@@ -47,7 +47,8 @@ jobs:
 
       - name: Build Release APK
         env:
-          GRADLE_OPTS: "-Xmx3g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+          GRADLE_OPTS: "-Xmx4g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8"
+          JAVA_TOOL_OPTIONS: "-Xmx4g -XX:MaxMetaspaceSize=1g"
         run: ./gradlew --no-daemon --stacktrace --build-cache -Pandroid.useAndroidX=true assembleRelease
 
       - name: Set short SHA
