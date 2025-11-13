@@ -10,7 +10,7 @@
 .externalNativeBuild
 *.iml
 external/
-gradle.properties
+gradle-local.properties
 .kotlin/
 **/build/
 *.log
