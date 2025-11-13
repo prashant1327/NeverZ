@@ -28,3 +28,28 @@ val Surface = Color(0xFFFDFCFF)
 val OnSurface = Color(0xFF1A1C1E)
 
 val Outline = Color(0xFF767680)
+
+val DarkPrimary = Color(0xFFADC6FF)
+val DarkOnPrimary = Color(0xFF002E69)
+val DarkPrimaryContainer = Color(0xFF004494)
+val DarkOnPrimaryContainer = Color(0xFFD7E2FF)
+
+val DarkSecondary = Color(0xFFBEC6DC)
+val DarkOnSecondary = Color(0xFF283141)
+val DarkSecondaryContainer = Color(0xFF3E4759)
+val DarkOnSecondaryContainer = Color(0xFFDAE2F9)
+
+val DarkTertiary = Color(0xFFDEBCDE)
+val DarkOnTertiary = Color(0xFF402844)
+val DarkTertiaryContainer = Color(0xFF583E5C)
+val DarkOnTertiaryContainer = Color(0xFFFBD7FD)
+
+val DarkError = Color(0xFFFFB4AB)
+val DarkOnError = Color(0xFF690005)
+val DarkErrorContainer = Color(0xFF93000A)
+val DarkOnErrorContainer = Color(0xFFFFDAD6)
+
+val DarkBackground = Color(0xFF1A1C1E)
+val DarkOnBackground = Color(0xFFE3E2E6)
+val DarkSurface = Color(0xFF1A1C1E)
+val DarkOnSurface = Color(0xFFE3E2E6)

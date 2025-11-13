@@ -38,9 +38,9 @@ import java.time.format.DateTimeFormatter
 
 class AppViewModel(
     application: Application,
-    private val quoteRepository: QuoteRepository = QuoteRepository(),
-    private val streakRepository: StreakRepository = StreakRepository(),
-    private val reminderScheduler: StreakReminderScheduler = StreakReminderScheduler(application)
+    private val quoteRepository: QuoteRepository,
+    private val streakRepository: StreakRepository,
+    private val reminderScheduler: StreakReminderScheduler
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(AppUiState())

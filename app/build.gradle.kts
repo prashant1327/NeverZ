@@ -1,17 +1,3 @@
-import java.util.Properties
-
-val localPropertiesFile = rootProject.file("gradle-local.properties")
-val localProperties = Properties().apply {
-    if (localPropertiesFile.exists()) {
-        localPropertiesFile.inputStream().use { load(it) }
-    }
-}
-
-fun resolveConfig(key: String): String? =
-    (project.findProperty(key) as? String)
-        ?: System.getenv(key)
-        ?: localProperties.getProperty(key)
-
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -35,21 +21,16 @@ android {
         buildConfigField(
             "String",
             "GEMINI_API_KEY",
-            "\"${resolveConfig("GEMINI_API_KEY") ?: ""}\""
+            "\"\""
         )
     }
 
     signingConfigs {
         create("release") {
-            val storeFilePath = resolveConfig("RELEASE_STORE_FILE")
-                ?: error("RELEASE_STORE_FILE is not defined")
-            storeFile = rootProject.file(storeFilePath)
-            storePassword = resolveConfig("RELEASE_STORE_PASSWORD")
-                ?: error("RELEASE_STORE_PASSWORD is not defined")
-            keyAlias = resolveConfig("RELEASE_KEY_ALIAS")
-                ?: error("RELEASE_KEY_ALIAS is not defined")
-            keyPassword = resolveConfig("RELEASE_KEY_PASSWORD")
-                ?: error("RELEASE_KEY_PASSWORD is not defined")
+            storeFile = rootProject.file("keystore/release.keystore")
+            storePassword = "android"
+            keyAlias = "android"
+            keyPassword = "android"
         }
     }
 
