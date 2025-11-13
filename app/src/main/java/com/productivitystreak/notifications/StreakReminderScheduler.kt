@@ -8,6 +8,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.productivitystreak.notifications.StreakReminderWorker
 import com.productivitystreak.ui.state.profile.ReminderFrequency
 import java.util.concurrent.TimeUnit
 
