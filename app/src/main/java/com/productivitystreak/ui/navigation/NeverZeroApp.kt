@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.animation.with
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -104,7 +105,7 @@ fun NeverZeroApp(
         AnimatedContent(
             targetState = currentDestination?.route ?: NeverZeroDestination.Dashboard.route,
             label = "nav-content",
-            transitionSpec = { fadeIn() with fadeOut() }
+            transitionSpec = { fadeIn().togetherWith(fadeOut()) }
         ) { _ ->
             NavHost(
                 navController = navController,

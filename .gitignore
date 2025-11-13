@@ -11,3 +11,6 @@
 *.iml
 external/
 gradle.properties
+.kotlin/
+**/build/
+*.log
