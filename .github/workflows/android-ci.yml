@@ -28,6 +28,7 @@ jobs:
       RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
       RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
       GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+      GRADLE_OPTS: "-Xmx2048m"
     outputs:
       short_sha: ${{ steps.set_sha.outputs.short_sha }}
     steps:
