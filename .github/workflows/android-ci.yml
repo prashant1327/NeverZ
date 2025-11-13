@@ -14,20 +14,27 @@ on:
       - 'gradlew'
       - 'gradlew.bat'
       - 'public-stable-ids.txt'
-    branches-ignore:
-      - 'wip/**'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/android-ci.yml'
+      - 'app/**'
+      - 'gradle/**'
+      - 'build.gradle.kts'
+      - 'build.gradle'
+      - 'gradle.properties'
+      - 'settings.gradle'
+      - 'settings.gradle.kts'
+      - 'gradlew'
+      - 'gradlew.bat'
+      - 'public-stable-ids.txt'
   workflow_dispatch:
 
 jobs:
   build:
     name: Build Signed Release APK
     runs-on: ubuntu-latest
-    env:
-      RELEASE_STORE_FILE: ${{ secrets.RELEASE_STORE_FILE }}
-      RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
-      RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
-      RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
     outputs:
       short_sha: ${{ steps.set_sha.outputs.short_sha }}
     steps:

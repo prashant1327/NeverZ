@@ -7,13 +7,14 @@ import androidx.activity.viewModels
 import androidx.compose.material3.Surface
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.productivitystreak.ui.AppViewModel
+import com.productivitystreak.ui.AppViewModelFactory
 import com.productivitystreak.ui.navigation.NeverZeroApp
 import com.productivitystreak.ui.theme.ProductivityStreakTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel: AppViewModel by viewModels()
+        val viewModel: AppViewModel by viewModels { AppViewModelFactory(application) }
         setContent {
             ProductivityStreakTheme {
                 val state = viewModel.uiState.collectAsStateWithLifecycle()
