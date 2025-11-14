@@ -32,6 +32,22 @@ class PreferencesManager(context: Context) {
         val STATS_PERIOD = stringPreferencesKey("stats_period")
         val USER_NAME = stringPreferencesKey("user_name")
         val TOTAL_POINTS = intPreferencesKey("total_points")
+
+        // Reading Tracker
+        val READING_STREAK_DAYS = intPreferencesKey("reading_streak_days")
+        val PAGES_READ_TODAY = intPreferencesKey("pages_read_today")
+        val READING_GOAL_PAGES = intPreferencesKey("reading_goal_pages")
+        val READING_LAST_DATE = stringPreferencesKey("reading_last_date")
+        val READING_ACTIVITY = stringPreferencesKey("reading_activity")
+
+        // Vocabulary
+        val VOCABULARY_STREAK_DAYS = intPreferencesKey("vocabulary_streak_days")
+        val WORDS_ADDED_TODAY = intPreferencesKey("words_added_today")
+        val VOCABULARY_LAST_DATE = stringPreferencesKey("vocabulary_last_date")
+        val VOCABULARY_WORDS = stringPreferencesKey("vocabulary_words")
+
+        // Achievements
+        val ACHIEVEMENTS_DATA = stringPreferencesKey("achievements_data")
     }
 
     // Theme mode
@@ -273,6 +289,189 @@ class PreferencesManager(context: Context) {
     suspend fun clearAll() {
         dataStore.edit { preferences ->
             preferences.clear()
+        }
+    }
+
+    // Reading Tracker
+    val readingStreakDays: Flow<Int> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.READING_STREAK_DAYS] ?: 0
+        }
+
+    suspend fun setReadingStreakDays(days: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.READING_STREAK_DAYS] = days
+        }
+    }
+
+    val pagesReadToday: Flow<Int> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.PAGES_READ_TODAY] ?: 0
+        }
+
+    suspend fun setPagesReadToday(pages: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.PAGES_READ_TODAY] = pages
+        }
+    }
+
+    val readingGoalPages: Flow<Int> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.READING_GOAL_PAGES] ?: 30
+        }
+
+    suspend fun setReadingGoalPages(pages: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.READING_GOAL_PAGES] = pages
+        }
+    }
+
+    val readingLastDate: Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.READING_LAST_DATE] ?: ""
+        }
+
+    suspend fun setReadingLastDate(date: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.READING_LAST_DATE] = date
+        }
+    }
+
+    val readingActivity: Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.READING_ACTIVITY] ?: "[]"
+        }
+
+    suspend fun setReadingActivity(activityJson: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.READING_ACTIVITY] = activityJson
+        }
+    }
+
+    // Vocabulary
+    val vocabularyStreakDays: Flow<Int> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.VOCABULARY_STREAK_DAYS] ?: 0
+        }
+
+    suspend fun setVocabularyStreakDays(days: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.VOCABULARY_STREAK_DAYS] = days
+        }
+    }
+
+    val wordsAddedToday: Flow<Int> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.WORDS_ADDED_TODAY] ?: 0
+        }
+
+    suspend fun setWordsAddedToday(words: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.WORDS_ADDED_TODAY] = words
+        }
+    }
+
+    val vocabularyLastDate: Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.VOCABULARY_LAST_DATE] ?: ""
+        }
+
+    suspend fun setVocabularyLastDate(date: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.VOCABULARY_LAST_DATE] = date
+        }
+    }
+
+    val vocabularyWords: Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.VOCABULARY_WORDS] ?: "[]"
+        }
+
+    suspend fun setVocabularyWords(wordsJson: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.VOCABULARY_WORDS] = wordsJson
+        }
+    }
+
+    // Achievements
+    val achievementsData: Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.ACHIEVEMENTS_DATA] ?: "[]"
+        }
+
+    suspend fun setAchievementsData(achievementsJson: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ACHIEVEMENTS_DATA] = achievementsJson
         }
     }
 }
