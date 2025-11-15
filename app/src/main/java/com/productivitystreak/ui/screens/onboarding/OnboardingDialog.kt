@@ -2,6 +2,8 @@ package com.productivitystreak.ui.screens.onboarding
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.with
 import androidx.compose.foundation.BorderStroke
@@ -23,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -51,6 +54,7 @@ import com.productivitystreak.ui.state.onboarding.OnboardingState
 import com.productivitystreak.ui.theme.Shapes
 import com.productivitystreak.ui.theme.Spacing
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun OnboardingDialog(
     state: OnboardingState,
@@ -97,7 +101,7 @@ fun OnboardingDialog(
                     AnimatedContent(
                         targetState = state.currentStep,
                         transitionSpec = {
-                            tween<IntSize>(250) with tween(250)
+                            fadeIn(animationSpec = tween(250)) with fadeOut(animationSpec = tween(250))
                         }, label = "onboarding-step"
                     ) { step ->
                         when (step) {

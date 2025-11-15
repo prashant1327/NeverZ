@@ -4,12 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -106,9 +106,9 @@ private fun MetricsRow(current: Int, longestName: String, average: Int) {
 }
 
 @Composable
-private fun MetricCard(title: String, value: String) {
+private fun RowScope.MetricCard(title: String, value: String) {
     Surface(
-        modifier = Modifier.weight(1f),
+        modifier = androidx.compose.foundation.layout.RowScope::class.java.let { Modifier.weight(1f) },
         shape = RoundedCornerShape(24.dp),
         color = Color.White,
         tonalElevation = 8.dp
