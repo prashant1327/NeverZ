@@ -84,7 +84,7 @@ android {
 }
 
 dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2024.09.02")
+    val composeBom = platform("androidx.compose:compose-bom:2024.08.00")
 
     implementation(composeBom)
     androidTestImplementation(composeBom)
@@ -95,7 +95,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
 
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.compose.foundation:foundation-layout")
     implementation("androidx.compose.ui:ui")
@@ -142,6 +142,7 @@ dependencies {
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
+    implementation(project(":uiOverrides"))
 }
 
 // Configure Kover for code coverage
