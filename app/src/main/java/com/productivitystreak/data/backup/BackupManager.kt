@@ -3,7 +3,9 @@ package com.productivitystreak.data.backup
 import android.content.Context
 import com.productivitystreak.data.local.AppDatabase
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlin.ExperimentalStdlibApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -41,13 +43,13 @@ class BackupManager(private val context: Context, private val database: AppDatab
 
             // Convert to JSON
             val backupData = BackupData(
-                streaks = moshi.adapter(List::class.java).toJson(streaks),
-                books = moshi.adapter(List::class.java).toJson(books),
-                vocabularyWords = moshi.adapter(List::class.java).toJson(vocabularyWords),
-                readingSessions = "[]", // Can be expanded
-                reflections = moshi.adapter(List::class.java).toJson(reflections),
-                achievements = moshi.adapter(List::class.java).toJson(achievements),
-                quotes = moshi.adapter(List::class.java).toJson(quotes)
+                streaks = toJson(streaks),
+                books = toJson(books),
+                vocabularyWords = toJson(vocabularyWords),
+                readingSessions = "[]", // Can be expanded later
+                reflections = toJson(reflections),
+                achievements = toJson(achievements),
+                quotes = toJson(quotes)
             )
 
             val adapter = moshi.adapter(BackupData::class.java)
@@ -93,19 +95,18 @@ class BackupManager(private val context: Context, private val database: AppDatab
             // Phase 4: Complete implementation with merge/replace options
             if (!mergeMode) {
                 // Replace mode: Clear existing data first
-                database.streakDao().deleteAll()
-                database.bookDao().deleteAll()
-                database.vocabularyDao().deleteAll()
-                database.dailyReflectionDao().deleteAll()
-                database.achievementDao().deleteAll()
-                database.quoteDao().deleteAll()
+                database.streakDao().deleteAllStreaks()
+                database.bookDao().deleteAllBooks()
+                database.vocabularyDao().deleteAllWords()
+                database.dailyReflectionDao().deleteAllReflections()
+                database.achievementDao().deleteAllAchievements()
+                database.quoteDao().deleteAllQuotes()
             }
 
             // Restore streaks
             try {
-                val streaksAdapter = moshi.adapter<List<com.productivitystreak.data.local.entity.StreakEntity>>()
-                val streaks = streaksAdapter.fromJson(backupData.streaks)
-                streaks?.forEach { streak ->
+                val streaks = fromJson<List<com.productivitystreak.data.local.entity.StreakEntity>>(backupData.streaks)
+                for (streak in streaks.orEmpty()) {
                     if (mergeMode) {
                         // In merge mode, only add if not exists
                         val existing = database.streakDao().getStreakById(streak.id)
@@ -124,9 +125,8 @@ class BackupManager(private val context: Context, private val database: AppDatab
 
             // Restore books
             try {
-                val booksAdapter = moshi.adapter<List<com.productivitystreak.data.local.entity.BookEntity>>()
-                val books = booksAdapter.fromJson(backupData.books)
-                books?.forEach { book ->
+                val books = fromJson<List<com.productivitystreak.data.local.entity.BookEntity>>(backupData.books)
+                for (book in books.orEmpty()) {
                     if (mergeMode) {
                         val existing = database.bookDao().getBookById(book.id)
                         if (existing == null) {
@@ -144,9 +144,8 @@ class BackupManager(private val context: Context, private val database: AppDatab
 
             // Restore vocabulary
             try {
-                val vocabAdapter = moshi.adapter<List<com.productivitystreak.data.local.entity.VocabularyWordEntity>>()
-                val words = vocabAdapter.fromJson(backupData.vocabularyWords)
-                words?.forEach { word ->
+                val words = fromJson<List<com.productivitystreak.data.local.entity.VocabularyWordEntity>>(backupData.vocabularyWords)
+                for (word in words.orEmpty()) {
                     if (mergeMode) {
                         val existing = database.vocabularyDao().getWordById(word.id)
                         if (existing == null) {
@@ -164,9 +163,8 @@ class BackupManager(private val context: Context, private val database: AppDatab
 
             // Restore reflections
             try {
-                val reflectionsAdapter = moshi.adapter<List<com.productivitystreak.data.local.entity.DailyReflectionEntity>>()
-                val reflections = reflectionsAdapter.fromJson(backupData.reflections)
-                reflections?.forEach { reflection ->
+                val reflections = fromJson<List<com.productivitystreak.data.local.entity.DailyReflectionEntity>>(backupData.reflections)
+                for (reflection in reflections.orEmpty()) {
                     if (mergeMode) {
                         val existing = database.dailyReflectionDao().getReflectionByDate(reflection.date)
                         if (existing == null) {
@@ -184,9 +182,8 @@ class BackupManager(private val context: Context, private val database: AppDatab
 
             // Restore achievements
             try {
-                val achievementsAdapter = moshi.adapter<List<com.productivitystreak.data.local.entity.AchievementEntity>>()
-                val achievements = achievementsAdapter.fromJson(backupData.achievements)
-                achievements?.forEach { achievement ->
+                val achievements = fromJson<List<com.productivitystreak.data.local.entity.AchievementEntity>>(backupData.achievements)
+                for (achievement in achievements.orEmpty()) {
                     if (mergeMode) {
                         val existing = database.achievementDao().getAchievementById(achievement.id)
                         if (existing == null) {
@@ -204,9 +201,8 @@ class BackupManager(private val context: Context, private val database: AppDatab
 
             // Restore quotes
             try {
-                val quotesAdapter = moshi.adapter<List<com.productivitystreak.data.local.entity.QuoteEntity>>()
-                val quotes = quotesAdapter.fromJson(backupData.quotes)
-                quotes?.forEach { quote ->
+                val quotes = fromJson<List<com.productivitystreak.data.local.entity.QuoteEntity>>(backupData.quotes)
+                for (quote in quotes.orEmpty()) {
                     database.quoteDao().insertQuote(quote)
                     restoredCount++
                 }
@@ -237,4 +233,11 @@ class BackupManager(private val context: Context, private val database: AppDatab
     suspend fun deleteBackup(file: File): Boolean = withContext(Dispatchers.IO) {
         file.delete()
     }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private inline fun <reified T> toJson(value: T): String = moshi.adapter<T>().toJson(value)
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private inline fun <reified T> fromJson(json: String): T? =
+        runCatching { moshi.adapter<T>().fromJson(json) }.getOrNull()
 }

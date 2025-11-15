@@ -53,7 +53,7 @@ class StreakWidgetProvider : AppWidgetProvider() {
                     
                     // Get active streaks
                     val streaks = streakRepository.observeStreaks().first()
-                    val activeStreaks = streaks.filter { !it.isArchived }
+                    val activeStreaks = streaks
                     
                     // Get top 3 streaks by current count
                     val topStreaks = activeStreaks.sortedByDescending { it.currentCount }.take(3)
@@ -80,7 +80,7 @@ class StreakWidgetProvider : AppWidgetProvider() {
                             val streak1 = topStreaks[0]
                             views.setTextViewText(R.id.streak_1_name, streak1.name)
                             views.setTextViewText(R.id.streak_1_count, "${streak1.currentCount} days")
-                            val progress1 = ((streak1.todayProgress.toFloat() / streak1.goalPerDay) * 100).toInt()
+                            val progress1 = ((streak1.progress) * 100).toInt()
                             views.setProgressBar(R.id.streak_1_progress, 100, progress1, false)
                         }
                         
@@ -89,7 +89,7 @@ class StreakWidgetProvider : AppWidgetProvider() {
                             val streak2 = topStreaks[1]
                             views.setTextViewText(R.id.streak_2_name, streak2.name)
                             views.setTextViewText(R.id.streak_2_count, "${streak2.currentCount} days")
-                            val progress2 = ((streak2.todayProgress.toFloat() / streak2.goalPerDay) * 100).toInt()
+                            val progress2 = ((streak2.progress) * 100).toInt()
                             views.setProgressBar(R.id.streak_2_progress, 100, progress2, false)
                         }
                         
@@ -98,7 +98,7 @@ class StreakWidgetProvider : AppWidgetProvider() {
                             val streak3 = topStreaks[2]
                             views.setTextViewText(R.id.streak_3_name, streak3.name)
                             views.setTextViewText(R.id.streak_3_count, "${streak3.currentCount} days")
-                            val progress3 = ((streak3.todayProgress.toFloat() / streak3.goalPerDay) * 100).toInt()
+                            val progress3 = ((streak3.progress) * 100).toInt()
                             views.setProgressBar(R.id.streak_3_progress, 100, progress3, false)
                         }
                     } else {

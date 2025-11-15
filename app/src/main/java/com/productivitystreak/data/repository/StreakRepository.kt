@@ -207,7 +207,7 @@ class StreakRepository(private val streakDao: StreakDao) {
             )
         }
 
-        private fun <T> runRepositoryCall(block: () -> T): RepositoryResult<Unit> {
+        private suspend fun <T> runRepositoryCall(block: suspend () -> T): RepositoryResult<Unit> {
             return try {
                 block()
                 RepositoryResult.Success(Unit)

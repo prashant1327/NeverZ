@@ -447,6 +447,12 @@ private fun TrendChart(points: List<TrendPoint>, modifier: Modifier = Modifier) 
         animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing),
         label = "trend-progress"
     )
+    val fillGradientColors = listOf(
+        MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+        Color.Transparent
+    )
+    val lineColor = MaterialTheme.colorScheme.primary
+
     Canvas(
         modifier = modifier
             .fillMaxWidth()
@@ -483,16 +489,11 @@ private fun TrendChart(points: List<TrendPoint>, modifier: Modifier = Modifier) 
         }
         drawPath(
             path = areaPath,
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
-                    Color.Transparent
-                )
-            )
+            brush = Brush.verticalGradient(colors = fillGradientColors)
         )
         drawPath(
             path = path,
-            color = MaterialTheme.colorScheme.primary,
+            color = lineColor,
             style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
         )
     }

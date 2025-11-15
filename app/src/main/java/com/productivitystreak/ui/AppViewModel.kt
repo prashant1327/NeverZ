@@ -23,6 +23,7 @@ import com.productivitystreak.ui.state.discover.DiscoverState
 import com.productivitystreak.ui.state.discover.FeaturedContent
 import com.productivitystreak.ui.state.discover.SuggestionItem
 import com.productivitystreak.ui.state.onboarding.OnboardingState
+import com.productivitystreak.ui.state.UiMessage
 import com.productivitystreak.ui.state.profile.ProfileState
 import com.productivitystreak.ui.state.profile.ProfileTheme
 import com.productivitystreak.ui.state.profile.ReminderFrequency
@@ -34,6 +35,10 @@ import com.productivitystreak.ui.state.stats.HeatMapDay
 import com.productivitystreak.ui.state.stats.HeatMapWeek
 import com.productivitystreak.ui.state.stats.LeaderboardEntry
 import com.productivitystreak.ui.state.stats.StatsState
+import com.productivitystreak.ui.state.stats.AverageDailyTrend
+import com.productivitystreak.ui.state.stats.ConsistencyLevel
+import com.productivitystreak.ui.state.stats.ConsistencyScore
+import com.productivitystreak.ui.state.stats.TrendPoint
 import com.productivitystreak.ui.state.vocabulary.VocabularyState
 import com.productivitystreak.ui.state.vocabulary.VocabularyWord
 import kotlinx.coroutines.Dispatchers
@@ -542,9 +547,9 @@ class AppViewModel(
             try {
                 preferencesManager.setNotificationsEnabled(enabled)
                 if (enabled) {
-                    reminderScheduler.scheduleDailyReminder()
+                    scheduleReminderForCurrentState()
                 } else {
-                    reminderScheduler.cancelAllReminders()
+                    reminderScheduler.cancelReminders()
                 }
             } catch (error: Exception) {
                 Log.e("AppViewModel", "Failed to toggle notifications", error)
@@ -582,11 +587,7 @@ class AppViewModel(
 
         val current = _uiState.value
         if (current.profileState.notificationEnabled) {
-            reminderScheduler.scheduleReminder(
-                frequency = frequency,
-                categories = current.onboardingState.selectedCategories,
-                userName = current.userName
-            )
+            scheduleReminderForCurrentState(frequency)
         }
     }
 
@@ -1239,9 +1240,9 @@ class AppViewModel(
             try {
                 preferencesManager.setDailyReminderEnabled(enabled)
                 if (enabled) {
-                    reminderScheduler.scheduleDailyReminder()
+                    scheduleReminderForCurrentState(ReminderFrequency.Daily)
                 } else {
-                    reminderScheduler.cancelAllReminders()
+                    reminderScheduler.cancelReminders()
                 }
             } catch (e: Exception) {
                 Log.e("AppViewModel", "Error toggling daily reminders", e)
@@ -1261,11 +1262,25 @@ class AppViewModel(
                 preferencesManager.setWeeklySummaryEnabled(enabled)
                 if (enabled) {
                     reminderScheduler.scheduleWeeklyBackup()
+                } else {
+                    reminderScheduler.cancelWeeklyBackup()
                 }
             } catch (e: Exception) {
                 Log.e("AppViewModel", "Error toggling weekly backups", e)
             }
         }
+    }
+
+    private fun scheduleReminderForCurrentState(
+        frequencyOverride: ReminderFrequency? = null
+    ) {
+        val current = _uiState.value
+        val frequency = frequencyOverride ?: current.profileState.reminderFrequency
+        reminderScheduler.scheduleReminder(
+            frequency = frequency,
+            categories = current.onboardingState.selectedCategories,
+            userName = current.userName
+        )
     }
 
     fun onSettingsReminderTimeChange(time: String) {
