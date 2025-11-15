@@ -37,6 +37,7 @@ class BackupManager(private val context: Context, private val database: AppDatab
             val streaks = database.streakDao().getAllStreaks().first()
             val books = database.bookDao().getAllBooks().first()
             val vocabularyWords = database.vocabularyDao().getAllWords().first()
+            val readingSessions = database.readingSessionDao().getAllSessions().first()
             val reflections = database.dailyReflectionDao().getAllReflections().first()
             val achievements = database.achievementDao().getAllAchievements().first()
             val quotes = database.quoteDao().getAllQuotes().first()
@@ -46,7 +47,7 @@ class BackupManager(private val context: Context, private val database: AppDatab
                 streaks = toJson(streaks),
                 books = toJson(books),
                 vocabularyWords = toJson(vocabularyWords),
-                readingSessions = "[]", // Can be expanded later
+                readingSessions = toJson(readingSessions),
                 reflections = toJson(reflections),
                 achievements = toJson(achievements),
                 quotes = toJson(quotes)
@@ -98,6 +99,7 @@ class BackupManager(private val context: Context, private val database: AppDatab
                 database.streakDao().deleteAllStreaks()
                 database.bookDao().deleteAllBooks()
                 database.vocabularyDao().deleteAllWords()
+                database.readingSessionDao().deleteAllSessions()
                 database.dailyReflectionDao().deleteAllReflections()
                 database.achievementDao().deleteAllAchievements()
                 database.quoteDao().deleteAllQuotes()
@@ -135,6 +137,25 @@ class BackupManager(private val context: Context, private val database: AppDatab
                         }
                     } else {
                         database.bookDao().insertBook(book)
+                        restoredCount++
+                    }
+                }
+            } catch (e: Exception) {
+                // Continue
+            }
+
+            // Restore reading sessions
+            try {
+                val sessions = fromJson<List<com.productivitystreak.data.local.entity.ReadingSessionEntity>>(backupData.readingSessions)
+                for (session in sessions.orEmpty()) {
+                    if (mergeMode) {
+                        val existing = database.readingSessionDao().getSessionById(session.id)
+                        if (existing == null) {
+                            database.readingSessionDao().insertSession(session)
+                            restoredCount++
+                        }
+                    } else {
+                        database.readingSessionDao().insertSession(session)
                         restoredCount++
                     }
                 }

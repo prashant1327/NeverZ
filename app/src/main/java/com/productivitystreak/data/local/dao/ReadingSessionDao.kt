@@ -9,6 +9,9 @@ interface ReadingSessionDao {
     @Query("SELECT * FROM reading_sessions WHERE bookId = :bookId ORDER BY date DESC")
     fun getSessionsForBook(bookId: Long): Flow<List<ReadingSessionEntity>>
 
+    @Query("SELECT * FROM reading_sessions ORDER BY date DESC")
+    fun getAllSessions(): Flow<List<ReadingSessionEntity>>
+
     @Query("SELECT * FROM reading_sessions ORDER BY date DESC LIMIT :limit")
     fun getRecentSessions(limit: Int): Flow<List<ReadingSessionEntity>>
 
@@ -21,6 +24,9 @@ interface ReadingSessionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSession(session: ReadingSessionEntity): Long
 
+    @Query("SELECT * FROM reading_sessions WHERE id = :id")
+    suspend fun getSessionById(id: Long): ReadingSessionEntity?
+
     @Update
     suspend fun updateSession(session: ReadingSessionEntity)
 
@@ -29,4 +35,7 @@ interface ReadingSessionDao {
 
     @Query("DELETE FROM reading_sessions WHERE bookId = :bookId")
     suspend fun deleteSessionsForBook(bookId: Long)
+
+    @Query("DELETE FROM reading_sessions")
+    suspend fun deleteAllSessions()
 }
