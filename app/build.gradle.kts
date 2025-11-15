@@ -142,7 +142,7 @@ dependencies {
     androidTestImplementation("androidx.test.uiautomator:uiautomator:2.3.0")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
-    implementation(project(":uiOverrides"))
+    
 }
 
 // Configure Kover for code coverage
