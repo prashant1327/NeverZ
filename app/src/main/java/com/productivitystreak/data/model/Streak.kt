@@ -10,10 +10,29 @@ data class Streak(
     val category: String,
     val history: List<StreakDayRecord>,
     val color: String = "#6366F1",
-    val icon: String = "flag"
+    val icon: String = "flag",
+    val frequency: StreakFrequency = StreakFrequency.DAILY,
+    val targetPerPeriod: Int? = null,
+    val customDaysOfWeek: List<String> = emptyList(),
+    val reminderEnabled: Boolean = true,
+    val reminderTime: String = "09:00",
+    val difficulty: StreakDifficulty = StreakDifficulty.BALANCED,
+    val allowFreezeDays: Boolean = true
 ) {
     val progress: Float
         get() = history.lastOrNull()?.completionFraction ?: 0f
+}
+
+enum class StreakFrequency {
+    DAILY,
+    WEEKLY,
+    CUSTOM
+}
+
+enum class StreakDifficulty {
+    EASY,
+    BALANCED,
+    CHALLENGING
 }
 
 data class StreakDayRecord(

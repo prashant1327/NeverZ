@@ -2,6 +2,8 @@ package com.productivitystreak.data.local.entity
 
 import androidx.room.TypeConverter
 import com.productivitystreak.data.model.StreakDayRecord
+import com.productivitystreak.data.model.StreakDifficulty
+import com.productivitystreak.data.model.StreakFrequency
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.Types
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -54,4 +56,20 @@ class Converters {
         val adapter = moshi.adapter<List<String>>(type)
         return adapter.fromJson(value) ?: emptyList()
     }
+
+    @TypeConverter
+    fun fromStreakFrequency(value: StreakFrequency): String = value.name
+
+    @TypeConverter
+    fun toStreakFrequency(value: String): StreakFrequency = runCatching {
+        StreakFrequency.valueOf(value)
+    }.getOrDefault(StreakFrequency.DAILY)
+
+    @TypeConverter
+    fun fromStreakDifficulty(value: StreakDifficulty): String = value.name
+
+    @TypeConverter
+    fun toStreakDifficulty(value: String): StreakDifficulty = runCatching {
+        StreakDifficulty.valueOf(value)
+    }.getOrDefault(StreakDifficulty.BALANCED)
 }
