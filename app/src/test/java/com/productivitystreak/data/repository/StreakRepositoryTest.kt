@@ -2,17 +2,23 @@ package com.productivitystreak.data.repository
 
 import com.productivitystreak.data.local.dao.StreakDao
 import com.productivitystreak.data.local.entity.StreakEntity
-import com.productivitystreak.data.model.Streak
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
-import org.mockito.Mockito.*
-import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnit
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 
 class StreakRepositoryTest {
+
+    @get:Rule
+    val mockitoRule = MockitoJUnit.rule()
 
     @Mock
     private lateinit var streakDao: StreakDao
@@ -21,7 +27,6 @@ class StreakRepositoryTest {
 
     @Before
     fun setUp() {
-        MockitoAnnotations.openMocks(this)
         streakRepository = StreakRepository(streakDao)
     }
 
@@ -42,18 +47,16 @@ class StreakRepositoryTest {
                 icon = "test"
             )
         )
-        `when`(streakDao.getAllStreaks()).thenReturn(flowOf(streakEntities))
+        whenever(streakDao.getAllStreaks()).thenReturn(flowOf(streakEntities))
 
         // When
-        val result = streakRepository.observeStreaks()
+        val result = streakRepository.observeStreaks().first()
 
         // Then
-        result.collect { streaks ->
-            assertEquals(1, streaks.size)
-            assertEquals("test-id", streaks[0].id)
-            assertEquals("Test Streak", streaks[0].name)
-            assertEquals(5, streaks[0].currentCount)
-        }
+        assertEquals(1, result.size)
+        assertEquals("test-id", result[0].id)
+        assertEquals("Test Streak", result[0].name)
+        assertEquals(5, result[0].currentCount)
     }
 
     @Test
@@ -71,6 +74,6 @@ class StreakRepositoryTest {
 
         // Then
         assertTrue(result is RepositoryResult.Success)
-        verify(streakDao).insertStreak(any<StreakEntity>())
+        org.mockito.Mockito.verify(streakDao).insertStreak(any())
     }
 }

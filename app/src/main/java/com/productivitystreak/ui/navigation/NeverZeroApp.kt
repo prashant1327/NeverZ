@@ -112,77 +112,71 @@ fun NeverZeroApp(
             )
         }
 
-        AnimatedContent(
-            targetState = currentDestination?.route ?: NeverZeroDestination.Dashboard.route,
-            label = "nav-content",
-            transitionSpec = { fadeIn().togetherWith(fadeOut()) }
-        ) { _ ->
-            NavHost(
-                navController = navController,
-                startDestination = NeverZeroDestination.Dashboard.route,
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                composable(NeverZeroDestination.Dashboard.route) {
-                    DashboardScreen(
-                        state = uiState,
-                        onRefreshQuote = onRefreshQuote,
-                        onSelectStreak = onSelectStreak,
-                        onToggleTask = onToggleTask,
-                        onNavigateToReading = {
-                            navController.navigate(NeverZeroDestination.Reading.route)
-                        },
-                        onNavigateToVocabulary = {
-                            navController.navigate(NeverZeroDestination.Vocabulary.route)
-                        }
-                    )
-                }
-                composable(NeverZeroDestination.Stats.route) {
-                    StatsScreen(state = uiState.statsState)
-                }
-                composable(NeverZeroDestination.Discover.route) {
-                    DiscoverScreen(state = uiState.discoverState)
-                }
-                composable(NeverZeroDestination.Profile.route) {
-                    ProfileScreen(
-                        userName = uiState.userName,
-                        state = uiState.profileState,
-                        quote = uiState.quote,
-                        onRefreshQuote = onRefreshQuote,
-                        onToggleNotifications = onToggleNotifications,
-                        onChangeReminderFrequency = onChangeReminderFrequency,
-                        onToggleWeeklySummary = onToggleWeeklySummary,
-                        onChangeTheme = onChangeTheme,
-                        onToggleHaptics = onToggleHaptics,
-                        onNavigateToSettings = {
-                            navController.navigate(NeverZeroDestination.Settings.route)
-                        }
-                    )
-                }
-                composable(NeverZeroDestination.Reading.route) {
-                    ReadingTrackerScreen(
-                        state = uiState.readingTrackerState,
-                        onAddProgress = onLogReadingProgress
-                    )
-                }
-                composable(NeverZeroDestination.Vocabulary.route) {
-                    VocabularyScreen(
-                        state = uiState.vocabularyState,
-                        onAddWord = onAddVocabularyWord
-                    )
-                }
-                composable(NeverZeroDestination.Settings.route) {
-                    SettingsScreen(
-                        state = uiState.settingsState,
-                        onThemeChange = onSettingsThemeChange,
-                        onDailyRemindersToggle = onSettingsDailyRemindersToggle,
-                        onWeeklyBackupsToggle = onSettingsWeeklyBackupsToggle,
-                        onReminderTimeChange = onSettingsReminderTimeChange,
-                        onHapticFeedbackToggle = onSettingsHapticFeedbackToggle,
-                        onCreateBackup = onSettingsCreateBackup,
-                        onRestoreBackup = onSettingsRestoreBackup,
-                        onDismissMessage = onSettingsDismissMessage
-                    )
-                }
+        NavHost(
+            navController = navController,
+            startDestination = NeverZeroDestination.Dashboard.route,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(NeverZeroDestination.Dashboard.route) {
+                DashboardScreen(
+                    state = uiState,
+                    onRefreshQuote = onRefreshQuote,
+                    onSelectStreak = onSelectStreak,
+                    onToggleTask = onToggleTask,
+                    onNavigateToReading = {
+                        navController.navigate(NeverZeroDestination.Reading.route)
+                    },
+                    onNavigateToVocabulary = {
+                        navController.navigate(NeverZeroDestination.Vocabulary.route)
+                    }
+                )
+            }
+            composable(NeverZeroDestination.Stats.route) {
+                StatsScreen(state = uiState.statsState)
+            }
+            composable(NeverZeroDestination.Discover.route) {
+                DiscoverScreen(state = uiState.discoverState)
+            }
+            composable(NeverZeroDestination.Profile.route) {
+                ProfileScreen(
+                    userName = uiState.userName,
+                    state = uiState.profileState,
+                    quote = uiState.quote,
+                    onRefreshQuote = onRefreshQuote,
+                    onToggleNotifications = onToggleNotifications,
+                    onChangeReminderFrequency = onChangeReminderFrequency,
+                    onToggleWeeklySummary = onToggleWeeklySummary,
+                    onChangeTheme = onChangeTheme,
+                    onToggleHaptics = onToggleHaptics,
+                    onNavigateToSettings = {
+                        navController.navigate(NeverZeroDestination.Settings.route)
+                    }
+                )
+            }
+            composable(NeverZeroDestination.Reading.route) {
+                ReadingTrackerScreen(
+                    state = uiState.readingTrackerState,
+                    onAddProgress = onLogReadingProgress
+                )
+            }
+            composable(NeverZeroDestination.Vocabulary.route) {
+                VocabularyScreen(
+                    state = uiState.vocabularyState,
+                    onAddWord = onAddVocabularyWord
+                )
+            }
+            composable(NeverZeroDestination.Settings.route) {
+                SettingsScreen(
+                    state = uiState.settingsState,
+                    onThemeChange = onSettingsThemeChange,
+                    onDailyRemindersToggle = onSettingsDailyRemindersToggle,
+                    onWeeklyBackupsToggle = onSettingsWeeklyBackupsToggle,
+                    onReminderTimeChange = onSettingsReminderTimeChange,
+                    onHapticFeedbackToggle = onSettingsHapticFeedbackToggle,
+                    onCreateBackup = onSettingsCreateBackup,
+                    onRestoreBackup = onSettingsRestoreBackup,
+                    onDismissMessage = onSettingsDismissMessage
+                )
             }
         }
     }
