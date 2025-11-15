@@ -295,6 +295,7 @@ private fun StatMetric(
             }
         }
     }
+}
 /**
  * Welcome header with time-based greeting
  */
