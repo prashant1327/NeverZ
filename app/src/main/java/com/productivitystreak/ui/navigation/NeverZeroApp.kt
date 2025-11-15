@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.*
@@ -25,7 +24,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -70,6 +68,8 @@ fun NeverZeroApp(
     onLogReadingProgress: (Int) -> Unit,
     onAddVocabularyWord: (String, String, String?) -> Unit,
     onToggleOnboardingCategory: (String) -> Unit,
+    onSetOnboardingGoal: (String) -> Unit,
+    onSetOnboardingCommitment: (Int, Int) -> Unit,
     onNextOnboardingStep: () -> Unit,
     onPreviousOnboardingStep: () -> Unit,
     onToggleOnboardingNotifications: (Boolean) -> Unit,
@@ -99,6 +99,13 @@ fun NeverZeroApp(
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
+        floatingActionButton = {
+            if (shouldShowBottomBar(currentDestination?.route)) {
+                PrimaryActionFab(onClick = onPrimaryAction)
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
+        isFloatingActionButtonDocked = true,
         bottomBar = {
             if (shouldShowBottomBar(currentDestination?.route)) {
                 NeverZeroNavigationBar(
@@ -112,8 +119,7 @@ fun NeverZeroApp(
                             launchSingleTop = true
                             restoreState = true
                         }
-                    },
-                    onPrimaryAction = onPrimaryAction
+                    }
                 )
             }
         }
@@ -123,6 +129,8 @@ fun NeverZeroApp(
                 state = uiState.onboardingState,
                 onDismiss = onDismissOnboarding,
                 onToggleCategory = onToggleOnboardingCategory,
+                onGoalSelected = onSetOnboardingGoal,
+                onCommitmentChanged = onSetOnboardingCommitment,
                 onNext = onNextOnboardingStep,
                 onPrevious = onPreviousOnboardingStep,
                 onToggleNotifications = onToggleOnboardingNotifications,
@@ -153,7 +161,8 @@ fun NeverZeroApp(
                     },
                     onNavigateToDiscover = {
                         navController.navigate(NeverZeroDestination.Discover.route)
-                    }
+                    },
+                    onEnableNotifications = { onToggleNotifications(true) }
                 )
             }
             composable(NeverZeroDestination.Stats.route) {
@@ -223,116 +232,53 @@ private fun shouldShowBottomBar(route: String?): Boolean {
 private fun NeverZeroNavigationBar(
     destinations: List<NeverZeroDestination>,
     currentRoute: String?,
-    onNavigate: (NeverZeroDestination) -> Unit,
-    onPrimaryAction: () -> Unit
+    onNavigate: (NeverZeroDestination) -> Unit
 ) {
-    val backgroundGradient = Brush.verticalGradient(
-        listOf(
-            MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
-            MaterialTheme.colorScheme.surface
-        )
-    )
-    Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = Color.Transparent,
-        shadowElevation = Elevation.level3
+    NavigationBar(
+        tonalElevation = Elevation.level2,
+        containerColor = MaterialTheme.colorScheme.surface
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(backgroundGradient)
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                destinations.forEachIndexed { index, destination ->
-                    NavigationPill(
-                        destination = destination,
-                        selected = currentRoute == destination.route,
-                        modifier = Modifier.weight(1f),
-                        onClick = { onNavigate(destination) }
-                    )
-
-                    if (index < destinations.lastIndex) {
-                        Spacer(modifier = Modifier.width(12.dp))
-                        PrimaryActionDivider(onClick = onPrimaryAction)
-                        Spacer(modifier = Modifier.width(12.dp))
+        destinations.forEach { destination ->
+            val selected = currentRoute == destination.route
+            NavigationBarItem(
+                selected = selected,
+                onClick = { onNavigate(destination) },
+                icon = {
+                    destination.icon?.let { icon ->
+                        Icon(
+                            painter = rememberVectorPainter(icon),
+                            contentDescription = destination.label,
+                            tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun NavigationPill(
-    destination: NeverZeroDestination,
-    selected: Boolean,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    val targetColor = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-    val textColor = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
-    val iconTint = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary
-
-    Surface(
-        modifier = modifier.height(56.dp),
-        shape = CircleShape,
-        tonalElevation = if (selected) Elevation.level2 else Elevation.level1,
-        color = targetColor,
-        onClick = onClick
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            destination.icon?.let { icon ->
-                Icon(
-                    painter = rememberVectorPainter(icon),
-                    contentDescription = destination.label,
-                    tint = iconTint
-                )
-            }
-            Text(
-                text = destination.label,
-                style = MaterialTheme.typography.labelLarge,
-                color = textColor,
-                fontWeight = if (selected) FontWeight.Bold else FontWeight.SemiBold
+                },
+                label = {
+                    Text(
+                        text = destination.label,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
+                    )
+                },
+                alwaysShowLabel = false
             )
         }
     }
 }
 
 @Composable
-private fun PrimaryActionDivider(onClick: () -> Unit) {
-    Box(contentAlignment = Alignment.Center) {
-        Surface(
-            modifier = Modifier
-                .height(60.dp)
-                .clip(CircleShape),
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primary,
-            shadowElevation = Elevation.level3,
-            onClick = onClick
-        ) {
-            Box(
-                modifier = Modifier
-                    .height(60.dp)
-                    .padding(12.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = "Primary Action",
-                    tint = MaterialTheme.colorScheme.onPrimary
-                )
-            }
-        }
+private fun PrimaryActionFab(onClick: () -> Unit) {
+    FloatingActionButton(
+        onClick = onClick,
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+        elevation = FloatingActionButtonDefaults.elevation(
+            defaultElevation = Elevation.level3,
+            pressedElevation = Elevation.level4
+        )
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Add,
+            contentDescription = "Add new habit"
+        )
     }
 }
 

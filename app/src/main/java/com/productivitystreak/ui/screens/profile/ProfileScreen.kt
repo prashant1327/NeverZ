@@ -3,6 +3,7 @@ package com.productivitystreak.ui.screens.profile
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -18,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowForwardIos
 import androidx.compose.material.icons.rounded.ColorLens
 import androidx.compose.material.icons.rounded.Help
-import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Notifications
@@ -31,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,7 +40,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.productivitystreak.data.model.Quote
 import com.productivitystreak.ui.state.profile.LegalItem
 import com.productivitystreak.ui.state.profile.ProfileState
 import com.productivitystreak.ui.state.profile.ProfileTheme
@@ -52,8 +51,6 @@ import com.productivitystreak.ui.theme.Spacing
 fun ProfileScreen(
     userName: String,
     state: ProfileState,
-    quote: Quote?,
-    onRefreshQuote: () -> Unit,
     onToggleNotifications: (Boolean) -> Unit,
     onChangeReminderFrequency: (ReminderFrequency) -> Unit,
     onToggleWeeklySummary: (Boolean) -> Unit,
@@ -73,8 +70,16 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         ProfileHeader()
-        ProfileHeroCard(userName = userName, quote = quote?.text, onRefreshQuote = onRefreshQuote)
-        ProfileOptionsCard(onNavigateToSettings = onNavigateToSettings)
+        ProfileHeroCard(
+            userName = userName,
+            email = state.email,
+            activeCategories = state.activeCategories,
+            onManageAccount = onNavigateToSettings
+        )
+        if (!state.notificationEnabled) {
+            NotificationPermissionCard(onEnable = { onToggleNotifications(true) })
+        }
+        SettingsShortcutCard(onNavigateToSettings = onNavigateToSettings)
         PreferencesCard(
             notificationEnabled = state.notificationEnabled,
             reminderFrequency = state.reminderFrequency,
@@ -108,7 +113,12 @@ private fun ProfileHeader() {
 }
 
 @Composable
-private fun ProfileHeroCard(userName: String, quote: String?, onRefreshQuote: () -> Unit) {
+private fun ProfileHeroCard(
+    userName: String,
+    email: String,
+    activeCategories: Set<String>,
+    onManageAccount: () -> Unit
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = Shapes.extraLarge,
@@ -127,39 +137,91 @@ private fun ProfileHeroCard(userName: String, quote: String?, onRefreshQuote: ()
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(4.dp)) {
                 Text(text = userName, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-                Text(text = "Joined January 2024", style = MaterialTheme.typography.bodyMedium, color = Color(0xFF7C8095))
+                Text(text = email, style = MaterialTheme.typography.bodyMedium, color = Color(0xFF7C8095))
             }
-            TextButton(onClick = onRefreshQuote) {
-                Text(text = quote ?: "Build habits that last.")
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = Shapes.large,
+                color = Color(0xFFF3F4FF)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(text = "Focus areas", style = MaterialTheme.typography.labelLarge, color = Color(0xFF6E70A4))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (activeCategories.isEmpty()) {
+                            Surface(shape = Shapes.medium, color = Color.White) {
+                                Text(
+                                    text = "Select interests in onboarding",
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = Color(0xFF7C8095)
+                                )
+                            }
+                        } else {
+                            activeCategories.forEach { category ->
+                                Surface(shape = Shapes.medium, color = Color.White) {
+                                    Text(
+                                        text = category,
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            Button(onClick = onManageAccount, shape = RoundedCornerShape(24.dp)) {
+                Text(text = "Manage account & settings")
             }
         }
     }
 }
 
 @Composable
-private fun ProfileOptionsCard(onNavigateToSettings: () -> Unit) {
+private fun SettingsShortcutCard(onNavigateToSettings: () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = Shapes.extraLarge,
         color = Color.White,
         tonalElevation = 6.dp
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 8.dp)) {
-            ProfileOptionRow(icon = Icons.Rounded.Settings, title = "Account", subtitle = "Manage personal info", onClick = onNavigateToSettings)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(text = "Settings shortcuts", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            ShortcutRow(icon = Icons.Rounded.Person, title = "Account", subtitle = "Personal info & login", onClick = onNavigateToSettings)
             Divider(color = Color(0xFFF0F0FF))
-            ProfileOptionRow(icon = Icons.Rounded.ColorLens, title = "Appearance", subtitle = "Theme & colors", onClick = onNavigateToSettings)
+            ShortcutRow(icon = Icons.Rounded.Palette, title = "Appearance", subtitle = "Theme & color mode", onClick = onNavigateToSettings)
             Divider(color = Color(0xFFF0F0FF))
-            ProfileOptionRow(icon = Icons.Rounded.Lock, title = "Privacy", subtitle = "Security & permissions", onClick = onNavigateToSettings)
+            ShortcutRow(icon = Icons.Rounded.Lock, title = "Privacy", subtitle = "Permissions & exports", onClick = onNavigateToSettings)
         }
     }
 }
 
 @Composable
-private fun ProfileOptionRow(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, subtitle: String, onClick: () -> Unit) {
+private fun ShortcutRow(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 12.dp),
+            .padding(vertical = 4.dp)
+            .clickable(onClick = onClick),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -171,6 +233,30 @@ private fun ProfileOptionRow(icon: androidx.compose.ui.graphics.vector.ImageVect
             Text(text = subtitle, style = MaterialTheme.typography.bodySmall, color = Color(0xFF7C8095))
         }
         Icon(imageVector = Icons.Rounded.ArrowForwardIos, contentDescription = null, tint = Color(0xFFB0B3CC))
+    }
+}
+
+@Composable
+private fun NotificationPermissionCard(onEnable: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = Shapes.extraLarge,
+        color = Color(0xFFFFF7ED)
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(text = "Reminders are off", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = Color(0xFF7A4D00))
+            Text(
+                text = "Turn on notifications so Never Zero can ping you when it's time to log a habit.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color(0xFF8A5A10)
+            )
+            Button(onClick = onEnable, shape = RoundedCornerShape(24.dp)) {
+                Text("Enable reminders")
+            }
+        }
     }
 }
 
@@ -191,8 +277,14 @@ private fun PreferencesCard(
         color = Color.White,
         tonalElevation = 6.dp
     ) {
-        Column(modifier = Modifier.fillMaxWidth().padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
             Text(text = "Preferences", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            Text(text = "Fine-tune how reminders, summaries, and haptics support your streaks.", style = MaterialTheme.typography.bodySmall, color = Color(0xFF7C8095))
             PreferenceRow(
                 icon = Icons.Rounded.Notifications,
                 title = "Daily Reminder",
@@ -272,7 +364,7 @@ private fun SupportCard(items: List<LegalItem>) {
         Column(modifier = Modifier.fillMaxWidth().padding(24.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             Text(text = "Support", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             SupportRow(icon = Icons.Rounded.Help, label = "Help & Support", value = items.firstOrNull()?.label ?: "Browse FAQs")
-            SupportRow(icon = Icons.Rounded.Info, label = "About", value = items.getOrNull(1)?.label ?: "Learn about Never Zero")
+            SupportRow(icon = Icons.Rounded.Settings, label = "Guides", value = items.getOrNull(1)?.label ?: "Learn about Never Zero")
         }
     }
 }

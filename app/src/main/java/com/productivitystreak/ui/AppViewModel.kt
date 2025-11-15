@@ -9,6 +9,7 @@ import com.productivitystreak.data.QuoteRepository
 import com.productivitystreak.data.local.PreferencesManager
 import com.productivitystreak.data.model.Streak
 import com.productivitystreak.data.repository.StreakRepository
+import com.productivitystreak.data.repository.onSuccess
 import com.productivitystreak.notifications.StreakReminderScheduler
 import com.productivitystreak.ui.state.AppUiState
 import com.productivitystreak.ui.state.settings.SettingsState
@@ -86,6 +87,40 @@ class AppViewModel(
         refreshQuote()
     }
 
+    fun onSetOnboardingGoal(goal: String) {
+        _uiState.update { state ->
+            state.copy(onboardingState = state.onboardingState.copy(goalHabit = goal))
+        }
+
+        viewModelScope.launch {
+            try {
+                preferencesManager.setOnboardingGoal(goal)
+            } catch (e: Exception) {
+                Log.e("AppViewModel", "Error saving onboarding goal", e)
+            }
+        }
+    }
+
+    fun onSetOnboardingCommitment(durationMinutes: Int, frequencyPerWeek: Int) {
+        _uiState.update { state ->
+            state.copy(
+                onboardingState = state.onboardingState.copy(
+                    commitmentDurationMinutes = durationMinutes,
+                    commitmentFrequencyPerWeek = frequencyPerWeek
+                )
+            )
+        }
+
+        viewModelScope.launch {
+            try {
+                preferencesManager.setOnboardingCommitmentDuration(durationMinutes)
+                preferencesManager.setOnboardingCommitmentFrequency(frequencyPerWeek)
+            } catch (e: Exception) {
+                Log.e("AppViewModel", "Error saving onboarding commitment", e)
+            }
+        }
+    }
+
     private fun loadUserPreferences() {
         viewModelScope.launch {
             try {
@@ -108,6 +143,42 @@ class AppViewModel(
                 }
             } catch (e: Exception) {
                 Log.e("AppViewModel", "Error loading onboarding status", e)
+            }
+        }
+
+        viewModelScope.launch {
+            try {
+                preferencesManager.onboardingGoal.collect { goal ->
+                    _uiState.update { state ->
+                        state.copy(onboardingState = state.onboardingState.copy(goalHabit = goal))
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("AppViewModel", "Error loading onboarding goal", e)
+            }
+        }
+
+        viewModelScope.launch {
+            try {
+                preferencesManager.onboardingCommitmentDuration.collect { minutes ->
+                    _uiState.update { state ->
+                        state.copy(onboardingState = state.onboardingState.copy(commitmentDurationMinutes = minutes))
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("AppViewModel", "Error loading commitment duration", e)
+            }
+        }
+
+        viewModelScope.launch {
+            try {
+                preferencesManager.onboardingCommitmentFrequency.collect { frequency ->
+                    _uiState.update { state ->
+                        state.copy(onboardingState = state.onboardingState.copy(commitmentFrequencyPerWeek = frequency))
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("AppViewModel", "Error loading commitment frequency", e)
             }
         }
 
@@ -556,12 +627,52 @@ class AppViewModel(
             }
         }
 
-        if (snapshot.profileState.notificationEnabled) {
+        if (snapshot.onboardingState.allowNotifications) {
+            onToggleNotifications(true)
+        }
+
+        seedInitialHabitFromOnboarding(snapshot)
+
+        if (snapshot.profileState.notificationEnabled || snapshot.onboardingState.allowNotifications) {
             reminderScheduler.scheduleReminder(
-                frequency = snapshot.profileState.reminderFrequency,
+                frequency = deriveReminderFrequency(snapshot.onboardingState.commitmentFrequencyPerWeek),
                 categories = snapshot.onboardingState.selectedCategories,
                 userName = snapshot.userName
             )
+        }
+    }
+
+    private fun seedInitialHabitFromOnboarding(stateSnapshot: AppUiState) {
+        if (stateSnapshot.streaks.isNotEmpty()) return
+        val goal = stateSnapshot.onboardingState.goalHabit.trim()
+        if (goal.isBlank()) return
+
+        viewModelScope.launch {
+            val minutes = stateSnapshot.onboardingState.commitmentDurationMinutes.coerceAtLeast(1)
+            val category = stateSnapshot.onboardingState.selectedCategories.firstOrNull() ?: "Focus"
+            val result = streakRepository.createStreak(
+                name = goal,
+                goalPerDay = minutes,
+                unit = "minutes",
+                category = category
+            )
+            result.onSuccess { id ->
+                _uiState.update { state ->
+                    state.copy(selectedStreakId = id)
+                }
+            }
+        }
+    }
+
+    fun onShowNotificationPermissionDialog() {
+        _uiState.update { state ->
+            state.copy(permissionState = state.permissionState.copy(showNotificationDialog = true))
+        }
+    }
+
+    fun onDismissNotificationPermissionDialog() {
+        _uiState.update { state ->
+            state.copy(permissionState = state.permissionState.copy(showNotificationDialog = false))
         }
     }
 

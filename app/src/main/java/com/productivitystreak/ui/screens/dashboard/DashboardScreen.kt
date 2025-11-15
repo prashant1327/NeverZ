@@ -29,8 +29,10 @@ import androidx.compose.material.icons.automirrored.rounded.MenuBook
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.CompassCalibration
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.LocalFireDepartment
+import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material3.Button
@@ -52,10 +54,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.productivitystreak.data.model.Streak
+import com.productivitystreak.ui.R
 import com.productivitystreak.ui.state.AppUiState
 import com.productivitystreak.ui.state.DashboardTask
 import com.productivitystreak.ui.theme.Border
@@ -74,15 +78,127 @@ fun DashboardScreen(
     onNavigateToReading: () -> Unit,
     onNavigateToVocabulary: () -> Unit,
     onNavigateToStats: () -> Unit,
-    onNavigateToDiscover: () -> Unit
+    onNavigateToDiscover: () -> Unit,
+    onEnableNotifications: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     val gradient = Brush.verticalGradient(
-        listOf(Color(0xFFF0F3FF), Color(0xFFEEF1FF), Color(0xFFF9F5FF))
+        listOf(
+            MaterialTheme.colorScheme.surface,
+            MaterialTheme.colorScheme.surfaceVariant,
+            MaterialTheme.colorScheme.surface
+        )
     )
     val selectedStreak = state.streaks.firstOrNull { it.id == state.selectedStreakId } ?: state.streaks.firstOrNull()
     val headlineQuote = state.quote?.text ?: "The secret of getting ahead is getting started."
     val completedTasks = state.todayTasks.count { it.isCompleted }
+
+@Composable
+private fun FirstTimeChecklist(
+    notificationsEnabled: Boolean,
+    hasLoggedToday: Boolean,
+    onAddHabit: () -> Unit,
+    onEnableNotifications: () -> Unit,
+    onReviewProgress: () -> Unit,
+    goalHabit: String,
+    commitmentMinutes: Int,
+    commitmentFrequency: Int
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = Shapes.extraLarge,
+        color = Color.White,
+        tonalElevation = 6.dp
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(text = "Getting started", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+            val highlight = if (goalHabit.isNotBlank()) goalHabit else "your first habit"
+            Text(text = "Complete these steps to launch $highlight.", style = MaterialTheme.typography.bodySmall, color = Color(0xFF7C819C))
+            ChecklistRow(
+                title = if (goalHabit.isNotBlank()) "Add \"$goalHabit\"" else "Add your first habit",
+                description = "Pick one from Discover or create your own.",
+                completed = false,
+                onClick = onAddHabit
+            )
+            ChecklistRow(
+                title = "Enable reminders",
+                description = "Stay on track with gentle nudges.",
+                completed = notificationsEnabled,
+                onClick = onEnableNotifications
+            )
+            ChecklistRow(
+                title = "Log today's progress",
+                description = "${commitmentMinutes} mins · ${commitmentFrequency}x/week",
+                completed = hasLoggedToday,
+                onClick = onReviewProgress
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChecklistRow(
+    title: String,
+    description: String,
+    completed: Boolean,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(Shapes.large)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 12.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Surface(shape = CircleShape, color = if (completed) Color(0xFFE4F8E8) else Color(0xFFF0F1FF)) {
+            Icon(
+                imageVector = if (completed) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+                contentDescription = null,
+                tint = if (completed) Color(0xFF2E7D32) else Color(0xFF5F6BFF),
+                modifier = Modifier.padding(10.dp)
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+            Text(text = description, style = MaterialTheme.typography.bodySmall, color = Color(0xFF7C819C))
+        }
+        Text(text = if (completed) "Done" else "Start", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
+    }
+}
+
+@Composable
+private fun NotificationNudgeCard(onEnableNotifications: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = Shapes.extraLarge,
+        color = Color(0xFFFFF6E8),
+        tonalElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.weight(1f)) {
+                Surface(shape = CircleShape, color = Color.White) {
+                    Icon(imageVector = Icons.Rounded.Notifications, contentDescription = null, tint = Color(0xFFEF6C00), modifier = Modifier.padding(12.dp))
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(text = "Never miss a check-in", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                    Text(text = "Enable reminders so we can nudge you before the day ends.", style = MaterialTheme.typography.bodySmall, color = Color(0xFF935F1B))
+                }
+            }
+            TextButton(onClick = onEnableNotifications) {
+                Text(text = "Enable")
+            }
+        }
+    }
+}
     val pendingTask = state.todayTasks.firstOrNull { !it.isCompleted }
 
     Column(
@@ -104,17 +220,40 @@ fun DashboardScreen(
         QuickActionsRow(
             onNavigateToReading = onNavigateToReading,
             onNavigateToVocabulary = onNavigateToVocabulary,
-            onNavigateToStats = onNavigateToStats
+            onNavigateToStats = onNavigateToStats,
+            onNavigateToDiscover = onNavigateToDiscover
         )
+
+        if (state.streaks.isEmpty()) {
+            FirstTimeChecklist(
+                notificationsEnabled = state.profileState.notificationEnabled,
+                hasLoggedToday = state.todayTasks.any { it.isCompleted },
+                onAddHabit = onNavigateToDiscover,
+                onEnableNotifications = onEnableNotifications,
+                onReviewProgress = onNavigateToStats,
+                goalHabit = state.onboardingState.goalHabit,
+                commitmentMinutes = state.onboardingState.commitmentDurationMinutes,
+                commitmentFrequency = state.onboardingState.commitmentFrequencyPerWeek
+            )
+        }
+
+        if (!state.profileState.notificationEnabled) {
+            NotificationNudgeCard(onEnableNotifications = onEnableNotifications)
+        }
+
+        HabitCalloutCard(onNavigateToDiscover = onNavigateToDiscover)
 
         StreakGridSection(
             streaks = state.streaks,
             selectedId = state.selectedStreakId,
-            onSelectStreak = onSelectStreak
+            onSelectStreak = onSelectStreak,
+            onAddHabit = onNavigateToDiscover
         )
 
         PrimaryActionButton(
-            label = if (pendingTask == null) "All streaks logged" else "+  Log Streak",
+            label = if (pendingTask == null) stringResource(R.string.dashboard_label_all_streaks_logged) else stringResource(
+                R.string.dashboard_button_log_streak
+            ),
             enabled = pendingTask != null,
             onClick = { pendingTask?.let { onToggleTask(it.id) } }
         )
@@ -155,12 +294,12 @@ private fun DashboardTopBar(userName: String) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text(text = "Never Zero", style = MaterialTheme.typography.labelLarge, color = Color(0xFF6A6F85))
+            Text(text = stringResource(R.string.app_name), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             Text(text = "$greeting, $userName", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
         }
-        Surface(shape = CircleShape, tonalElevation = 6.dp, color = Color.White) {
-            IconButton(onClick = {}) {
-                Icon(imageVector = Icons.Rounded.Person, contentDescription = null, tint = Color(0xFF7B61FF))
+        Surface(shape = CircleShape, tonalElevation = 6.dp, color = MaterialTheme.colorScheme.surfaceVariant) {
+            IconButton(onClick = {}, contentDescription = stringResource(R.string.cd_profile_avatar)) {
+                Icon(imageVector = Icons.Rounded.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
             }
         }
     }
@@ -174,8 +313,8 @@ private fun HeroStreakCard(
 ) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(32.dp),
-        color = Color.White,
+        shape = Shapes.extraLarge,
+        color = MaterialTheme.colorScheme.surface,
         tonalElevation = 12.dp
     ) {
         Column(
@@ -188,11 +327,11 @@ private fun HeroStreakCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(text = "Your Streaks", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-                    Text(text = "$totalStreaks active", style = MaterialTheme.typography.bodySmall, color = Color(0xFF7C819C))
+                    Text(text = "Lead habit", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                    Text(text = "$totalStreaks active streaks", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
-                IconButton(onClick = onRefreshQuote) {
-                    Icon(imageVector = Icons.Rounded.AutoAwesome, contentDescription = null, tint = Color(0xFF7B61FF))
+                TextButton(onClick = onRefreshQuote) {
+                    Text(text = stringResource(id = R.string.dashboard_action_get_motivated))
                 }
             }
 
@@ -200,18 +339,22 @@ private fun HeroStreakCard(
                 Surface(
                     modifier = Modifier.size(72.dp),
                     shape = CircleShape,
-                    color = Color(0xFFE8EAFE)
+                    color = MaterialTheme.colorScheme.primaryContainer
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(imageVector = Icons.Rounded.LocalFireDepartment, contentDescription = null, tint = Color(0xFF7B61FF), modifier = Modifier.size(36.dp))
+                        Icon(imageVector = Icons.Rounded.LocalFireDepartment, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(36.dp))
                     }
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(text = streak?.name ?: "Stay inspired", style = MaterialTheme.typography.titleMedium)
+                    Text(text = streak?.name ?: "No habit selected", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        text = if (streak == null) "Create your first habit" else "${streak.currentCount} day streak",
+                        text = when {
+                            streak == null -> "Create your first streak"
+                            streak.currentCount == 0 -> "Log progress to start"
+                            else -> "${streak.currentCount} day streak"
+                        },
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color(0xFF7C819C)
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }
@@ -219,14 +362,16 @@ private fun HeroStreakCard(
             if (streak != null) {
                 val progressPercent = (streak.progress * 100).roundToInt().coerceIn(0, 100)
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(text = "Today's Progress", style = MaterialTheme.typography.labelMedium, color = Color(0xFF7C819C))
+                    Text(text = "Today's Progress", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     LinearProgressIndicator(
                         progress = { streak.progress.coerceIn(0f, 1f) },
-                        color = Color(0xFF7B61FF),
-                        trackColor = Color(0xFFECEEFF)
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                     Text(text = "$progressPercent% complete", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Medium)
                 }
+            } else {
+                Text(text = "Add a habit to unlock insights", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
@@ -236,7 +381,8 @@ private fun HeroStreakCard(
 private fun QuickActionsRow(
     onNavigateToReading: () -> Unit,
     onNavigateToVocabulary: () -> Unit,
-    onNavigateToStats: () -> Unit
+    onNavigateToStats: () -> Unit,
+    onNavigateToDiscover: () -> Unit
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -257,10 +403,10 @@ private fun QuickActionsRow(
             modifier = Modifier.weight(1f)
         )
         QuickActionCard(
-            title = "Stats",
-            subtitle = "View insights",
-            icon = Icons.Rounded.Bolt,
-            onClick = onNavigateToStats,
+            title = "Discover",
+            subtitle = "Browse habit ideas",
+            icon = Icons.Rounded.CompassCalibration,
+            onClick = onNavigateToDiscover,
             modifier = Modifier.weight(1f)
         )
     }
@@ -295,10 +441,35 @@ private fun QuickActionCard(
 }
 
 @Composable
+private fun HabitCalloutCard(onNavigateToDiscover: () -> Unit) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = Shapes.extraLarge,
+        color = Color.White,
+        tonalElevation = 6.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.weight(1f)) {
+                Text(text = "Need a fresh habit?", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+                Text(text = "Tap the + button or explore curated ideas.", style = MaterialTheme.typography.bodySmall, color = Color(0xFF7C819C))
+            }
+            TextButton(onClick = onNavigateToDiscover) {
+                Text("Explore")
+            }
+        }
+    }
+}
+
+@Composable
 private fun StreakGridSection(
     streaks: List<Streak>,
     selectedId: String?,
-    onSelectStreak: (String) -> Unit
+    onSelectStreak: (String) -> Unit,
+    onAddHabit: () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         Text(text = "Your Streaks", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
@@ -320,7 +491,7 @@ private fun StreakGridSection(
                             ) { onSelectStreak(streak.id) }
                         }
                         if (row.size == 1) {
-                            AddHabitCard(modifier = Modifier.weight(1f), onClick = {})
+                            AddHabitCard(modifier = Modifier.weight(1f), onClick = onAddHabit)
                         }
                     }
                 }
@@ -385,6 +556,7 @@ private fun AddHabitCard(modifier: Modifier = Modifier, onClick: () -> Unit) {
                 Icon(imageVector = Icons.Rounded.Add, contentDescription = null, tint = Color(0xFF5F6BFF), modifier = Modifier.padding(12.dp))
             }
             Text(text = "New Habit", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
+            Text(text = "Launch Discover to begin", style = MaterialTheme.typography.bodySmall, color = Color(0xFF7C819C))
         }
     }
 }

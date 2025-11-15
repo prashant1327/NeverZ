@@ -22,6 +22,9 @@ class PreferencesManager(context: Context) {
         val REMINDER_FREQUENCY = stringPreferencesKey("reminder_frequency")
         val WEEKLY_SUMMARY_ENABLED = booleanPreferencesKey("weekly_summary_enabled")
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val ONBOARDING_GOAL = stringPreferencesKey("onboarding_goal")
+        val ONBOARDING_COMMITMENT_DURATION = intPreferencesKey("onboarding_commitment_duration")
+        val ONBOARDING_COMMITMENT_FREQUENCY = intPreferencesKey("onboarding_commitment_frequency")
         val APP_LOCK_ENABLED = booleanPreferencesKey("app_lock_enabled")
         val BIOMETRIC_ENABLED = booleanPreferencesKey("biometric_enabled")
         val HAPTIC_FEEDBACK_ENABLED = booleanPreferencesKey("haptic_feedback_enabled")
@@ -161,6 +164,60 @@ class PreferencesManager(context: Context) {
     suspend fun setOnboardingCompleted(completed: Boolean) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.ONBOARDING_COMPLETED] = completed
+        }
+    }
+
+    val onboardingGoal: Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.ONBOARDING_GOAL] ?: ""
+        }
+
+    suspend fun setOnboardingGoal(goal: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ONBOARDING_GOAL] = goal
+        }
+    }
+
+    val onboardingCommitmentDuration: Flow<Int> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.ONBOARDING_COMMITMENT_DURATION] ?: 5
+        }
+
+    suspend fun setOnboardingCommitmentDuration(minutes: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ONBOARDING_COMMITMENT_DURATION] = minutes
+        }
+    }
+
+    val onboardingCommitmentFrequency: Flow<Int> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.ONBOARDING_COMMITMENT_FREQUENCY] ?: 3
+        }
+
+    suspend fun setOnboardingCommitmentFrequency(frequency: Int) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ONBOARDING_COMMITMENT_FREQUENCY] = frequency
         }
     }
 

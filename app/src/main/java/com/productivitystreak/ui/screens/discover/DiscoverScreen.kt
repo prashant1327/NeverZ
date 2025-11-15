@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,9 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Chat
 import androidx.compose.material.icons.rounded.Group
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -50,7 +53,6 @@ fun DiscoverScreen(state: DiscoverState) {
         InspirationCard(content = state.featuredContent)
         SuggestionsSection(items = state.suggestions)
         CommunitySection(challenges = state.communityChallenges)
-        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 
@@ -77,7 +79,7 @@ private fun InspirationCard(content: FeaturedContent) {
         ) {
             Text(text = "Stay Inspired", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
             Text(
-                text = content.description.ifBlank { "The secret of getting ahead is getting started." },
+                text = content.description.ifBlank { "Micro-habits backed by behavioral science." },
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color(0xFF7A7F96)
             )
@@ -87,13 +89,31 @@ private fun InspirationCard(content: FeaturedContent) {
                     .height(140.dp),
                 shape = Shapes.large,
                 color = Color(0xFFE7E9FF)
-            ) {}
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = content.title.ifBlank { "Fresh ideas drop every morning" },
+                        style = MaterialTheme.typography.titleSmall,
+                        color = Color(0xFF6A63FF)
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Column {
                     Text(text = "Add new habits", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
                     Text(text = "Curated ideas daily", style = MaterialTheme.typography.bodySmall, color = Color(0xFF7A7F96))
                 }
-                TextButton(onClick = {}) { Text("View All") }
+                Button(
+                    onClick = {},
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6A63FF), contentColor = Color.White),
+                    shape = Shapes.large
+                ) {
+                    Text(text = "Browse habit ideas")
+                }
             }
         }
     }
@@ -104,6 +124,7 @@ private fun SuggestionsSection(items: List<SuggestionItem>) {
     if (items.isEmpty()) return
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(text = "New Habits to Try", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
+        Text(text = "Pick one and log it via the + button below.", style = MaterialTheme.typography.bodySmall, color = Color(0xFF7A7F96))
         items.forEach { suggestion ->
             Surface(
                 modifier = Modifier.fillMaxWidth(),
@@ -122,8 +143,8 @@ private fun SuggestionsSection(items: List<SuggestionItem>) {
                         Text(text = suggestion.title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
                         Text(text = suggestion.subtitle, style = MaterialTheme.typography.bodySmall, color = Color(0xFF7A7F96))
                     }
-                    Surface(shape = CircleShape, color = Color(0xFFEEF0FF)) {
-                        Icon(imageVector = Icons.Rounded.Add, contentDescription = null, tint = Color(0xFF6860FF), modifier = Modifier.padding(10.dp))
+                    IconButton(onClick = { /* future hook */ }, modifier = Modifier.size(36.dp)) {
+                        Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add habit", tint = Color(0xFF6860FF))
                     }
                 }
             }

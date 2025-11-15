@@ -27,8 +27,13 @@ import androidx.compose.material.icons.rounded.Alarm
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Notifications
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -44,15 +49,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardOptions
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.productivitystreak.ui.components.GradientButton
 import com.productivitystreak.ui.state.onboarding.OnboardingCategory
 import com.productivitystreak.ui.state.onboarding.OnboardingState
+import com.productivitystreak.ui.R
 import com.productivitystreak.ui.theme.Shapes
 import com.productivitystreak.ui.theme.Spacing
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -60,6 +70,8 @@ fun OnboardingDialog(
     state: OnboardingState,
     onDismiss: () -> Unit,
     onToggleCategory: (String) -> Unit,
+    onGoalSelected: (String) -> Unit,
+    onCommitmentChanged: (Int, Int) -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
     onToggleNotifications: (Boolean) -> Unit,
@@ -69,8 +81,8 @@ fun OnboardingDialog(
     val isLastStep = state.currentStep >= state.totalSteps - 1
     val background = Brush.verticalGradient(
         listOf(
-            Color(0xFFF2F6FF),
-            Color(0xFFE1E6FF)
+            MaterialTheme.colorScheme.surface,
+            MaterialTheme.colorScheme.surfaceVariant
         )
     )
 
@@ -105,24 +117,29 @@ fun OnboardingDialog(
                         }, label = "onboarding-step"
                     ) { step ->
                         when (step) {
-                            0 -> WelcomeStep()
-                            1 -> CategoriesStep(state, onToggleCategory)
-                            else -> GentleNudgeStep(state, onToggleNotifications, onReminderTimeSelected)
+                            0 -> GoalStep(goal = state.goalHabit, onGoalSelected = onGoalSelected)
+                            1 -> CommitmentStep(
+                                durationMinutes = state.commitmentDurationMinutes,
+                                frequencyPerWeek = state.commitmentFrequencyPerWeek,
+                                onCommitmentChanged = onCommitmentChanged
+                            )
+                            2 -> CategoriesStep(state, onToggleCategory)
+                            else -> PermissionStep(state, onToggleNotifications, onReminderTimeSelected)
                         }
                     }
                 }
 
                 Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
                     val primaryEnabled = when (state.currentStep) {
-                        1 -> state.selectedCategories.size >= 3
+                        0 -> state.goalHabit.isNotBlank()
+                        2 -> state.selectedCategories.size >= 2
                         else -> true
                     }
 
                     GradientButton(
                         text = when {
-                            state.currentStep == 0 -> "Let's Begin"
-                            isLastStep -> "Confirm"
-                            else -> "Continue"
+                            isLastStep -> stringResource(id = R.string.onboarding_primary_cta_last)
+                            else -> stringResource(id = R.string.onboarding_primary_cta)
                         },
                         onClick = {
                             if (isLastStep) onComplete() else onNext()
@@ -142,7 +159,7 @@ fun OnboardingDialog(
                     ) {
                         if (state.currentStep > 0) {
                             TextButton(onClick = onPrevious) {
-                                Text("Back", color = Color(0xFF5B6BFF))
+                                Text(stringResource(id = R.string.onboarding_back), color = MaterialTheme.colorScheme.primary)
                             }
                         } else {
                             Spacer(modifier = Modifier.width(Spacing.xl))
@@ -150,8 +167,8 @@ fun OnboardingDialog(
 
                         TextButton(onClick = if (isLastStep) onComplete else onDismiss) {
                             Text(
-                                text = if (isLastStep) "Skip for now" else "Skip",
-                                color = Color(0xFF5B6BFF)
+                                text = if (isLastStep) stringResource(id = R.string.onboarding_skip_for_now) else stringResource(id = R.string.onboarding_secondary_cta),
+                                color = MaterialTheme.colorScheme.primary
                             )
                         }
                     }
@@ -174,12 +191,12 @@ private fun OnboardingHeader(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Never Zero",
+                text = stringResource(id = R.string.app_name),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
             TextButton(onClick = onDismiss) {
-                Text("Close", color = Color(0xFF5B6BFF))
+                Text(stringResource(id = R.string.cd_close_dialog), color = MaterialTheme.colorScheme.primary)
             }
         }
 
@@ -188,75 +205,163 @@ private fun OnboardingHeader(
                 .fillMaxWidth()
                 .height(6.dp)
                 .clip(RoundedCornerShape(50))
-                .background(Color(0xFFE0E5FF))
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(((currentStep + 1f) / totalSteps).coerceIn(0f, 1f))
                     .height(6.dp)
-                    .clip(RoundedCornerShape(50))
-                    .background(Color(0xFF5B6BFF))
+                    .clip(RoundedCornerShape(28.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             )
         }
 
         Text(
-            text = "Step ${currentStep + 1} of $totalSteps",
+            text = stringResource(id = R.string.onboarding_step_progress, currentStep + 1, totalSteps),
             style = MaterialTheme.typography.labelLarge,
-            color = Color(0xFF667085)
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        StepIndicator(currentStep = currentStep, totalSteps = totalSteps)
     }
 }
 
 @Composable
-private fun WelcomeStep() {
-    Column(
+private fun StepIndicator(currentStep: Int, totalSteps: Int) {
+    Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(Spacing.lg)
+        horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Surface(
-            modifier = Modifier.size(160.dp),
-            shape = CircleShape,
-            color = Color.White,
-            tonalElevation = 8.dp,
-            border = BorderStroke(2.dp, Color(0xFFE8EAFF))
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                PulsingRing()
+        repeat(totalSteps) { index ->
+            val isActive = index == currentStep
+            Box(
+                modifier = Modifier
+                    .width(if (isActive) 24.dp else 8.dp)
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant)
+            )
+        }
+    }
+}
+
+@Composable
+@Composable
+private fun GoalStep(goal: String, onGoalSelected: (String) -> Unit) {
+    var localGoal by remember(goal) { mutableStateOf(goal) }
+    val suggestions = listOf("Read 5 minutes", "Meditate 10 minutes", "Walk 1 km", "Journal nightly")
+
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        Text(
+            text = "Choose your first habit",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF1E1E36)
+        )
+        Text(
+            text = "Start with something small and specific. We'll build momentum together.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color(0xFF5F647C)
+        )
+        OutlinedTextField(
+            value = localGoal,
+            onValueChange = {
+                localGoal = it
+                onGoalSelected(it)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text("e.g. Read for 5 minutes") },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences)
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+            Text(text = "Quick picks", style = MaterialTheme.typography.labelLarge, color = Color(0xFF6E70A4))
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                suggestions.forEach { suggestion ->
+                    AssistChip(
+                        onClick = {
+                            localGoal = suggestion
+                            onGoalSelected(suggestion)
+                        },
+                        label = { Text(suggestion) },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = if (suggestion == localGoal) Color(0xFFE8E5FF) else Color.Transparent
+                        )
+                    )
+                }
             }
         }
-
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "Never Zero",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF1E1E36)
-            )
-            Spacer(modifier = Modifier.height(Spacing.sm))
-            Text(
-                text = "Build habits that last. Start your journey today.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color(0xFF5F647C),
-                textAlign = TextAlign.Center
-            )
-        }
     }
 }
 
 @Composable
-private fun PulsingRing() {
-    Box(contentAlignment = Alignment.Center) {
+private fun CommitmentStep(
+    durationMinutes: Int,
+    frequencyPerWeek: Int,
+    onCommitmentChanged: (Int, Int) -> Unit
+) {
+    var minutes by remember(durationMinutes) { mutableStateOf(durationMinutes) }
+    var frequency by remember(frequencyPerWeek) { mutableStateOf(frequencyPerWeek) }
+
+    fun emit() = onCommitmentChanged(minutes, frequency)
+
+    Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
+        Text(
+            text = "Set your micro-commitment",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF1E1E36)
+        )
+        Text(
+            text = "Small wins add up. Pick a duration and how many days per week you'll show up.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color(0xFF5F647C)
+        )
         Surface(
-            modifier = Modifier.size(120.dp),
-            shape = CircleShape,
-            color = Color(0xFFF2F5FF)
-        ) {}
-        Surface(
-            modifier = Modifier.size(70.dp),
-            shape = CircleShape,
-            color = Color(0xFF7C4DFF)
-        ) {}
+            modifier = Modifier.fillMaxWidth(),
+            shape = Shapes.large,
+            color = Color.White,
+            tonalElevation = 6.dp
+        ) {
+            Column(
+                modifier = Modifier.padding(Spacing.lg),
+                verticalArrangement = Arrangement.spacedBy(Spacing.md)
+            ) {
+                Text(text = "Daily duration", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
+                Text(text = "$minutes minutes", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
+                Slider(
+                    value = minutes.toFloat(),
+                    onValueChange = {
+                        minutes = it.roundToInt().coerceIn(1, 60)
+                        emit()
+                    },
+                    valueRange = 1f..60f,
+                    steps = 58,
+                    colors = SliderDefaults.colors(activeTrackColor = Color(0xFF5B6BFF))
+                )
+                Text(text = "Days per week", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Medium)
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm)) {
+                    val options = listOf(3, 4, 5, 7)
+                    options.forEach { option ->
+                        val selected = option == frequency
+                        Surface(
+                            shape = Shapes.full,
+                            color = if (selected) Color(0xFFE8E5FF) else Color.Transparent,
+                            border = BorderStroke(1.dp, if (selected) Color(0xFF5B6BFF) else Color(0xFFE2E4F0)),
+                            modifier = Modifier.clickable {
+                                frequency = option
+                                emit()
+                            }
+                        ) {
+                            Text(
+                                text = "$option x/week",
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                                color = if (selected) Color(0xFF5B6BFF) else Color(0xFF5F647C)
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -343,20 +448,20 @@ private fun CategoryCard(
 }
 
 @Composable
-private fun GentleNudgeStep(
+private fun PermissionStep(
     state: OnboardingState,
     onToggleNotifications: (Boolean) -> Unit,
     onReminderTimeSelected: (String) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
         Text(
-            text = "Set a Gentle Nudge",
+            text = "Stay on track with reminders",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1E1E36)
         )
         Text(
-            text = "A little reminder to help you build momentum and never have a zero day.",
+            text = "Never Zero sends gentle nudges before the day ends so you can keep the streak alive.",
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFF5F647C)
         )
@@ -446,20 +551,24 @@ private fun TimePickerRow(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(28.dp))
-            .background(Color(0xFFF5F6FF))
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = Spacing.lg, vertical = Spacing.md),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        TimeColumn("Hour", selectedHour, listOf("07", "08", "09")) {
+        val hourOptions = (1..12).map { it.toString().padStart(2, '0') }
+        val minuteOptions = listOf("00", "15", "30", "45")
+        val periodOptions = listOf("AM", "PM")
+
+        TimeColumn(stringResource(id = R.string.time_picker_label_hour), selectedHour, hourOptions) {
             selectedHour = it
             emit()
         }
-        TimeColumn("Minute", selectedMinute, listOf("29", "30", "31")) {
+        TimeColumn(stringResource(id = R.string.time_picker_label_minute), selectedMinute, minuteOptions) {
             selectedMinute = it
             emit()
         }
-        TimeColumn("Period", selectedPeriod, listOf("AM", "PM")) {
+        TimeColumn(stringResource(id = R.string.time_picker_label_period), selectedPeriod, periodOptions) {
             selectedPeriod = it
             emit()
         }

@@ -34,6 +34,8 @@ class MainActivity : ComponentActivity() {
                         onLogReadingProgress = viewModel::onLogReadingProgress,
                         onAddVocabularyWord = viewModel::onAddVocabularyWord,
                         onToggleOnboardingCategory = viewModel::onToggleOnboardingCategory,
+                        onSetOnboardingGoal = viewModel::onSetOnboardingGoal,
+                        onSetOnboardingCommitment = viewModel::onSetOnboardingCommitment,
                         onNextOnboardingStep = viewModel::onNextOnboardingStep,
                         onPreviousOnboardingStep = viewModel::onPreviousOnboardingStep,
                         onToggleOnboardingNotifications = viewModel::onToggleOnboardingNotifications,
