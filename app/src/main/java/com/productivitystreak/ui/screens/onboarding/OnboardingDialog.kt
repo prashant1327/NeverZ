@@ -56,10 +56,10 @@ import androidx.compose.ui.text.input.KeyboardOptions
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.productivitystreak.R
 import com.productivitystreak.ui.components.GradientButton
 import com.productivitystreak.ui.state.onboarding.OnboardingCategory
 import com.productivitystreak.ui.state.onboarding.OnboardingState
-import com.productivitystreak.ui.R
 import com.productivitystreak.ui.theme.Shapes
 import com.productivitystreak.ui.theme.Spacing
 import kotlin.math.roundToInt
