@@ -1420,6 +1420,14 @@ class AppViewModel(
         )
     }
 
+    private fun deriveReminderFrequency(frequencyPerWeek: Int): ReminderFrequency {
+        return when {
+            frequencyPerWeek >= 5 -> ReminderFrequency.Daily
+            frequencyPerWeek >= 1 -> ReminderFrequency.Weekly
+            else -> ReminderFrequency.None
+        }
+    }
+
     fun onSettingsReminderTimeChange(time: String) {
         _uiState.update { state ->
             state.copy(

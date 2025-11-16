@@ -59,7 +59,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.productivitystreak.data.model.Streak
-import com.productivitystreak.ui.R
+import com.productivitystreak.R
 import com.productivitystreak.ui.state.AppUiState
 import com.productivitystreak.ui.state.DashboardTask
 import com.productivitystreak.ui.theme.Border
