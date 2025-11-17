@@ -132,9 +132,6 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     ksp("androidx.room:room-compiler:2.6.1")
 
-    // Biometric authentication
-    implementation("androidx.biometric:biometric:1.1.0")
-
     implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7")
 
     testImplementation("junit:junit:4.13.2")
