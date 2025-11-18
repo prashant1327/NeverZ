@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AutoGraph
@@ -25,6 +27,7 @@ import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -106,6 +109,7 @@ fun NeverZeroApp(
     onSettingsRestoreFileSelected: (Uri) -> Unit = {},
     onSettingsDismissRestoreDialog: () -> Unit = {},
     onSettingsDismissMessage: () -> Unit = {},
+    onOpenAddEntry: () -> Unit,
     onAddButtonTapped: () -> Unit,
     onDismissAddMenu: () -> Unit,
     onAddEntrySelected: (AddEntryType) -> Unit,
@@ -180,7 +184,8 @@ fun NeverZeroApp(
                         onNavigateToDiscover = {
                             navController.navigate(NeverZeroDestination.Discover.route)
                         },
-                        onEnableNotifications = { onToggleNotifications(true) }
+                        onEnableNotifications = { onToggleNotifications(true) },
+                        onOpenAddEntry = onOpenAddEntry
                     )
                 }
                 composable(NeverZeroDestination.Stats.route) {
