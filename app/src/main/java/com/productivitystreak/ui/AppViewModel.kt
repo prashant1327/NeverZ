@@ -228,6 +228,10 @@ class AppViewModel(
         _uiState.update { it.copy(uiMessage = UiMessage(text = message, actionLabel = actionLabel)) }
     }
 
+    fun onDismissUiMessage() {
+        _uiState.update { it.copy(uiMessage = null) }
+    }
+
     fun onSetOnboardingGoal(goal: String) {
         _uiState.update { state ->
             state.copy(onboardingState = state.onboardingState.copy(goalHabit = goal))
@@ -814,6 +818,18 @@ class AppViewModel(
     fun onDismissNotificationPermissionDialog() {
         _uiState.update { state ->
             state.copy(permissionState = state.permissionState.copy(showNotificationDialog = false))
+        }
+    }
+
+    fun onShowAlarmPermissionDialog() {
+        _uiState.update { state ->
+            state.copy(permissionState = state.permissionState.copy(showAlarmDialog = true))
+        }
+    }
+
+    fun onDismissAlarmPermissionDialog() {
+        _uiState.update { state ->
+            state.copy(permissionState = state.permissionState.copy(showAlarmDialog = false))
         }
     }
 
