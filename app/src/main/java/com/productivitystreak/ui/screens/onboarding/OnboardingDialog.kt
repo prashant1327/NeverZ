@@ -30,7 +30,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.weight
+
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -170,12 +170,14 @@ fun OnboardingFlow(
 
         if (showFinishRipple) {
             Canvas(modifier = Modifier.matchParentSize()) {
+                val premiumStart = NeverZeroTheme.gradientColors.PremiumStart
+                val premiumEnd = NeverZeroTheme.gradientColors.PremiumEnd
                 val radius = size.maxDimension * finishRipple.value
                 drawCircle(
                     brush = Brush.radialGradient(
                         colors = listOf(
-                            NeverZeroTheme.gradientColors.PremiumStart,
-                            NeverZeroTheme.gradientColors.PremiumEnd
+                            premiumStart,
+                            premiumEnd
                         )
                     ),
                     radius = radius,
@@ -241,6 +243,7 @@ private fun OnboardingWelcomeStep() {
         ),
         label = "sunrise-radius"
     )
+    )
     val drift by infiniteTransition.animateFloat(
         initialValue = -0.04f,
         targetValue = 0.04f,
@@ -268,12 +271,15 @@ private fun OnboardingWelcomeStep() {
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val baseCenter = Offset(size.width / 2, size.height * 0.65f)
                 val center = baseCenter.copy(x = baseCenter.x + drift * size.width * 0.2f)
-                val radius = (size.minDimension / 3f) * pulse
+                val sunriseStart = NeverZeroTheme.gradientColors.SunriseStart
+                val sunriseEnd = NeverZeroTheme.gradientColors.SunriseEnd
+                val minDim = kotlin.math.min(size.width, size.height)
+                val radius = (minDim / 3f) * pulse
                 drawCircle(
                     brush = Brush.verticalGradient(
                         listOf(
-                            NeverZeroTheme.gradientColors.SunriseStart,
-                            NeverZeroTheme.gradientColors.SunriseEnd
+                            sunriseStart,
+                            sunriseEnd
                         )
                     ),
                     radius = radius,
@@ -371,14 +377,18 @@ private fun OnboardingLeadHabitConceptStep() {
                 .background(MaterialTheme.colorScheme.surface),
             contentAlignment = Alignment.Center
         ) {
+            val surfaceColor = MaterialTheme.colorScheme.surface
+            val successColor = NeverZeroTheme.semanticColors.Success
             Canvas(modifier = Modifier.fillMaxSize()) {
                 val start = Offset(size.width * 0.15f, size.height * 0.65f)
                 val end = Offset(size.width * 0.85f, size.height * 0.35f)
+                val oceanStart = NeverZeroTheme.gradientColors.OceanStart
+                val oceanEnd = NeverZeroTheme.gradientColors.OceanEnd
                 drawLine(
                     brush = Brush.horizontalGradient(
                         listOf(
-                            NeverZeroTheme.gradientColors.OceanStart,
-                            NeverZeroTheme.gradientColors.OceanEnd
+                            oceanStart,
+                            oceanEnd
                         )
                     ),
                     start = start,
@@ -394,8 +404,8 @@ private fun OnboardingLeadHabitConceptStep() {
                     val y = size.height * (0.65f - 0.3f * t)
                     drawCircle(
                         color = if (index == 0)
-                            MaterialTheme.colorScheme.surface
-                        else NeverZeroTheme.semanticColors.Success,
+                            surfaceColor
+                        else successColor,
                         radius = if (index == 0) 9.dp.toPx() else 6.dp.toPx(),
                         center = Offset(x, y)
                     )
@@ -606,7 +616,8 @@ private fun OnboardingFirstHabitStep(
                     onClick = {
                         localGoal = title
                         onSetGoal(title)
-                    }
+                    },
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -621,7 +632,8 @@ private fun OnboardingFirstHabitStep(
                     onClick = {
                         localGoal = title
                         onSetGoal(title)
-                    }
+                    },
+                    modifier = Modifier.weight(1f)
                 )
             }
         }
@@ -656,10 +668,11 @@ private fun OnboardingFirstHabitStep(
 private fun QuickPickPill(
     label: String,
     selected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = Modifier.weight(1f),
+        modifier = modifier,
         shape = RoundedCornerShape(24.dp),
         tonalElevation = if (selected) 4.dp else 0.dp,
         color = if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.14f)

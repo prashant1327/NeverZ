@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
+
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -193,33 +193,37 @@ private fun VocabularyEmptyState(onAddWord: () -> Unit) {
             val leftPage = Offset((size.width - bookWidth) / 2f, size.height * 0.2f)
             val rightPage = Offset(leftPage.x + bookWidth / 2f, leftPage.y)
 
+            val surfaceVariant = MaterialTheme.colorScheme.surfaceVariant
+            val primary = MaterialTheme.colorScheme.primary
+            val minDim = kotlin.math.min(size.width, size.height)
+            
             drawRoundRect(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                color = surfaceVariant.copy(alpha = 0.6f),
                 topLeft = leftPage,
                 size = androidx.compose.ui.geometry.Size(bookWidth / 2f - 8f, bookHeight),
                 cornerRadius = androidx.compose.ui.geometry.CornerRadius(20f, 20f)
             )
             drawRoundRect(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+                color = surfaceVariant.copy(alpha = 0.6f),
                 topLeft = rightPage,
                 size = androidx.compose.ui.geometry.Size(bookWidth / 2f - 8f, bookHeight),
                 cornerRadius = androidx.compose.ui.geometry.CornerRadius(20f, 20f)
             )
             drawLine(
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
+                color = primary.copy(alpha = 0.4f),
                 start = Offset(size.width / 2f, leftPage.y),
                 end = Offset(size.width / 2f, leftPage.y + bookHeight),
                 strokeWidth = 6f
             )
 
             drawCircle(
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                radius = size.minDimension / 5f,
+                color = primary.copy(alpha = 0.15f),
+                radius = minDim / 5f,
                 center = Offset(size.width / 2f, leftPage.y - 30f),
                 style = Stroke(width = 10f)
             )
             drawCircle(
-                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                color = primary.copy(alpha = 0.6f),
                 radius = 8f,
                 center = Offset(size.width / 2f, leftPage.y - 30f)
             )

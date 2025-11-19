@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.weight
+
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -90,12 +90,14 @@ private fun SummaryRow(statsState: StatsState) {
         StatisticCard(
             title = "Current streak",
             value = "${statsState.currentLongestStreak} days",
-            subtitle = statsState.currentLongestStreakName.ifBlank { "Stay on the path" }
+            subtitle = statsState.currentLongestStreakName.ifBlank { "Stay on the path" },
+            modifier = Modifier.weight(1f)
         )
         StatisticCard(
             title = "Completion rate",
             value = "${statsState.averageDailyProgressPercent}%",
-            subtitle = "Daily average"
+            subtitle = "Daily average",
+            modifier = Modifier.weight(1f)
         )
     }
 }
@@ -104,10 +106,11 @@ private fun SummaryRow(statsState: StatsState) {
 private fun StatisticCard(
     title: String,
     value: String,
-    subtitle: String
+    subtitle: String,
+    modifier: Modifier = Modifier
 ) {
     Card(
-        modifier = Modifier.weight(1f),
+        modifier = modifier,
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface,
@@ -194,6 +197,7 @@ private fun TrendChart(trend: AverageDailyTrend) {
         val usableHeight = chartHeight - 2 * verticalPadding
 
         // Baseline grid
+        // Baseline grid
         val gridColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.18f)
         repeat(4) { index ->
             val y = verticalPadding + (usableHeight / 3f) * index
@@ -230,9 +234,10 @@ private fun TrendChart(trend: AverageDailyTrend) {
         fillPath.lineTo(lastX, chartHeight - verticalPadding)
         fillPath.close()
 
+        val oceanStart = NeverZeroTheme.gradientColors.OceanStart
         val gradient = Brush.verticalGradient(
             colors = listOf(
-                NeverZeroTheme.gradientColors.OceanStart.copy(alpha = 0.35f),
+                oceanStart.copy(alpha = 0.35f),
                 Color.Transparent
             ),
             startY = verticalPadding,
@@ -241,9 +246,10 @@ private fun TrendChart(trend: AverageDailyTrend) {
 
         drawPath(path = fillPath, brush = gradient)
 
+        val oceanEnd = NeverZeroTheme.gradientColors.OceanEnd
         drawPath(
             path = path,
-            color = NeverZeroTheme.gradientColors.OceanEnd,
+            color = oceanEnd,
             style = Stroke(width = 3.dp.toPx())
         )
 
@@ -252,13 +258,14 @@ private fun TrendChart(trend: AverageDailyTrend) {
             val normalized = (percent - minPercent) / (maxPercent - minPercent)
             val x = horizontalPadding + stepX * index
             val y = verticalPadding + usableHeight * (1f - normalized)
+            val surfaceColor = MaterialTheme.colorScheme.surface
             drawCircle(
-                color = MaterialTheme.colorScheme.surface,
+                color = surfaceColor,
                 radius = 6.dp.toPx(),
                 center = Offset(x, y)
             )
             drawCircle(
-                color = NeverZeroTheme.gradientColors.OceanEnd,
+                color = oceanEnd,
                 radius = 4.dp.toPx(),
                 center = Offset(x, y)
             )
@@ -285,9 +292,10 @@ private fun BreakdownRow(breakdown: List<HabitBreakdown>) {
 
 @Composable
 private fun HabitBreakdownCard(item: HabitBreakdown) {
+    val primary = MaterialTheme.colorScheme.primary
     val accent = remember(item.accentHex) {
         runCatching { Color(android.graphics.Color.parseColor(item.accentHex)) }.getOrElse {
-            MaterialTheme.colorScheme.primary
+            primary
         }
     }
 
@@ -384,13 +392,17 @@ private fun HeatMapGrid(heatMap: CalendarHeatMap) {
         weeks.forEachIndexed { xIndex, week ->
             week.days.forEachIndexed { yIndex, day ->
                 val intensity = day.intensity.coerceIn(0f, 1f)
+                val sunriseStart = NeverZeroTheme.gradientColors.SunriseStart
+                val sunriseEnd = NeverZeroTheme.gradientColors.SunriseEnd
+                val onSurface = MaterialTheme.colorScheme.onSurface
+                
                 val brush = if (intensity <= 0f) {
-                    SolidColor(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+                    SolidColor(onSurface.copy(alpha = 0.05f))
                 } else {
                     Brush.verticalGradient(
                         listOf(
-                            NeverZeroTheme.gradientColors.SunriseStart.copy(alpha = 0.3f + 0.5f * intensity),
-                            NeverZeroTheme.gradientColors.SunriseEnd.copy(alpha = 0.3f + 0.5f * intensity)
+                            sunriseStart.copy(alpha = 0.3f + 0.5f * intensity),
+                            sunriseEnd.copy(alpha = 0.3f + 0.5f * intensity)
                         )
                     )
                 }

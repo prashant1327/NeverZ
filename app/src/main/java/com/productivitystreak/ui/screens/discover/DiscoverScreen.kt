@@ -113,9 +113,10 @@ fun DiscoverScreen(
 private fun FeaturedCard(content: FeaturedContent) {
     if (content.title.isBlank()) return
 
+    val defaultColor = NeverZeroTheme.gradientColors.PremiumStart
     val accent = remember(content.accentHex) {
         runCatching { Color(android.graphics.Color.parseColor(content.accentHex)) }
-            .getOrElse { NeverZeroTheme.gradientColors.PremiumStart }
+            .getOrElse { defaultColor }
     }
 
     Card(
@@ -168,9 +169,10 @@ private fun FeaturedCard(content: FeaturedContent) {
 
 @Composable
 private fun CategoryChip(item: CategoryItem) {
+    val primary = MaterialTheme.colorScheme.primary
     val accent = remember(item.accentHex) {
         runCatching { Color(android.graphics.Color.parseColor(item.accentHex)) }
-            .getOrElse { MaterialTheme.colorScheme.primary }
+            .getOrElse { primary }
     }
     Surface(
         shape = RoundedCornerShape(22.dp),
@@ -200,9 +202,10 @@ private fun CategoryChip(item: CategoryItem) {
 
 @Composable
 private fun SuggestionCard(item: SuggestionItem) {
+    val primary = MaterialTheme.colorScheme.primary
     val accent = remember(item.accentHex) {
         runCatching { Color(android.graphics.Color.parseColor(item.accentHex)) }
-            .getOrElse { MaterialTheme.colorScheme.primary }
+            .getOrElse { primary }
     }
 
     Card(
@@ -251,9 +254,10 @@ private fun SuggestionCard(item: SuggestionItem) {
 
 @Composable
 private fun ChallengeCard(item: ChallengeItem) {
+    val twilightStart = NeverZeroTheme.gradientColors.TwilightStart
     val accent = remember(item.accentHex) {
         runCatching { Color(android.graphics.Color.parseColor(item.accentHex)) }
-            .getOrElse { NeverZeroTheme.gradientColors.TwilightStart }
+            .getOrElse { twilightStart }
     }
 
     Card(

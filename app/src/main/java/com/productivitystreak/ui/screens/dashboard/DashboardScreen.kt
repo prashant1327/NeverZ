@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
+
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -235,7 +235,7 @@ private fun CircularProgressRing(
     Canvas(modifier = modifier.size(size)) {
         val sweep = 360f * progress
         val stroke = strokeWidth.toPx()
-        val radius = size.minDimension / 2f - stroke
+        val radius = kotlin.math.min(size.width, size.height) / 2f - stroke
 
         drawCircle(
             color = Color.White.copy(alpha = 0.25f),
@@ -262,9 +262,8 @@ private fun DashboardTaskRow(
     onToggle: () -> Unit,
     showConfetti: Boolean
 ) {
-    val accent = remember(task.accentHex) {
-        hexToColor(task.accentHex, MaterialTheme.colorScheme.primary)
-    }
+    val primaryColor = MaterialTheme.colorScheme.primary
+    val accent = hexToColor(task.accentHex, primaryColor)
 
     Card(
         modifier = Modifier
@@ -331,7 +330,7 @@ private fun DashboardTaskRow(
                 )
             }
 
-            AnimatedVisibility(
+            androidx.compose.animation.AnimatedVisibility(
                 visible = showConfetti,
                 enter = fadeIn(),
                 exit = fadeOut(),
@@ -356,7 +355,8 @@ private fun ConfettiOverlay(color: Color) {
                 x = startX + random.nextFloat() * 12f - 6f,
                 y = (startY + velocity).coerceAtMost(size.height)
             )
-            val tint = if (index % 3 == 0) MaterialTheme.colorScheme.primary else color
+            val primary = MaterialTheme.colorScheme.primary
+            val tint = if (index % 3 == 0) primary else color
             drawLine(
                 color = tint.copy(alpha = 0.55f),
                 start = Offset(startX, startY),
@@ -396,19 +396,24 @@ private fun DashboardEmptyState(onAddHabitClick: () -> Unit) {
             ) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val center = Offset(size.width / 2, size.height / 2)
+                    val primaryAlpha = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f)
+                    val oceanStart = NeverZeroTheme.gradientColors.OceanStart.copy(alpha = 0.9f)
+                    val oceanEnd = NeverZeroTheme.gradientColors.OceanEnd.copy(alpha = 0.9f)
+                    val minDim = kotlin.math.min(size.width, size.height)
+                    
                     drawCircle(
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
-                        radius = size.minDimension / 3
+                        color = primaryAlpha,
+                        radius = minDim / 3
                     )
                     drawCircle(
-                        color = NeverZeroTheme.gradientColors.OceanStart.copy(alpha = 0.9f),
-                        radius = size.minDimension / 6,
+                        color = oceanStart,
+                        radius = minDim / 6,
                         center = center
                     )
                     drawCircle(
-                        color = NeverZeroTheme.gradientColors.OceanEnd.copy(alpha = 0.9f),
-                        radius = size.minDimension / 9,
-                        center = center + Offset(size.minDimension / 9, -size.minDimension / 9)
+                        color = oceanEnd,
+                        radius = minDim / 9,
+                        center = center + Offset(minDim / 9, -minDim / 9)
                     )
                 }
             }
