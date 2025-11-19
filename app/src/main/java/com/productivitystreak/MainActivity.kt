@@ -1,5 +1,6 @@
 package com.productivitystreak
 
+import android.Manifest
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
@@ -57,6 +58,7 @@ class MainActivity : ComponentActivity() {
                         onSettingsRestoreFileSelected = viewModel::onSettingsRestoreFromFile,
                         onSettingsDismissRestoreDialog = viewModel::onSettingsDismissRestoreDialog,
                         onSettingsDismissMessage = viewModel::onSettingsDismissMessage,
+                        onDismissUiMessage = viewModel::onDismissUiMessage,
                         onOpenAddEntry = viewModel::onAddButtonTapped,
                         onAddButtonTapped = viewModel::onAddButtonTapped,
                         onDismissAddMenu = viewModel::onDismissAddMenu,
@@ -64,14 +66,17 @@ class MainActivity : ComponentActivity() {
                         onDismissAddForm = viewModel::onDismissAddForm,
                         onSubmitHabit = viewModel::onSubmitNewHabit,
                         onSubmitWord = viewModel::onSubmitVocabularyEntry,
-                        onSubmitJournal = viewModel::onSubmitJournalEntry
+                        onSubmitJournal = viewModel::onSubmitJournalEntry,
+                        onRequestNotificationPermission = {
+                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        },
+                        onRequestExactAlarmPermission = {
+                            PermissionManager.launchExactAlarmSettings(this)
+                        }
                     )
                 }
             }
         }
-
-        requestNotificationPermissionIfNeeded()
-        ensureExactAlarmCapability()
     }
 
     private fun requestNotificationPermissionIfNeeded() {

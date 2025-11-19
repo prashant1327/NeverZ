@@ -342,10 +342,9 @@ fun JournalFormSheet(
 }
 
 private fun moodEmoji(value: Float): String = when (value.toInt()) {
-    1 -> "641" // 🙁
-    2 -> "610" // 😐
-    3 -> "642" // 🙂
-    4 -> "600" // 😀
-    else -> "929" // 🤩
+    1 -> "🙁"
+    2 -> "😐"
+    3 -> "🙂"
+    4 -> "😀"
+    else -> "🤩"
 }
-
