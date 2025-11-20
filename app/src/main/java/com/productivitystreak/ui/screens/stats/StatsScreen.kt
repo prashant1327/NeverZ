@@ -58,7 +58,8 @@ import kotlin.math.absoluteValue
 @Composable
 fun StatsScreen(
     statsState: StatsState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onLeaderboardEntrySelected: (LeaderboardEntry) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -84,7 +85,10 @@ fun StatsScreen(
         }
 
         if (statsState.leaderboard.isNotEmpty()) {
-            LeaderboardSection(entries = statsState.leaderboard)
+            LeaderboardSection(
+                entries = statsState.leaderboard,
+                onEntrySelected = onLeaderboardEntrySelected
+            )
         }
 
         statsState.calendarHeatMap?.let {
@@ -94,7 +98,10 @@ fun StatsScreen(
 }
 
 @Composable
-private fun LeaderboardSection(entries: List<LeaderboardEntry>) {
+private fun LeaderboardSection(
+    entries: List<LeaderboardEntry>,
+    onEntrySelected: (LeaderboardEntry) -> Unit
+) {
     if (entries.isEmpty()) return
 
     var selectedPosition by remember { mutableStateOf<Int?>(null) }
@@ -135,7 +142,10 @@ private fun LeaderboardSection(entries: List<LeaderboardEntry>) {
                             entry = entry,
                             highlight = entry.position == 1,
                             selected = isSelected,
-                            onClick = { selectedPosition = entry.position }
+                            onClick = {
+                                selectedPosition = entry.position
+                                onEntrySelected(entry)
+                            }
                         )
                     }
             }
