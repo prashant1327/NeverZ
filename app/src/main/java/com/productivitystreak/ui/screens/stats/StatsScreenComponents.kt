@@ -26,30 +26,51 @@ import androidx.compose.ui.unit.dp
 import com.productivitystreak.ui.icons.AppIcons
 import com.productivitystreak.ui.state.stats.ConsistencyLevel
 import com.productivitystreak.ui.state.stats.ConsistencyScore
+import kotlin.math.roundToInt
 
 // Add this composable after the StatsScreen function
 
 @Composable
-private fun ConsistencyScoreCard(score: ConsistencyScore) {
-    val levelColor = when (score.level) {
-        ConsistencyLevel.BEGINNER -> Color(0xFF9E9E9E)
-        ConsistencyLevel.BUILDING -> Color(0xFF2196F3)
-        ConsistencyLevel.CONSISTENT -> Color(0xFF4CAF50)
-        ConsistencyLevel.UNSTOPPABLE -> Color(0xFFFFD700)
+fun ConsistencyScoreCard(score: ConsistencyScore) {
+    // Map underlying 3-level score into 4 narrative tiers
+    val tier = when {
+        score.score >= 90 -> "UNSTOPPABLE"
+        score.level == ConsistencyLevel.High -> "CONSISTENT"
+        score.level == ConsistencyLevel.Medium -> "BUILDING"
+        else -> "BEGINNER"
     }
 
-    val levelIcon = when (score.level) {
-        ConsistencyLevel.BEGINNER -> AppIcons.Seedling
-        ConsistencyLevel.BUILDING -> AppIcons.FireStreak
-        ConsistencyLevel.CONSISTENT -> AppIcons.Lightning
-        ConsistencyLevel.UNSTOPPABLE -> AppIcons.Crown
+    val levelColor = when (tier) {
+        "BEGINNER" -> Color(0xFF9E9E9E)
+        "BUILDING" -> Color(0xFF2196F3)
+        "CONSISTENT" -> Color(0xFF4CAF50)
+        "UNSTOPPABLE" -> Color(0xFFFFD700)
+        else -> MaterialTheme.colorScheme.primary
     }
 
-    val levelText = when (score.level) {
-        ConsistencyLevel.BEGINNER -> "Beginner"
-        ConsistencyLevel.BUILDING -> "Building Momentum"
-        ConsistencyLevel.CONSISTENT -> "Consistent Performer"
-        ConsistencyLevel.UNSTOPPABLE -> "Unstoppable Force"
+    val levelIcon = when (tier) {
+        "BEGINNER" -> AppIcons.Seedling
+        "BUILDING" -> AppIcons.FireStreak
+        "CONSISTENT" -> AppIcons.Lightning
+        "UNSTOPPABLE" -> AppIcons.Crown
+        else -> AppIcons.Default
+    }
+
+    val levelText = when (tier) {
+        "BEGINNER" -> "Beginner"
+        "BUILDING" -> "Building Momentum"
+        "CONSISTENT" -> "Consistent Performer"
+        "UNSTOPPABLE" -> "Unstoppable Force"
+        else -> "Consistency"
+    }
+
+    // Approximate progress toward the next tier based on score (0–100)
+    val percentToNextLevel = when (tier) {
+        "BEGINNER" -> (score.score * 100f / 50f).coerceIn(0f, 100f).roundToInt()
+        "BUILDING" -> ((score.score - 50) * 100f / 30f).coerceIn(0f, 100f).roundToInt()
+        "CONSISTENT" -> ((score.score - 80) * 100f / 10f).coerceIn(0f, 100f).roundToInt()
+        "UNSTOPPABLE" -> 100
+        else -> 0
     }
 
     Card(
@@ -134,7 +155,7 @@ private fun ConsistencyScoreCard(score: ConsistencyScore) {
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(score.percentToNextLevel / 100f)
+                            .fillMaxWidth(percentToNextLevel / 100f)
                             .height(12.dp)
                             .background(
                                 brush = Brush.horizontalGradient(
@@ -149,10 +170,13 @@ private fun ConsistencyScoreCard(score: ConsistencyScore) {
             // Motivational message
             Text(
                 text = when (score.level) {
-                    ConsistencyLevel.BEGINNER -> "Every journey starts with a single step. Keep showing up."
-                    ConsistencyLevel.BUILDING -> "You're building real momentum. Don't stop now."
-                    ConsistencyLevel.CONSISTENT -> "You've proven you're the person who shows up. Keep going."
-                    ConsistencyLevel.UNSTOPPABLE -> "You're unstoppable. This is who you are now."
+                    ConsistencyLevel.NeedsAttention -> "Every journey starts with a single step. Keep showing up."
+                    ConsistencyLevel.Medium -> "You're building real momentum. Don't stop now."
+                    ConsistencyLevel.High -> if (score.score >= 90) {
+                        "You're unstoppable. This is who you are now."
+                    } else {
+                        "You've proven you're the person who shows up. Keep going."
+                    }
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,

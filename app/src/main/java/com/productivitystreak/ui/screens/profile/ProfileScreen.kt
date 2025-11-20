@@ -94,6 +94,8 @@ fun ProfileScreen(
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     var showTimeCapsuleSheet by rememberSaveable { mutableStateOf(false) }
+    var reflectionCapsuleId by rememberSaveable { mutableStateOf<String?>(null) }
+    val reflectionCapsule = reflectionCapsuleId?.let { id -> timeCapsules.firstOrNull { it.id == id } }
 
     Column(
         modifier = Modifier
@@ -122,7 +124,8 @@ fun ProfileScreen(
 
         TimeCapsuleOverviewCard(
             capsules = timeCapsules,
-            onWriteNew = { showTimeCapsuleSheet = true }
+            onWriteNew = { showTimeCapsuleSheet = true },
+            onReflect = { capsule -> reflectionCapsuleId = capsule.id }
         )
 
         NotificationPreferencesCard(
@@ -173,6 +176,24 @@ fun ProfileScreen(
         }
     }
 
+    if (reflectionCapsule != null) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { reflectionCapsuleId = null },
+            sheetState = sheetState,
+            shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+        ) {
+            TimeCapsuleReflectionSheet(
+                capsule = reflectionCapsule,
+                onDismiss = { reflectionCapsuleId = null },
+                onSave = { text ->
+                    onSaveTimeCapsuleReflection(reflectionCapsule.id, text)
+                    reflectionCapsuleId = null
+                }
+            )
+        }
+    }
+
     if (settingsState.errorMessage != null || settingsState.showBackupSuccessMessage || settingsState.showRestoreSuccessMessage || settingsState.showTimePickerDialog) {
         // Let the central snackbar represent messages; here we just clear flags when invoked externally
         // via onSettingsDismissMessage from NeverZeroApp when needed.
@@ -183,7 +204,8 @@ fun ProfileScreen(
 @Composable
 private fun TimeCapsuleOverviewCard(
     capsules: List<TimeCapsule>,
-    onWriteNew: () -> Unit
+    onWriteNew: () -> Unit,
+    onReflect: (TimeCapsule) -> Unit
 ) {
     val now = System.currentTimeMillis()
     val upcoming = capsules.filter { !it.opened && it.deliveryDateMillis > now }.minByOrNull { it.deliveryDateMillis }
@@ -235,6 +257,15 @@ private fun TimeCapsuleOverviewCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface
                 )
+                Text(
+                    text = "Capture reflection",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(999.dp))
+                        .clickable(onClick = { onReflect(it) })
+                        .padding(horizontal = 14.dp, vertical = 6.dp)
+                )
             }
 
             Text(
@@ -244,6 +275,83 @@ private fun TimeCapsuleOverviewCard(
                 modifier = Modifier
                     .clip(RoundedCornerShape(999.dp))
                     .clickable(onClick = onWriteNew)
+                    .padding(horizontal = 14.dp, vertical = 6.dp)
+            )
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun TimeCapsuleReflectionSheet(
+    capsule: TimeCapsule,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
+    var reflection by rememberSaveable { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "Reflection",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        Text(
+            text = "Past self’s promise",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = capsule.goalDescription,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Text(
+            text = "Current reality",
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        OutlinedTextField(
+            value = reflection,
+            onValueChange = { reflection = it },
+            label = { Text("Were you the person you promised to be?") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(140.dp),
+            maxLines = 6
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Cancel",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .clickable(onClick = onDismiss)
+                    .padding(horizontal = 14.dp, vertical = 6.dp)
+            )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            Text(
+                text = "Save reflection",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(999.dp))
+                    .clickable { onSave(reflection) }
                     .padding(horizontal = 14.dp, vertical = 6.dp)
             )
         }
