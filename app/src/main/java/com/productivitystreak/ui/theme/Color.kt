@@ -180,3 +180,75 @@ val ScrimTransparent = Color(0x00000000)
 // Divider colors
 val DividerLight = Color(0xFFE1E2EC)
 val DividerDark = Color(0xFF44474F)
+
+// ==================== MATERIAL 3 TONAL SURFACES ====================
+// Enhanced surface colors for Material You design
+
+// Light theme tonal surfaces
+val SurfaceDim = Color(0xFFDDD8E1)
+val SurfaceBright = Color(0xFFFEF7FF)
+val SurfaceContainerLowest = Color(0xFFFFFFFF)
+val SurfaceContainerLow = Color(0xFFF7F2FA)
+val SurfaceContainer = Color(0xFFF1ECF4)
+val SurfaceContainerHigh = Color(0xFFEBE6EE)
+val SurfaceContainerHighest = Color(0xFFE6E0E9)
+
+// Dark theme tonal surfaces
+val DarkSurfaceDim = Color(0xFF141218)
+val DarkSurfaceBright = Color(0xFF3B383E)
+val DarkSurfaceContainerLowest = Color(0xFF0F0D13)
+val DarkSurfaceContainerLow = Color(0xFF1D1B20)
+val DarkSurfaceContainer = Color(0xFF211F26)
+val DarkSurfaceContainerHigh = Color(0xFF2B2930)
+val DarkSurfaceContainerHighest = Color(0xFF36343B)
+
+// ==================== INTERACTION STATE COLORS ====================
+// State layer colors for interactive components
+
+object StateLayerOpacity {
+    const val hover = 0.08f
+    const val focus = 0.12f
+    const val pressed = 0.12f
+    const val dragged = 0.16f
+}
+
+// ==================== EXTENDED SEMANTIC COLORS ====================
+// Additional semantic colors for specific UI states
+
+object ExtendedSemanticColors {
+    // Focus indicator
+    val Focus = Color(0xFF0061FE)
+    val DarkFocus = Color(0xFFAAC7FF)
+    
+    // Disabled states
+    val DisabledContent = Color(0xFF1C1B1F).copy(alpha = 0.38f)
+    val DisabledContainer = Color(0xFF1C1B1F).copy(alpha = 0.12f)
+    val DarkDisabledContent = Color(0xFFE6E1E5).copy(alpha = 0.38f)
+    val DarkDisabledContainer = Color(0xFFE6E1E5).copy(alpha = 0.12f)
+    
+    // Loading state
+    val LoadingShimmer = Color(0xFFE1E2EC)
+    val DarkLoadingShimmer = Color(0xFF44474F)
+}
+
+// ==================== CUSTOM ACCENT COLORS ====================
+// Additional accent colors for special features
+
+object AccentColors {
+    // Achievement gold
+    val Achievement = Color(0xFFFFB300)
+    val AchievementContainer = Color(0xFFFFECB3)
+    
+    // Premium purple
+    val Premium = Color(0xFF6C5CE7)
+    val PremiumContainer = Color(0xFFEAE6FF)
+    
+    // Streak fire
+    val StreakFire = Color(0xFFFF6B35)
+    val StreakFireContainer = Color(0xFFFFE8E0)
+    
+    // Focus mode
+    val Focus = Color(0xFF00BFA5)
+    val FocusContainer = Color(0xFFB2DFDB)
+}
+

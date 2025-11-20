@@ -158,3 +158,107 @@ object Border {
     val medium: Dp = 2.dp
     val thick: Dp = 4.dp
 }
+
+// ==================== TOUCH TARGET TOKENS ====================
+/**
+ * Minimum touch target sizes for accessibility
+ * Following Material 3 and WCAG guidelines
+ */
+object TouchTarget {
+    val minimum: Dp = 48.dp        // Minimum accessible touch target
+    val recommended: Dp = 56.dp    // Recommended comfortable size
+    val large: Dp = 64.dp          // Large, easy-to-hit targets
+}
+
+// ==================== CONTAINER TOKENS ====================
+/**
+ * Standard container dimensions for consistent layouts
+ */
+object Container {
+    // Card dimensions
+    val cardMinWidth: Dp = 280.dp
+    val cardMaxWidth: Dp = 560.dp
+    val cardMinHeight: Dp = 80.dp
+    
+    // Dialog dimensions
+    val dialogMinWidth: Dp = 280.dp
+    val dialogMaxWidth: Dp = 560.dp
+    val dialogPadding: Dp = 24.dp
+    
+    // Bottom sheet dimensions
+    val bottomSheetMaxWidth: Dp = 640.dp
+    val bottomSheetHandleWidth: Dp = 32.dp
+    val bottomSheetHandleHeight: Dp = 4.dp
+    
+    // List item heights
+    val listItemMinHeight: Dp = 56.dp
+    val listItemMediumHeight: Dp = 72.dp
+    val listItemLargeHeight: Dp = 88.dp
+}
+
+// ==================== ICON SIZE TOKENS ====================
+/**
+ * Extended icon sizing for various contexts
+ */
+object IconSize {
+    val extraSmall: Dp = 12.dp
+    val small: Dp = 16.dp
+    val medium: Dp = 24.dp
+    val large: Dp = 32.dp
+    val extraLarge: Dp = 48.dp
+    val huge: Dp = 64.dp
+    val massive: Dp = 96.dp
+}
+
+// ==================== SPACING INSETS ====================
+/**
+ * Screen edge insets and safe areas
+ */
+object Insets {
+    val screenHorizontal: Dp = 16.dp
+    val screenVertical: Dp = 16.dp
+    val screenTop: Dp = 8.dp
+    val screenBottom: Dp = 16.dp
+    val contentHorizontal: Dp = 20.dp
+}
+
+// ==================== TYPOGRAPHY SPACING ====================
+/**
+ * Spacing specifically for text content
+ */
+object TextSpacing {
+    val paragraphSpacing: Dp = 16.dp
+    val lineSpacing: Dp = 8.dp
+    val wordSpacing: Dp = 4.dp
+    val captionSpacing: Dp = 4.dp
+}
+
+// ==================== GRID SYSTEM ====================
+/**
+ * Grid layout specifications
+ */
+object Grid {
+    val columns: Int = 4           // Mobile columns
+    val tabletColumns: Int = 8     // Tablet columns
+    val desktopColumns: Int = 12   // Desktop columns
+    val gutter: Dp = 16.dp         // Space between columns
+    val margin: Dp = 16.dp         // Screen edge margins
+}
+
+// ==================== Z-INDEX TOKENS ====================
+/**
+ * Z-index layering for component stacking
+ */
+object ZIndex {
+    const val background = 0f
+    const val content = 1f
+    const val surface = 2f
+    const val elevated = 3f
+    const val overlay = 4f
+    const val modal = 5f
+    const val popover = 6f
+    const val tooltip = 7f
+    const val notification = 8f
+    const val maximum = 9f
+}
+
