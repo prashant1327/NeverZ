@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -24,7 +25,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -39,7 +39,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
 import com.productivitystreak.ui.state.discover.ArticleItem
 import com.productivitystreak.ui.state.discover.CategoryItem
 import com.productivitystreak.ui.state.discover.CommunityStory
@@ -65,6 +64,28 @@ fun DiscoverScreen(
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.onBackground
             )
+        }
+
+        if (state.communityStories.isNotEmpty()) {
+            item {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Community stories",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    LazyRow(
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                        itemsIndexed(state.communityStories, key = { _, story -> story.id }) { index, story ->
+                            CommunityStoryAvatar(story = story, isOnline = index == 0)
+                        }
+                    }
+                }
+            }
         }
 
         if (state.featuredContent.title.isNotBlank()) {
@@ -111,27 +132,6 @@ fun DiscoverScreen(
                 )
             }
         }
-
-        if (state.communityStories.isNotEmpty()) {
-            item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "Community stories",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        items(state.communityStories, key = { it.id }) { story ->
-                            CommunityStoryAvatar(story)
-                        }
-                    }
-                }
-            }
-        }
     }
 }
 
@@ -141,28 +141,24 @@ fun ArticleCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {}
 ) {
-    val shape = RoundedCornerShape(22.dp)
-    Surface(
+    Card(
         modifier = modifier,
-        tonalElevation = 2.dp,
-        shadowElevation = 2.dp,
-        shape = shape,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
         onClick = onClick
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            AsyncImage(
+            Box(
                 modifier = Modifier
-                    .size(72.dp)
-                    .clip(RoundedCornerShape(18.dp)),
-                model = article.imageUrl,
-                contentDescription = null,
-                contentScale = ContentScale.Crop
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f))
             )
 
             Column(
@@ -171,51 +167,54 @@ fun ArticleCard(
             ) {
                 Text(
                     text = article.title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold),
                     color = MaterialTheme.colorScheme.onSurface,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = article.tag.uppercase(),
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.primary,
-                        letterSpacing = 0.5.sp
-                    )
-                    Text(
-                        text = "•",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        text = "${article.readTimeMinutes} min read",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Text(
+                    text = article.tag,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "${article.readTimeMinutes} min read",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
     }
 }
 
 @Composable
-private fun CommunityStoryAvatar(story: CommunityStory) {
+private fun CommunityStoryAvatar(story: CommunityStory, isOnline: Boolean) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        AsyncImage(
-            modifier = Modifier
-                .size(64.dp)
-                .clip(CircleShape),
-            model = story.avatarUrl,
-            contentDescription = "${story.author} avatar",
-            contentScale = ContentScale.Crop
-        )
+        Box(
+            modifier = Modifier.size(64.dp),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            AsyncImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(CircleShape),
+                model = story.avatarUrl,
+                contentDescription = "${story.author} avatar",
+                contentScale = ContentScale.Crop
+            )
+            if (isOnline) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.inversePrimary)
+                        .align(Alignment.BottomEnd)
+                )
+            }
+        }
         Text(
             modifier = Modifier.widthIn(max = 72.dp),
             text = story.author,

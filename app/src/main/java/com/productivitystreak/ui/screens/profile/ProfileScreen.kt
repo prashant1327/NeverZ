@@ -15,22 +15,38 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenu
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,13 +55,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.productivitystreak.ui.state.profile.ProfileState
-import com.productivitystreak.ui.state.profile.ProfileTheme
 import com.productivitystreak.ui.state.profile.ReminderFrequency
 import com.productivitystreak.ui.state.settings.SettingsState
 import com.productivitystreak.ui.state.settings.ThemeMode
-import com.productivitystreak.ui.theme.NeverZeroTheme
 import com.productivitystreak.ui.utils.PermissionManager
 
 @Composable
@@ -68,7 +81,8 @@ fun ProfileScreen(
     onToggleWeeklySummary: (Boolean) -> Unit,
     onToggleHaptics: (Boolean) -> Unit,
     onRequestNotificationPermission: () -> Unit,
-    onRequestExactAlarmPermission: () -> Unit
+    onRequestExactAlarmPermission: () -> Unit,
+    onEditProfile: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -87,7 +101,11 @@ fun ProfileScreen(
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        AccountCard(userName = userName, email = profileState.email)
+        ProfileHeader(
+            userName = userName,
+            email = profileState.email,
+            onEditProfile = onEditProfile
+        )
 
         NotificationPreferencesCard(
             profileState = profileState,
@@ -100,7 +118,7 @@ fun ProfileScreen(
         )
 
         ThemeCard(
-            settingsState = settingsState,
+            selectedTheme = settingsState.themeMode,
             onSettingsThemeChange = onSettingsThemeChange
         )
 
@@ -171,6 +189,16 @@ private fun AccountCard(userName: String, email: String) {
     }
 }
 
+private data class ReminderCadenceOption(val label: String, val frequency: ReminderFrequency)
+
+private data class ThemeOption(val label: String, val mode: ThemeMode)
+
+private fun ReminderFrequency.toDropdownLabel(): String = when (this) {
+    ReminderFrequency.Daily -> "Daily"
+    ReminderFrequency.Weekly -> "Weekly"
+    ReminderFrequency.None -> "Daily"
+}
+
 @Composable
 private fun NotificationPreferencesCard(
     profileState: ProfileState,
@@ -183,6 +211,25 @@ private fun NotificationPreferencesCard(
 ) {
     val context = LocalContext.current
     val shouldRequestNotification = PermissionManager.shouldRequestNotificationPermission(context)
+    val reminderOptions = remember {
+        listOf(
+            ReminderCadenceOption("Daily", ReminderFrequency.Daily),
+            ReminderCadenceOption("Weekly", ReminderFrequency.Weekly),
+            ReminderCadenceOption("Weekdays", ReminderFrequency.Weekly)
+        )
+    }
+    var selectedCadenceLabel by rememberSaveable {
+        mutableStateOf(profileState.reminderFrequency.toDropdownLabel())
+    }
+
+    LaunchedEffect(profileState.reminderFrequency) {
+        selectedCadenceLabel = when (profileState.reminderFrequency) {
+            ReminderFrequency.Daily -> "Daily"
+            ReminderFrequency.Weekly ->
+                if (selectedCadenceLabel == "Weekdays") "Weekdays" else "Weekly"
+            ReminderFrequency.None -> "Daily"
+        }
+    }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -220,44 +267,14 @@ private fun NotificationPreferencesCard(
                 onCheckedChange = onSettingsDailyRemindersToggle
             )
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = "Reminder cadence",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Text(
-                        text = when (profileState.reminderFrequency) {
-                            ReminderFrequency.Daily -> "Every day"
-                            ReminderFrequency.Weekly -> "Weekly"
-                            ReminderFrequency.None -> "Off"
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+            ReminderCadenceDropdown(
+                selectedLabel = selectedCadenceLabel,
+                options = reminderOptions,
+                onSelect = { option ->
+                    selectedCadenceLabel = option.label
+                    onChangeReminderFrequency(option.frequency)
                 }
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FrequencyChip(
-                        label = "Off",
-                        selected = profileState.reminderFrequency == ReminderFrequency.None,
-                        onClick = { onChangeReminderFrequency(ReminderFrequency.None) }
-                    )
-                    FrequencyChip(
-                        label = "Weekly",
-                        selected = profileState.reminderFrequency == ReminderFrequency.Weekly,
-                        onClick = { onChangeReminderFrequency(ReminderFrequency.Weekly) }
-                    )
-                    FrequencyChip(
-                        label = "Daily",
-                        selected = profileState.reminderFrequency == ReminderFrequency.Daily,
-                        onClick = { onChangeReminderFrequency(ReminderFrequency.Daily) }
-                    )
-                }
-            }
+            )
 
             if (shouldRequestNotification) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -288,28 +305,54 @@ private fun PreferenceRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(checkedThumbColor = MaterialTheme.colorScheme.primary)
+        )
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun FrequencyChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .clickable(onClick = onClick)
-            .background(
-                if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-                else Color.Transparent
+private fun ReminderCadenceDropdown(
+    selectedLabel: String,
+    options: List<ReminderCadenceOption>,
+    onSelect: (ReminderCadenceOption) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text(text = "Reminder cadence", style = MaterialTheme.typography.bodyMedium)
+        ExposedDropdownMenuBox(
+            expanded = expanded,
+            onExpandedChange = { expanded = !expanded }
+        ) {
+            OutlinedTextField(
+                value = selectedLabel,
+                onValueChange = {},
+                readOnly = true,
+                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
+                colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors()
             )
-            .padding(horizontal = 10.dp, vertical = 4.dp)
-    ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = if (selected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.onSurfaceVariant
-        )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(option.label) },
+                        onClick = {
+                            expanded = false
+                            onSelect(option)
+                        }
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -358,7 +401,7 @@ private fun PermissionNudgeCard(
 
 @Composable
 private fun ThemeCard(
-    settingsState: SettingsState,
+    selectedTheme: ThemeMode,
     onSettingsThemeChange: (ThemeMode) -> Unit
 ) {
     Card(
@@ -374,48 +417,37 @@ private fun ThemeCard(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(text = "Appearance", style = MaterialTheme.typography.titleMedium)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                ThemeChip(
-                    label = "Light",
-                    selected = settingsState.themeMode == ThemeMode.LIGHT,
-                    onClick = { onSettingsThemeChange(ThemeMode.LIGHT) }
-                )
-                ThemeChip(
-                    label = "Dark",
-                    selected = settingsState.themeMode == ThemeMode.DARK,
-                    onClick = { onSettingsThemeChange(ThemeMode.DARK) }
-                )
-                ThemeChip(
-                    label = "System",
-                    selected = settingsState.themeMode == ThemeMode.SYSTEM,
-                    onClick = { onSettingsThemeChange(ThemeMode.SYSTEM) }
-                )
-            }
+            ThemeSegmentedControl(
+                selectedTheme = selectedTheme,
+                onThemeSelected = onSettingsThemeChange
+            )
         }
     }
 }
 
 @Composable
-private fun ThemeChip(label: String, selected: Boolean, onClick: () -> Unit) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(999.dp))
-            .clickable(onClick = onClick)
-            .background(
-                if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
-                else Color.Transparent
-            )
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+private fun ThemeSegmentedControl(
+    selectedTheme: ThemeMode,
+    onThemeSelected: (ThemeMode) -> Unit
+) {
+    val options = listOf(
+        ThemeOption("Light", ThemeMode.LIGHT),
+        ThemeOption("Dark", ThemeMode.DARK),
+        ThemeOption("System", ThemeMode.SYSTEM)
+    )
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelMedium,
-            color = if (selected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        options.forEach { option ->
+            FilterChip(
+                selected = selectedTheme == option.mode,
+                onClick = { onThemeSelected(option.mode) },
+                label = { Text(option.label) },
+                shape = RoundedCornerShape(50)
+            )
+        }
     }
 }
 
