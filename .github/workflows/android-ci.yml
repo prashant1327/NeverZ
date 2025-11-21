@@ -67,12 +67,11 @@ jobs:
       - name: Rename APK with commit hash
         run: |
           APK_DIR="app/build/outputs/apk/release"
-          if [ -f "$APK_DIR/app-release.apk" ]; then
-            APK_SRC="$APK_DIR/app-release.apk"
-          elif [ -f "$APK_DIR/app-release-unsigned.apk" ]; then
-            APK_SRC="$APK_DIR/app-release-unsigned.apk"
-          else
-            echo "No release APK found in $APK_DIR" >&2
+          APK_SRC="$APK_DIR/app-release.apk"
+          if [ ! -f "$APK_SRC" ]; then
+            echo "Signed release APK not found in $APK_DIR" >&2
+            echo "Gradle only produces app-release-unsigned.apk when release signing credentials are missing." >&2
+            echo "Set RELEASE_STORE_PASSWORD, RELEASE_KEY_ALIAS and RELEASE_KEY_PASSWORD secrets before rerunning." >&2
             ls -al "$APK_DIR" || true
             exit 1
           fi

@@ -1,19 +1,59 @@
-# Add project specific ProGuard rules here.
-# You can control the set of applied configuration files using the
-# proguardFiles setting in build.gradle.
+# NeverZero ProGuard Rules
 
-# Compose + immutable collection warnings
--dontwarn kotlinx.collections.immutable.**
-
-# Keep Application entry point so dependency injection / WorkManager can reflectively resolve it.
+# Keep application class
 -keep class com.productivitystreak.NeverZeroApplication { *; }
 
-# Moshi uses reflection for adapter lookup. Keep public models to prevent stripping JSON fields.
--keep class com.productivitystreak.data.model.** { *; }
+# Keep all data classes and entities for Room and Moshi serialization
+-keep class com.productivitystreak.data.** { *; }
+-keepclassmembers class com.productivitystreak.data.** { *; }
 
-# WorkManager reflects on Worker subclasses; ensure constructors stay intact.
--keep class com.productivitystreak.notifications.** extends androidx.work.ListenableWorker { *; }
+# Keep Room entities and DAOs
+-keep @androidx.room.Entity class * { *; }
+-keep @androidx.room.Dao interface * { *; }
 
-# Optional: keep coroutines debug probes when running with JVM debug options.
--keep class kotlinx.coroutines.debug.internal.DebugProbesImpl { *; }
--keep class kotlinx.coroutines.DebugProbesKt { *; }
+# Moshi
+-keepclasseswithmembers class * {
+    @com.squareup.moshi.* <methods>;
+}
+-keep @com.squareup.moshi.JsonQualifier interface *
+-keepclassmembers class kotlin.Metadata {
+    public <methods>;
+}
+
+# Kotlin serialization
+-keepattributes *Annotation*, InnerClasses
+-dontnote kotlinx.serialization.AnnotationsKt
+
+# Keep Kotlin Metadata for reflection
+-keep class kotlin.Metadata { *; }
+
+# Keep Retrofit interfaces
+-keep interface com.productivitystreak.data.remote.** { *; }
+
+# Keep BuildConfig
+-keep class com.productivitystreak.BuildConfig { *; }
+
+# Coroutines
+-keepnames class kotlinx.coroutines.internal.MainDispatcherFactory {}
+-keepnames class kotlinx.coroutines.CoroutineExceptionHandler {}
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+
+# Compose
+-keep class androidx.compose.** { *; }
+-keep @androidx.compose.runtime.Composable class * { *; }
+-keepclassmembers class * {
+    @androidx.compose.runtime.Composable *;
+}
+
+# Remove logging in release
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+}
+
+# Keep line numbers for crash reports
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile

@@ -1,9 +1,16 @@
 package com.productivitystreak.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "daily_reflections")
+@Entity(
+    tableName = "daily_reflections",
+    indices = [
+        Index(value = ["date"]),
+        Index(value = ["date", "lastUpdated"])
+    ]
+)
 data class DailyReflectionEntity(
     @PrimaryKey
     val date: String, // YYYY-MM-DD format

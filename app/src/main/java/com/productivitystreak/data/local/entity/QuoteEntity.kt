@@ -1,10 +1,17 @@
 package com.productivitystreak.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.productivitystreak.data.model.Quote
 
-@Entity(tableName = "quotes")
+@Entity(
+    tableName = "quotes",
+    indices = [
+        Index(value = ["isFavorite", "createdAt"]),
+        Index(value = ["createdAt"])
+    ]
+)
 data class QuoteEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,

@@ -151,6 +151,29 @@ fun HomeScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
+        val buddhaState by viewModel.buddhaInsightState.collectAsStateWithLifecycle()
+        
+        LaunchedEffect(uiState.streaks) {
+            if (uiState.streaks.isNotEmpty()) {
+                viewModel.loadBuddhaInsight(uiState.streaks)
+            }
+        }
+        
+        com.productivitystreak.ui.components.BuddhaInsightCard(
+            state = buddhaState,
+            onRetry = { viewModel.retryBuddhaInsight(uiState.streaks) },
+            modifier = Modifier.fillMaxWidth()
+        )
+        
+        val sidequest by viewModel.sidequest.collectAsStateWithLifecycle()
+        sidequest?.let { quest ->
+            com.productivitystreak.ui.components.SidequestCard(
+                quest = quest,
+                onAccept = { /* TODO: Handle quest acceptance */ },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
         Text(
             text = "Today’s habits",
             style = MaterialTheme.typography.titleMedium,
