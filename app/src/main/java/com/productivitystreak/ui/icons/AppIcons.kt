@@ -12,6 +12,9 @@ import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.SelfImprovement
 import androidx.compose.material.icons.outlined.Vibration
 import androidx.compose.material.icons.outlined.Work
+import androidx.compose.material.icons.outlined.AddTask
+import androidx.compose.material.icons.outlined.MenuBook
+import androidx.compose.material.icons.outlined.EditNote
 import androidx.compose.material.icons.rounded.EmojiEvents
 import androidx.compose.material.icons.rounded.LocalFireDepartment
 import androidx.compose.material.icons.rounded.Bolt
@@ -45,6 +48,11 @@ object AppIcons {
     val Lightning: ImageVector = Icons.Rounded.Bolt // Lightning for XP/energy
     val Seedling: ImageVector = Icons.Rounded.Spa // Zen/growth for beginner
     val TrendUp: ImageVector = Icons.Rounded.TrendingUp // Upward trend
+    
+    // Command Center Menu Icons (Thin-line/Outlined style)
+    val AddHabit: ImageVector = Icons.Outlined.AddTask // Add new habit
+    val AddWord: ImageVector = Icons.Outlined.MenuBook // Log vocabulary word
+    val AddJournal: ImageVector = Icons.Outlined.EditNote // Journal entry
 
     private val categoryMap: Map<String, ImageVector> = mapOf(
         "health" to Health,

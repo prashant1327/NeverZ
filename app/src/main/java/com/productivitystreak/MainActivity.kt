@@ -23,14 +23,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val viewModel: AppViewModel by viewModels { AppViewModelFactory(application) }
         setContent {
-            ProductivityStreakTheme {
-                val state = viewModel.uiState.collectAsStateWithLifecycle()
+            val state = viewModel.uiState.collectAsStateWithLifecycle()
+            val themeMode = state.value.profileState.theme
+
+            ProductivityStreakTheme(
+                themeMode = themeMode
+            ) {
                 Surface {
                     NeverZeroApp(
                         uiState = state.value,
                         onRefreshQuote = viewModel::refreshQuote,
                         onSelectStreak = viewModel::onSelectStreak,
                         onToggleTask = viewModel::onToggleTask,
+                        onAddOneOffTask = viewModel::addOneOffTask,
+                        onToggleOneOffTask = viewModel::toggleOneOffTask,
+                        onDeleteOneOffTask = viewModel::deleteOneOffTask,
                         onSimulateTaskCompletion = viewModel::simulateTaskCompletion,
                         onLogReadingProgress = viewModel::onLogReadingProgress,
                         onAddVocabularyWord = viewModel::onAddVocabularyWord,

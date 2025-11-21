@@ -2,81 +2,85 @@ package com.productivitystreak.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+// ==================== CORE BRAND COLORS ====================
+
+private val Ion = Color(0xFF4BF2FF)
+private val Plasma = Color(0xFF8A7CFF)
+private val Laser = Color(0xFF12E09F)
+private val Ember = Color(0xFFFF5C4D)
+
+private val Obsidian = Color(0xFF000000)
+private val Stealth = Color(0xFF06080F)
+private val MatteGlass = Color(0xFF0B111C)
+private val BorderGraphite = Color(0xFF1D2738)
+private val Silver = Color(0xFFC6D2E4)
+private val Graphite = Color(0xFF7E8AA3)
+private val Ink = Color(0xFF05070D)
+private val Frost = Color(0xFFE8F6FF)
+
 // ==================== LIGHT THEME COLORS ====================
 
-// Primary - Main brand color (vibrant blue)
-val Primary = Color(0xFF0061FE)
-val OnPrimary = Color(0xFFFFFFFF)
-val PrimaryContainer = Color(0xFFD6E3FF)
-val OnPrimaryContainer = Color(0xFF001A41)
+val Primary = Ion
+val OnPrimary = Ink
+val PrimaryContainer = Ion.copy(alpha = 0.14f)
+val OnPrimaryContainer = Ion
 
-// Secondary - Supporting color (modern slate)
-val Secondary = Color(0xFF535F70)
-val OnSecondary = Color(0xFFFFFFFF)
-val SecondaryContainer = Color(0xFFD7E3F8)
-val OnSecondaryContainer = Color(0xFF101C2B)
+val Secondary = Plasma
+val OnSecondary = Ink
+val SecondaryContainer = Plasma.copy(alpha = 0.18f)
+val OnSecondaryContainer = Plasma
 
-// Tertiary - Accent color (warm purple)
-val Tertiary = Color(0xFF6B5778)
-val OnTertiary = Color(0xFFFFFFFF)
-val TertiaryContainer = Color(0xFFF2DAFF)
-val OnTertiaryContainer = Color(0xFF251431)
+val Tertiary = Laser
+val OnTertiary = Ink
+val TertiaryContainer = Laser.copy(alpha = 0.2f)
+val OnTertiaryContainer = Laser
 
-// Error colors
-val Error = Color(0xFFBA1A1A)
-val OnError = Color(0xFFFFFFFF)
-val ErrorContainer = Color(0xFFFFDAD6)
-val OnErrorContainer = Color(0xFF410002)
+val Error = Ember
+val OnError = Color(0xFF1A0A07)
+val ErrorContainer = Ember.copy(alpha = 0.18f)
+val OnErrorContainer = Ember
 
-// Surface colors - Clean, modern backgrounds
-val Background = Color(0xFFFCFCFF)
-val OnBackground = Color(0xFF1A1C1E)
-val Surface = Color(0xFFFCFCFF)
-val OnSurface = Color(0xFF1A1C1E)
-val SurfaceVariant = Color(0xFFE1E2EC)
-val OnSurfaceVariant = Color(0xFF44474F)
+val Background = Color(0xFFF4F6FB)
+val OnBackground = Ink
+val Surface = Color(0xFFF7F9FF)
+val OnSurface = Ink
+val SurfaceVariant = Color(0xFFE5E9F5)
+val OnSurfaceVariant = Graphite
 
-// Outline colors
-val Outline = Color(0xFF74777F)
-val OutlineVariant = Color(0xFFC4C6D0)
+val Outline = BorderGraphite.copy(alpha = 0.6f)
+val OutlineVariant = BorderGraphite.copy(alpha = 0.35f)
 
 // ==================== DARK THEME COLORS ====================
 
-// Primary - Lighter for dark backgrounds
-val DarkPrimary = Color(0xFFAAC7FF)
-val DarkOnPrimary = Color(0xFF002F65)
-val DarkPrimaryContainer = Color(0xFF00468F)
-val DarkOnPrimaryContainer = Color(0xFFD6E3FF)
+val DarkPrimary = Ion
+val DarkOnPrimary = Obsidian
+val DarkPrimaryContainer = Ion.copy(alpha = 0.22f)
+val DarkOnPrimaryContainer = Frost
 
-// Secondary - Adapted for dark mode
-val DarkSecondary = Color(0xFFBBC7DB)
-val DarkOnSecondary = Color(0xFF253140)
-val DarkSecondaryContainer = Color(0xFF3C4858)
-val DarkOnSecondaryContainer = Color(0xFFD7E3F8)
+val DarkSecondary = Plasma
+val DarkOnSecondary = Obsidian
+val DarkSecondaryContainer = Plasma.copy(alpha = 0.24f)
+val DarkOnSecondaryContainer = Frost
 
-// Tertiary - Warmer for dark mode
-val DarkTertiary = Color(0xFFD7BEE4)
-val DarkOnTertiary = Color(0xFF3B2948)
-val DarkTertiaryContainer = Color(0xFF53405F)
-val DarkOnTertiaryContainer = Color(0xFFF2DAFF)
+val DarkTertiary = Laser
+val DarkOnTertiary = Obsidian
+val DarkTertiaryContainer = Laser.copy(alpha = 0.24f)
+val DarkOnTertiaryContainer = Frost
 
-// Error colors for dark mode
-val DarkError = Color(0xFFFFB4AB)
-val DarkOnError = Color(0xFF690005)
-val DarkErrorContainer = Color(0xFF93000A)
-val DarkOnErrorContainer = Color(0xFFFFDAD6)
+val DarkError = Ember
+val DarkOnError = Obsidian
+val DarkErrorContainer = Ember.copy(alpha = 0.28f)
+val DarkOnErrorContainer = Frost
 
-// Surface colors - Deep, rich backgrounds
-val DarkBackground = Color(0xFF1A1C1E)
-val DarkOnBackground = Color(0xFFE2E2E6)
-val DarkSurface = Color(0xFF1A1C1E)
-val DarkOnSurface = Color(0xFFE2E2E6)
-val DarkSurfaceVariant = Color(0xFF44474F)
-val DarkOnSurfaceVariant = Color(0xFFC4C6D0)
+val DarkBackground = Obsidian
+val DarkOnBackground = Silver
+val DarkSurface = MatteGlass
+val DarkOnSurface = Silver
+val DarkSurfaceVariant = Stealth
+val DarkOnSurfaceVariant = Graphite
 
-// Outline colors for dark mode
-val DarkOutline = Color(0xFF8E9099)
-val DarkOutlineVariant = Color(0xFF44474F)
+val DarkOutline = BorderGraphite
+val DarkOutlineVariant = BorderGraphite.copy(alpha = 0.5f)
 
 // ==================== CATEGORY/STREAK ACCENT COLORS ====================
 // Vibrant, modern colors for different streak categories
@@ -210,6 +214,73 @@ object StateLayerOpacity {
     const val focus = 0.12f
     const val pressed = 0.12f
     const val dragged = 0.16f
+}
+
+// ==================== DESIGN COLOR TOKENS ====================
+
+data class NeverZeroDesignColors(
+    val isDark: Boolean,
+    val background: Color,
+    val backgroundAlt: Color,
+    val surface: Color,
+    val surfaceElevated: Color,
+    val border: Color,
+    val glow: Color,
+    val primary: Color,
+    val onPrimary: Color,
+    val primaryMuted: Color,
+    val secondary: Color,
+    val onSecondary: Color,
+    val textPrimary: Color,
+    val textSecondary: Color,
+    val disabled: Color,
+    val success: Color,
+    val warning: Color,
+    val error: Color
+)
+
+object NeverZeroDesignPalettes {
+    val Dark = NeverZeroDesignColors(
+        isDark = true,
+        background = Obsidian,
+        backgroundAlt = Stealth,
+        surface = MatteGlass,
+        surfaceElevated = Color(0xFF111929),
+        border = BorderGraphite,
+        glow = Ion.copy(alpha = 0.35f),
+        primary = Ion,
+        onPrimary = Obsidian,
+        primaryMuted = Ion.copy(alpha = 0.45f),
+        secondary = Plasma,
+        onSecondary = Obsidian,
+        textPrimary = Silver,
+        textSecondary = Graphite,
+        disabled = Graphite.copy(alpha = 0.4f),
+        success = Laser,
+        warning = Color(0xFFFFC857),
+        error = Ember
+    )
+
+    val Light = NeverZeroDesignColors(
+        isDark = false,
+        background = Background,
+        backgroundAlt = Color(0xFFE8ECF6),
+        surface = Color(0xFFFDFEFF),
+        surfaceElevated = Color(0xFFF0F4FF),
+        border = Outline,
+        glow = Ion.copy(alpha = 0.2f),
+        primary = Ion,
+        onPrimary = Ink,
+        primaryMuted = Ion.copy(alpha = 0.6f),
+        secondary = Plasma,
+        onSecondary = Ink,
+        textPrimary = Color(0xFF0F1726),
+        textSecondary = Graphite,
+        disabled = Graphite.copy(alpha = 0.48f),
+        success = Laser,
+        warning = Color(0xFFFF9F43),
+        error = Ember
+    )
 }
 
 // ==================== EXTENDED SEMANTIC COLORS ====================

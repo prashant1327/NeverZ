@@ -48,6 +48,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -71,38 +73,135 @@ fun AddEntryMenuSheet(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = 20.dp, vertical = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
-        Text(
-            text = "What would you like to add?",
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
-        Text(
-            text = "Capture new habits, keep words alive, or reflect on the day.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        // Header
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center
-        )
+            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = "Command Center",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = "Choose your action",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
 
-        AddMenuCard(
-            title = "New habit",
-            subtitle = "Track a fresh routine with gentle nudges.",
-            onClick = { onEntrySelected(AddEntryType.HABIT) }
-        )
-        AddMenuCard(
-            title = "Log word",
-            subtitle = "Save vocabulary for your streak.",
-            onClick = { onEntrySelected(AddEntryType.WORD) }
-        )
-        AddMenuCard(
-            title = "Journal",
-            subtitle = "Reflect, reset, and stay intentional.",
-            onClick = { onEntrySelected(AddEntryType.JOURNAL) }
-        )
+        // 2-Column Grid of Actions
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // Row 1: New Habit + Log Word
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CommandCenterCard(
+                    icon = com.productivitystreak.ui.icons.AppIcons.AddHabit,
+                    title = "New Habit",
+                    subtitle = "Track progress",
+                    onClick = { onEntrySelected(AddEntryType.HABIT) },
+                    modifier = Modifier.weight(1f)
+                )
+                CommandCenterCard(
+                    icon = com.productivitystreak.ui.icons.AppIcons.AddWord,
+                    title = "Learn Word",
+                    subtitle = "Build vocab",
+                    onClick = { onEntrySelected(AddEntryType.WORD) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+            
+            // Row 2: Journal (full width)
+            CommandCenterCard(
+                icon = com.productivitystreak.ui.icons.AppIcons.AddJournal,
+                title = "Daily Journal",
+                subtitle = "Reflect and reset",
+                onClick = { onEntrySelected(AddEntryType.JOURNAL) },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
+@Composable
+private fun CommandCenterCard(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    title: String,
+    subtitle: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    
+    val scale by animateFloatAsState(
+        targetValue = if (isPressed) 0.95f else 1f,
+        animationSpec = androidx.compose.animation.core.spring(
+            dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy,
+            stiffness = androidx.compose.animation.core.Spring.StiffnessMedium
+        ),
+        label = "card-scale"
+    )
+    
+    // Glassmorphic card
+    androidx.compose.material3.Surface(
+        onClick = onClick,
+        modifier = modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            },
+        shape = RoundedCornerShape(24.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+        tonalElevation = 2.dp,
+        interactionSource = interactionSource
+    ) {
+        Box(
+            modifier = Modifier
+                .padding(20.dp)
+                .fillMaxWidth(),
+            contentAlignment = androidx.compose.ui.Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Large thin-line icon
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    modifier = Modifier.size(48.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                
+                // Title
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = androidx.compose.ui.text.font.FontWeight.SemiBold,
+                    textAlign = TextAlign.Center
+                )
+                
+                // Subtitle
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
     }
 }
 

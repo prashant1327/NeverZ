@@ -510,23 +510,6 @@ class AppViewModel(
             } catch (e: Exception) {
                 Log.e("AppViewModel", "Error loading reminder frequency", e)
             }
-        }
-        
-        viewModelScope.launch {
-            try {
-                preferencesManager.totalPoints.collect { points ->
-                    _uiState.update { state ->
-                        state.copy(totalPoints = points)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e("AppViewModel", "Error loading total points", e)
-            }
-        }
-    }
-
-    private fun observeAssets() {
-        viewModelScope.launch {
             try {
                 assetRepository.observeAssets().collect { assets ->
                     _uiState.update { state ->
@@ -2011,6 +1994,45 @@ class AppViewModel(
                     errorMessage = null
                 )
             )
+        }
+    }
+    // One-off Tasks Management
+    fun addOneOffTask(title: String) {
+        if (title.isBlank()) return
+        val newTask = com.productivitystreak.data.model.Task(title = title.trim())
+        val currentTasks = _uiState.value.oneOffTasks
+        val updatedTasks = currentTasks + newTask
+        saveOneOffTasks(updatedTasks)
+    }
+
+    fun toggleOneOffTask(taskId: String) {
+        val currentTasks = _uiState.value.oneOffTasks
+        val updatedTasks = currentTasks.map { task ->
+            if (task.id == taskId) task.copy(isCompleted = !task.isCompleted) else task
+        }
+        saveOneOffTasks(updatedTasks)
+    }
+
+    fun deleteOneOffTask(taskId: String) {
+        val currentTasks = _uiState.value.oneOffTasks
+        val updatedTasks = currentTasks.filter { it.id != taskId }
+        saveOneOffTasks(updatedTasks)
+    }
+
+    private fun saveOneOffTasks(tasks: List<com.productivitystreak.data.model.Task>) {
+        viewModelScope.launch {
+            try {
+                val type = Types.newParameterizedType(List::class.java, com.productivitystreak.data.model.Task::class.java)
+                val adapter = moshi.adapter<List<com.productivitystreak.data.model.Task>>(type)
+                val json = adapter.toJson(tasks)
+                preferencesManager.setOneOffTasks(json)
+                
+                // Optimistic update
+                _uiState.update { it.copy(oneOffTasks = tasks) }
+            } catch (e: Exception) {
+                Log.e("AppViewModel", "Error saving tasks", e)
+                pushUiMessage("Failed to save task", type = UiMessageType.ERROR)
+            }
         }
     }
 }

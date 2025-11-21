@@ -95,6 +95,7 @@ private val AppShapes = Shapes(
 val LocalStreakColors = staticCompositionLocalOf { StreakColors }
 val LocalGradientColors = staticCompositionLocalOf { GradientColors }
 val LocalSemanticColors = staticCompositionLocalOf { SemanticColors }
+val LocalDesignColors = staticCompositionLocalOf { NeverZeroDesignPalettes.Dark }
 
 /**
  * Never Zero Theme
@@ -118,11 +119,13 @@ fun AppTheme(
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
+    val designColors = if (darkTheme) NeverZeroDesignPalettes.Dark else NeverZeroDesignPalettes.Light
 
     CompositionLocalProvider(
         LocalStreakColors provides StreakColors,
         LocalGradientColors provides GradientColors,
-        LocalSemanticColors provides SemanticColors
+        LocalSemanticColors provides SemanticColors,
+        LocalDesignColors provides designColors
     ) {
         MaterialTheme(
             colorScheme = colorScheme,
@@ -135,10 +138,16 @@ fun AppTheme(
 
 @Composable
 fun ProductivityStreakTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    themeMode: com.productivitystreak.ui.state.profile.ProfileTheme = com.productivitystreak.ui.state.profile.ProfileTheme.Auto,
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
+    val darkTheme = when (themeMode) {
+        com.productivitystreak.ui.state.profile.ProfileTheme.Dark -> true
+        com.productivitystreak.ui.state.profile.ProfileTheme.Light -> false
+        com.productivitystreak.ui.state.profile.ProfileTheme.Auto -> isSystemInDarkTheme()
+    }
+
     AppTheme(
         darkTheme = darkTheme,
         dynamicColor = dynamicColor,
@@ -161,4 +170,8 @@ object NeverZeroTheme {
     val semanticColors: SemanticColors
         @Composable
         get() = LocalSemanticColors.current
+
+    val designColors: NeverZeroDesignColors
+        @Composable
+        get() = LocalDesignColors.current
 }

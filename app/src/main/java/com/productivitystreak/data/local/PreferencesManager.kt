@@ -55,6 +55,9 @@ class PreferencesManager(context: Context) {
 
         // Ghost notifications
         val GHOST_LAST_SENT_DATE = stringPreferencesKey("ghost_last_sent_date")
+        
+        // Tasks
+        val ONE_OFF_TASKS = stringPreferencesKey("one_off_tasks")
     }
 
     // Theme mode
@@ -570,6 +573,25 @@ class PreferencesManager(context: Context) {
     suspend fun setGhostLastSentDate(date: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.GHOST_LAST_SENT_DATE] = date
+        }
+    }
+
+    // One-off Tasks
+    val oneOffTasks: Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.ONE_OFF_TASKS] ?: "[]"
+        }
+
+    suspend fun setOneOffTasks(tasksJson: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.ONE_OFF_TASKS] = tasksJson
         }
     }
 }

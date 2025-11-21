@@ -86,6 +86,9 @@ fun NeverZeroApp(
     onRefreshQuote: () -> Unit,
     onSelectStreak: (String) -> Unit,
     onToggleTask: (String) -> Unit,
+    onAddOneOffTask: (String) -> Unit,
+    onToggleOneOffTask: (String) -> Unit,
+    onDeleteOneOffTask: (String) -> Unit,
     onSimulateTaskCompletion: (String, Int) -> Unit,
     onLogReadingProgress: (Int) -> Unit,
     onAddVocabularyWord: (String, String, String?) -> Unit,
@@ -132,7 +135,7 @@ fun NeverZeroApp(
     val haptics = LocalHapticFeedback.current
 
     // FTUE: Immersive onboarding flow
-    if (uiState.showOnboarding) {
+    if (uiState.showOnboarding == true) {
         OnboardingFlow(
             uiState = uiState,
             onToggleOnboardingCategory = onToggleOnboardingCategory,
@@ -147,6 +150,14 @@ fun NeverZeroApp(
             onRequestNotificationPermission = onRequestNotificationPermission,
             onRequestExactAlarmPermission = onRequestExactAlarmPermission
         )
+        return
+    } else if (uiState.showOnboarding == null) {
+        // Loading state - show splash or empty surface
+        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Box(contentAlignment = Alignment.Center) {
+                // Optional: Add Logo or Loading Indicator here
+            }
+        }
         return
     }
 
@@ -224,7 +235,8 @@ fun NeverZeroApp(
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                     }
                     onAddButtonTapped()
-                }
+                },
+                isMenuOpen = isSheetVisible
             )
         }
     ) { innerPadding ->
@@ -232,6 +244,10 @@ fun NeverZeroApp(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
+                .then(
+                    // Add blur to background when Command Center is open
+                    if (isSheetVisible) Modifier.blur(10.dp) else Modifier
+                )
         ) {
             Crossfade(
                 targetState = currentDestination,
@@ -244,7 +260,10 @@ fun NeverZeroApp(
                         onToggleTask = onToggleTask,
                         onRefreshQuote = onRefreshQuote,
                         onAddHabitClick = onAddButtonTapped,
-                        onSelectStreak = onSelectStreak
+                        onSelectStreak = onSelectStreak,
+                        onAddOneOffTask = onAddOneOffTask,
+                        onToggleOneOffTask = onToggleOneOffTask,
+                        onDeleteOneOffTask = onDeleteOneOffTask
                     )
                     MainDestination.STATS -> StatsScreen(
                         statsState = uiState.statsState,
@@ -342,7 +361,8 @@ fun NeverZeroApp(
 private fun NeverZeroBottomBar(
     current: MainDestination,
     onDestinationSelected: (MainDestination) -> Unit,
-    onAddTapped: () -> Unit
+    onAddTapped: () -> Unit,
+    isMenuOpen: Boolean = false
 ) {
     Box(
         modifier = Modifier
@@ -388,7 +408,8 @@ private fun NeverZeroBottomBar(
                     icon = Icons.Outlined.Add,
                     onClick = onAddTapped,
                     containerColor = NeverZeroTheme.gradientColors.PremiumStart,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                    isExpanded = isMenuOpen
                 )
 
                 NavItem(
