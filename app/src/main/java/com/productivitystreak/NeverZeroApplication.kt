@@ -6,6 +6,7 @@ import com.productivitystreak.data.local.AppDatabase
 import com.productivitystreak.data.local.PreferencesManager
 import com.productivitystreak.data.repository.*
 import com.productivitystreak.debug.GlobalExceptionHandler
+import com.productivitystreak.notifications.GhostNotificationScheduler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -28,6 +29,7 @@ class NeverZeroApplication : Application() {
 
     // Utilities
     val backupManager by lazy { BackupManager(this, database) }
+    private val ghostScheduler by lazy { GhostNotificationScheduler(this) }
 
     override fun onCreate() {
         super.onCreate()
@@ -38,5 +40,8 @@ class NeverZeroApplication : Application() {
             streakRepository.initializeSampleData()
             achievementRepository.initializeAchievements()
         }
+
+        // Schedule ghost notifications
+        ghostScheduler.schedule()
     }
 }

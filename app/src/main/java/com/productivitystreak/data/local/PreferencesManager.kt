@@ -52,6 +52,9 @@ class PreferencesManager(context: Context) {
 
         // Achievements
         val ACHIEVEMENTS_DATA = stringPreferencesKey("achievements_data")
+
+        // Ghost notifications
+        val GHOST_LAST_SENT_DATE = stringPreferencesKey("ghost_last_sent_date")
     }
 
     // Theme mode
@@ -548,6 +551,25 @@ class PreferencesManager(context: Context) {
     suspend fun setAchievementsData(achievementsJson: String) {
         dataStore.edit { preferences ->
             preferences[PreferencesKeys.ACHIEVEMENTS_DATA] = achievementsJson
+        }
+    }
+
+    // Ghost notifications
+    val ghostLastSentDate: Flow<String> = dataStore.data
+        .catch { exception ->
+            if (exception is IOException) {
+                emit(emptyPreferences())
+            } else {
+                throw exception
+            }
+        }
+        .map { preferences ->
+            preferences[PreferencesKeys.GHOST_LAST_SENT_DATE] ?: ""
+        }
+
+    suspend fun setGhostLastSentDate(date: String) {
+        dataStore.edit { preferences ->
+            preferences[PreferencesKeys.GHOST_LAST_SENT_DATE] = date
         }
     }
 }

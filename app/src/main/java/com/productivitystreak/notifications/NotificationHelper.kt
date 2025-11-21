@@ -19,6 +19,7 @@ class NotificationHelper(private val context: Context) {
         private const val CHANNEL_ID_BACKUP = "backup_reminders"
         private const val CHANNEL_ID_STREAK_DANGER = "streak_danger"
         private const val CHANNEL_ID_TIME_CAPSULE = "time_capsule"
+        private const val CHANNEL_ID_GHOST = "ghost_notifications"
 
         private const val NOTIFICATION_ID_DAILY_REMINDER = 1
         private const val NOTIFICATION_ID_ACHIEVEMENT = 2
@@ -26,6 +27,7 @@ class NotificationHelper(private val context: Context) {
         private const val NOTIFICATION_ID_BACKUP = 4
         private const val NOTIFICATION_ID_STREAK_DANGER = 5
         private const val NOTIFICATION_ID_TIME_CAPSULE = 6
+        private const val NOTIFICATION_ID_GHOST = 7
     }
 
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -95,8 +97,18 @@ class NotificationHelper(private val context: Context) {
                 enableVibration(true)
             }
 
+            // Ghost notifications
+            val ghostChannel = NotificationChannel(
+                CHANNEL_ID_GHOST,
+                "Ghost Notifications",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Occasional data-based nudges that sound like they’re from you."
+                enableVibration(true)
+            }
+
             notificationManager.createNotificationChannels(
-                listOf(remindersChannel, achievementsChannel, milestonesChannel, backupChannel, dangerChannel, timeCapsuleChannel)
+                listOf(remindersChannel, achievementsChannel, milestonesChannel, backupChannel, dangerChannel, timeCapsuleChannel, ghostChannel)
             )
         }
     }
@@ -263,5 +275,68 @@ class NotificationHelper(private val context: Context) {
             .build()
 
         notificationManager.notify(NOTIFICATION_ID_TIME_CAPSULE, notification)
+    }
+
+    fun showGhostSlumpNudge(userName: String, daysInactive: Int) {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val title = if (userName.isNotBlank()) {
+            "$userName, your habits have been quiet"
+        } else {
+            "Your habits have been quiet"
+        }
+
+        val message = if (daysInactive <= 3) {
+            "It’s been a couple of days since you checked in. Take one small step your future self would recognize."
+        } else {
+            "It’s been a while since you checked in. Start with a 60-second action today and rebuild from there."
+        }
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_GHOST)
+            .setSmallIcon(R.drawable.ic_launcher)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(NOTIFICATION_ID_GHOST, notification)
+    }
+
+    fun showGhostMomentumNudge(streakName: String, currentCount: Int) {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val title = "Protect your run"
+        val message = "You’re $currentCount days into \"$streakName\". A small action today keeps the story going."
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID_GHOST)
+            .setSmallIcon(R.drawable.ic_launcher)
+            .setContentTitle(title)
+            .setContentText(message)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(NOTIFICATION_ID_GHOST, notification)
     }
 }

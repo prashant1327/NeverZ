@@ -208,14 +208,18 @@ fun OnboardingFlow(
         }
 
         if (showPermissionDialog) {
-            PermissionDialog(
-                onAllow = {
+            com.productivitystreak.ui.components.InteractivePermissionDialog(
+                title = "Let us nudge you gently?",
+                description = "Turn on notifications so we can send a small reminder when it’s time for your habit. You can change this anytime in Settings.",
+                confirmText = "Allow reminders",
+                dismissText = "Not now",
+                onConfirm = {
                     showPermissionDialog = false
                     onRequestNotificationPermission()
                     onToggleNotificationsAllowed(true)
                     onNextStep()
                 },
-                onSkip = {
+                onDismiss = {
                     showPermissionDialog = false
                     onToggleNotificationsAllowed(false)
                     onNextStep()
@@ -829,34 +833,7 @@ private fun QuantitySelector(
     }
 }
 
-@Composable
-private fun PermissionDialog(
-    onAllow: () -> Unit,
-    onSkip: () -> Unit,
-    onDismissRequest: () -> Unit = onSkip
-) {
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = { Text("Let us nudge you gently?") },
-        text = {
-            Text(
-                "Turn on notifications so we can send a small reminder when it’s time for your habit. You can change this anytime in Settings."
-            )
-        },
-        confirmButton = {
-            com.productivitystreak.ui.components.StyledTextButton(
-                text = "Allow reminders",
-                onClick = onAllow
-            )
-        },
-        dismissButton = {
-            com.productivitystreak.ui.components.StyledTextButton(
-                text = "Not now",
-                onClick = onSkip
-            )
-        }
-    )
-}
+// PermissionDialog removed in favor of com.productivitystreak.ui.components.InteractivePermissionDialog
 
 @Composable
 private fun OnboardingFooter(
