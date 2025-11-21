@@ -17,7 +17,8 @@ data class Streak(
     val reminderEnabled: Boolean = true,
     val reminderTime: String = "09:00",
     val difficulty: StreakDifficulty = StreakDifficulty.BALANCED,
-    val allowFreezeDays: Boolean = true
+    val allowFreezeDays: Boolean = true,
+    val rescuedDates: List<String> = emptyList()
 ) {
     val progress: Float
         get() = history.lastOrNull()?.completionFraction ?: 0f
@@ -38,7 +39,8 @@ enum class StreakDifficulty {
 data class StreakDayRecord(
     val date: String,
     val completed: Int,
-    val goal: Int
+    val goal: Int,
+    val wasRescued: Boolean = false
 ) {
     val completionFraction: Float
         get() = if (goal == 0) 0f else (completed / goal.toFloat()).coerceAtMost(1f)

@@ -167,6 +167,7 @@ fun NeverZeroApp(
 
     var currentDestination by rememberSaveable { mutableStateOf(MainDestination.HOME) }
     var selectedAssetId by rememberSaveable { mutableStateOf<String?>(null) }
+    var showSkillPaths by rememberSaveable { mutableStateOf(false) }
 
     val addUi = uiState.addUiState
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -245,7 +246,10 @@ fun NeverZeroApp(
                         onAddHabitClick = onAddButtonTapped,
                         onSelectStreak = onSelectStreak
                     )
-                    MainDestination.STATS -> StatsScreen(statsState = uiState.statsState)
+                    MainDestination.STATS -> StatsScreen(
+                        statsState = uiState.statsState,
+                        onNavigateToSkillPaths = { showSkillPaths = true }
+                    )
                     MainDestination.DISCOVER -> DiscoverScreen(
                         state = uiState.discoverState,
                         onAssetSelected = { assetId -> selectedAssetId = assetId }
@@ -276,6 +280,13 @@ fun NeverZeroApp(
                         onSaveTimeCapsuleReflection = onSaveTimeCapsuleReflection
                     )
                 }
+            }
+
+            // Skill Paths Overlay
+            if (showSkillPaths) {
+                com.productivitystreak.ui.screens.skills.SkillPathsScreen(
+                    onBack = { showSkillPaths = false }
+                )
             }
 
             if (isSheetVisible) {

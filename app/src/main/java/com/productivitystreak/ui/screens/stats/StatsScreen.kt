@@ -62,7 +62,8 @@ import kotlin.math.absoluteValue
 fun StatsScreen(
     statsState: StatsState,
     modifier: Modifier = Modifier,
-    onLeaderboardEntrySelected: (LeaderboardEntry) -> Unit = {}
+    onLeaderboardEntrySelected: (LeaderboardEntry) -> Unit = {},
+    onNavigateToSkillPaths: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -88,6 +89,9 @@ fun StatsScreen(
         statsState.averageDailyTrend?.let {
             StreakTrendCard(trend = it)
         }
+
+        // Skill Paths Entry
+        SkillPathsEntryCard(onClick = onNavigateToSkillPaths)
 
         if (statsState.habitBreakdown.isNotEmpty()) {
             BreakdownRow(breakdown = statsState.habitBreakdown)
@@ -675,3 +679,41 @@ private fun HeatMapGrid(heatMap: CalendarHeatMap) {
     }
 }
 
+@Composable
+private fun SkillPathsEntryCard(onClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = "Skill Paths & Badges",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Level up your habits",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Icon(
+                imageVector = com.productivitystreak.ui.icons.AppIcons.Crown,
+                contentDescription = "Go to Skill Paths",
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+    }
+}

@@ -42,8 +42,10 @@ import com.productivitystreak.ui.theme.*
 
 @Composable
 fun RescueProtocolDialog(
+    endangeredStreakName: String = "your habit",
+    currentStreak: Int = 0,
     onDismiss: () -> Unit,
-    onAccept: () -> Unit
+    onQuickAction: () -> Unit
 ) {
     Dialog(
         onDismissRequest = onDismiss,
@@ -133,7 +135,7 @@ fun RescueProtocolDialog(
 
                 // Supporting message
                 Text(
-                    text = "Commit to just 1 minute of focused work right now to save your streak.",
+                    text = "Your ${currentStreak}-day streak for \"$endangeredStreakName\" is at risk. Commit to just 1 minute of focused work right now to save it.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,
@@ -144,8 +146,8 @@ fun RescueProtocolDialog(
 
                 // Action buttons
                 PillButton(
-                    text = "I'll Do 1 Minute",
-                    onClick = onAccept,
+                    text = "Log 1-Min Action",
+                    onClick = onQuickAction,
                     modifier = Modifier.fillMaxWidth(),
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary

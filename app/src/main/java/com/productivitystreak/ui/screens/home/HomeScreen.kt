@@ -73,11 +73,21 @@ fun HomeScreen(
     var showRescueDialog by remember { mutableStateOf(false) }
 
     if (showRescueDialog) {
+        // Find the first incomplete streak for rescue
+        val endangeredStreak = uiState.streaks.firstOrNull { streak ->
+            streak.history.lastOrNull()?.metGoal == false
+        }
+        
         RescueProtocolDialog(
+            endangeredStreakName = endangeredStreak?.name ?: "your habit",
+            currentStreak = endangeredStreak?.currentCount ?: 0,
             onDismiss = { showRescueDialog = false },
-            onAccept = {
+            onQuickAction = {
                 showRescueDialog = false
-                // TODO: Add logic to mark a "mini-win" or log the rescue
+                // Mark today's record as "rescued" for the first incomplete streak
+                endangeredStreak?.let { streak ->
+                    onSimulateTask(streak.id, 1) // Log minimal progress
+                }
             }
         )
     }
