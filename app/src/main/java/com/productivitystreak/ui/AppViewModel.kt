@@ -299,14 +299,25 @@ class AppViewModel(
     }
 
     private fun observeStreaks() {
+        // Observe streak data and update UI state, including skill-paths
         viewModelScope.launch {
             try {
                 streakRepository.observeStreaks().collectLatest { streaks ->
+                    val stats = withContext(Dispatchers.Default) {
+                        buildStatsStateFromStreaks(streaks)
+                    }
+                    val skillPaths = withContext(Dispatchers.Default) {
+                        com.productivitystreak.ui.utils.SkillPathsHelper.computeSkillPathsState(streaks)
+                    }
+
                     _uiState.update { state ->
+                        val selectedId = state.selectedStreakId ?: streaks.firstOrNull()?.id
                         state.copy(
                             streaks = streaks,
+                            selectedStreakId = selectedId,
                             todayTasks = buildTasksForStreaks(streaks),
-                            statsState = buildStatsStateFromStreaks(streaks)
+                            statsState = stats,
+                            skillPathsState = skillPaths
                         )
                     }
                 }
