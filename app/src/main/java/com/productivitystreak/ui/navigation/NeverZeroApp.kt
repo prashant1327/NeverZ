@@ -82,84 +82,45 @@ enum class MainDestination { HOME, STATS, DISCOVER, PROFILE }
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NeverZeroApp(
-    uiState: AppUiState,
-    onRefreshQuote: () -> Unit,
-    onSelectStreak: (String) -> Unit,
-    onToggleTask: (String) -> Unit,
-    onAddOneOffTask: (String) -> Unit,
-    onToggleOneOffTask: (String) -> Unit,
-    onDeleteOneOffTask: (String) -> Unit,
-    onSimulateTaskCompletion: (String, Int) -> Unit,
-    onLogReadingProgress: (Int) -> Unit,
-    onAddVocabularyWord: (String, String, String?) -> Unit,
-    onToggleOnboardingCategory: (String) -> Unit,
-    onSetOnboardingGoal: (String) -> Unit,
-    onSetOnboardingCommitment: (Int, Int) -> Unit,
-    onNextOnboardingStep: () -> Unit,
-    onPreviousOnboardingStep: () -> Unit,
-    onToggleOnboardingNotifications: (Boolean) -> Unit,
-    onSetOnboardingReminderTime: (String) -> Unit,
-    onCompleteOnboarding: () -> Unit,
-    onDismissOnboarding: () -> Unit,
-    onToggleNotifications: (Boolean) -> Unit,
-    onChangeReminderFrequency: (com.productivitystreak.ui.state.profile.ReminderFrequency) -> Unit,
-    onToggleWeeklySummary: (Boolean) -> Unit,
-    onChangeTheme: (com.productivitystreak.ui.state.profile.ProfileTheme) -> Unit,
-    onToggleHaptics: (Boolean) -> Unit,
-    onSettingsThemeChange: (com.productivitystreak.ui.state.settings.ThemeMode) -> Unit = {},
-    onSettingsDailyRemindersToggle: (Boolean) -> Unit = {},
-    onSettingsWeeklyBackupsToggle: (Boolean) -> Unit = {},
-    onSettingsReminderTimeChange: (String) -> Unit = {},
-    onSettingsHapticFeedbackToggle: (Boolean) -> Unit = {},
-    onSettingsCreateBackup: () -> Unit = {},
-    onSettingsRestoreBackup: () -> Unit = {},
-    onSettingsRestoreFileSelected: (Uri) -> Unit = {},
-    onSettingsDismissRestoreDialog: () -> Unit = {},
-    onSettingsDismissMessage: () -> Unit = {},
-    onAssetConsumed: (String) -> Unit = {},
-    onAssetTestPassed: (String) -> Unit = {},
-    onCreateTimeCapsule: (message: String, goal: String, daysFromNow: Int) -> Unit = { _, _, _ -> },
-    onSaveTimeCapsuleReflection: (id: String, reflection: String) -> Unit = { _, _ -> },
-    onDismissUiMessage: () -> Unit,
-    onOpenAddEntry: () -> Unit,
-    onAddButtonTapped: () -> Unit,
-    onDismissAddMenu: () -> Unit,
-    onAddEntrySelected: (AddEntryType) -> Unit,
-    onDismissAddForm: () -> Unit,
-    onSubmitHabit: (name: String, goal: Int, unit: String, category: String, color: String?, icon: String?) -> Unit,
-    onSubmitWord: (word: String, definition: String, example: String?) -> Unit,
-    onSubmitJournal: (mood: Int, notes: String, highlights: String?, gratitude: String?, tomorrowGoals: String?) -> Unit,
-    onRequestNotificationPermission: () -> Unit,
-    onRequestExactAlarmPermission: () -> Unit
+    appViewModel: com.productivitystreak.ui.AppViewModel,
+    viewModelFactory: androidx.lifecycle.ViewModelProvider.Factory
 ) {
+    val uiState by androidx.lifecycle.compose.collectAsStateWithLifecycle(appViewModel.uiState)
+    
+    // Feature ViewModels
+    val streakViewModel: com.productivitystreak.ui.screens.stats.StreakViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = viewModelFactory)
+    val profileViewModel: com.productivitystreak.ui.screens.profile.ProfileViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = viewModelFactory)
+    val discoverViewModel: com.productivitystreak.ui.screens.discover.DiscoverViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = viewModelFactory)
+    val onboardingViewModel: com.productivitystreak.ui.screens.onboarding.OnboardingViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = viewModelFactory)
+    
+    // We need these for the Add Menu
+    val vocabularyViewModel: com.productivitystreak.ui.screens.vocabulary.VocabularyViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = viewModelFactory)
+    val journalViewModel: com.productivitystreak.ui.screens.journal.JournalViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = viewModelFactory)
+    val readingViewModel: com.productivitystreak.ui.screens.reading.ReadingViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = viewModelFactory)
+
     val haptics = LocalHapticFeedback.current
 
     // FTUE: Immersive onboarding flow
-    if (uiState.showOnboarding == true) {
+    val showOnboarding by androidx.lifecycle.compose.collectAsStateWithLifecycle(onboardingViewModel.showOnboarding)
+    if (showOnboarding) {
+        val onboardingState by androidx.lifecycle.compose.collectAsStateWithLifecycle(onboardingViewModel.uiState)
         OnboardingFlow(
-            uiState = uiState,
-            onToggleOnboardingCategory = onToggleOnboardingCategory,
-            onSetOnboardingGoal = onSetOnboardingGoal,
-            onSetOnboardingCommitment = onSetOnboardingCommitment,
-            onNextStep = onNextOnboardingStep,
-            onPreviousStep = onPreviousOnboardingStep,
-            onToggleNotificationsAllowed = onToggleOnboardingNotifications,
-            onSetReminderTime = onSetOnboardingReminderTime,
-            onCompleteOnboarding = onCompleteOnboarding,
-            onDismissOnboarding = onDismissOnboarding,
-            onRequestNotificationPermission = onRequestNotificationPermission,
-            onRequestExactAlarmPermission = onRequestExactAlarmPermission
+            uiState = onboardingState,
+            onToggleOnboardingCategory = onboardingViewModel::onToggleOnboardingCategory,
+            onSetOnboardingGoal = onboardingViewModel::onSetOnboardingGoal,
+            onSetOnboardingCommitment = onboardingViewModel::onSetOnboardingCommitment,
+            onNextStep = onboardingViewModel::onNextOnboardingStep,
+            onPreviousStep = onboardingViewModel::onPreviousOnboardingStep,
+            onToggleNotificationsAllowed = onboardingViewModel::onToggleOnboardingNotifications,
+            onSetReminderTime = onboardingViewModel::onSetOnboardingReminderTime,
+            onCompleteOnboarding = { onboardingViewModel.onCompleteOnboarding(uiState.userName) },
+            onDismissOnboarding = { /* handled by state */ },
+            onRequestNotificationPermission = appViewModel::onShowNotificationPermissionDialog,
+            onRequestExactAlarmPermission = appViewModel::onShowAlarmPermissionDialog
         )
         return
-    } else if (uiState.showOnboarding == null) {
-        // Loading state - show splash or empty surface
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            Box(contentAlignment = Alignment.Center) {
-                // Optional: Add Logo or Loading Indicator here
-            }
-        }
-        return
     }
+
 
     val snackbarHostState = remember { SnackbarHostState() }
     val uiMessage = uiState.uiMessage
@@ -179,6 +140,7 @@ fun NeverZeroApp(
     var currentDestination by rememberSaveable { mutableStateOf(MainDestination.HOME) }
     var selectedAssetId by rememberSaveable { mutableStateOf<String?>(null) }
     var showSkillPaths by rememberSaveable { mutableStateOf(false) }
+    var showTemplates by rememberSaveable { mutableStateOf(false) }
 
     val addUi = uiState.addUiState
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -332,8 +294,27 @@ fun NeverZeroApp(
                             isSubmitting = addUi.isSubmitting,
                             onSubmit = onSubmitJournal
                         )
+                        AddEntryType.TEMPLATE -> {
+                            // Close sheet and navigate to templates
+                            LaunchedEffect(Unit) {
+                                onDismissAddMenu()
+                                showTemplates = true
+                            }
+                        }
                     }
                 }
+            }
+
+            // Templates Screen Overlay
+            if (showTemplates) {
+                com.productivitystreak.ui.screens.templates.TemplatesScreen(
+                    viewModel = appViewModel,
+                    onNavigateBack = { showTemplates = false },
+                    onImportTemplate = { template ->
+                        appViewModel.importTemplate(template)
+                        showTemplates = false
+                    }
+                )
             }
 
             val selectedAsset = selectedAssetId?.let { id ->

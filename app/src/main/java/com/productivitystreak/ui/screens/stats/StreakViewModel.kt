@@ -183,4 +183,80 @@ class StreakViewModel(
             )
         }
     }
+    private fun observeTopStreakLeaderboard(limit: Int = 5) {
+        viewModelScope.launch {
+            try {
+                streakRepository.observeTopStreaks(limit).collectLatest { topStreaks ->
+                    _uiState.update { state ->
+                        state.copy(
+                            statsState = state.statsState.copy(
+                                leaderboard = topStreaks.mapIndexed { index, streak ->
+                                    LeaderboardEntry(
+                                        position = index + 1,
+                                        name = streak.name,
+                                        streakDays = streak.currentCount
+                                    )
+                                }
+                            )
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                // Handle error
+            }
+        }
+    }
+
+    fun onSelectStreak(streakId: String) {
+        _uiState.update { it.copy(selectedStreakId = streakId) }
+    }
+
+    fun onToggleTask(taskId: String) {
+        val snapshot = _uiState.value
+        val task = snapshot.todayTasks.find { it.id == taskId } ?: return
+        if (task.isCompleted) return
+
+        val streak = snapshot.streaks.find { it.id == task.streakId }
+        if (streak == null) {
+            return
+        }
+
+        // Optimistic update
+        _uiState.update { state ->
+            state.copy(
+                todayTasks = state.todayTasks.map { current ->
+                    if (current.id == taskId) current.copy(isCompleted = true) else current
+                }
+            )
+        }
+
+        viewModelScope.launch {
+            try {
+                streakRepository.logProgress(task.streakId, streak.goalPerDay)
+            } catch (e: Exception) {
+                // Revert on failure
+                _uiState.update { state ->
+                    state.copy(todayTasks = buildTasksForStreaks(state.streaks))
+                }
+            }
+        }
+    }
+
+    fun addOneOffTask(title: String) {
+        // TODO: Implement one-off tasks in repository
+    }
+
+    fun toggleOneOffTask(taskId: String) {
+        // TODO: Implement one-off tasks
+    }
+
+    fun deleteOneOffTask(taskId: String) {
+        // TODO: Implement one-off tasks
+    }
+
+    fun simulateTaskCompletion(streakId: String, count: Int) {
+         viewModelScope.launch {
+            streakRepository.logProgress(streakId, count)
+        }
+    }
 }

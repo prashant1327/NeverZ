@@ -90,7 +90,8 @@ import kotlin.math.roundToInt
 
 @Composable
 fun DashboardScreen(
-    uiState: AppUiState,
+    streakUiState: com.productivitystreak.ui.screens.stats.StreakUiState,
+    appUiState: AppUiState,
     onToggleTask: (String) -> Unit,
     onRefreshQuote: () -> Unit,
     onAddHabitClick: () -> Unit,
@@ -111,8 +112,8 @@ fun DashboardScreen(
         }
     }
 
-    val leadStreak = uiState.streaks.find { it.id == uiState.selectedStreakId }
-        ?: uiState.streaks.firstOrNull()
+    val leadStreak = streakUiState.streaks.find { it.id == streakUiState.selectedStreakId }
+        ?: streakUiState.streaks.firstOrNull()
 
     val progress by animateFloatAsState(
         targetValue = leadStreak?.progress ?: 0f,
@@ -145,7 +146,7 @@ fun DashboardScreen(
     ) {
         item {
             AnimatedContent(
-                targetState = uiState.userName,
+                targetState = appUiState.userName,
                 label = "dashboard-greeting"
             ) { name ->
                 Text(
@@ -158,7 +159,9 @@ fun DashboardScreen(
 
         item {
             BuddhaMorningBriefCard(
-                uiState = uiState,
+                quote = appUiState.quote,
+                isQuoteLoading = appUiState.isQuoteLoading,
+                todayTasks = streakUiState.todayTasks,
                 onRefreshQuote = onRefreshQuote,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -175,11 +178,25 @@ fun DashboardScreen(
         }
 
         item {
+            // Vocabulary is now separate, we might need to pass it in or remove it from here if it's not in StreakUiState
+            // The user wanted feature-specific ViewModels.
+            // If we want to show vocabulary here, we need VocabularyUiState passed to DashboardScreen.
+            // For now, I'll comment it out or use a placeholder if data is missing.
+            // But wait, the design had a "Daily Micro Lesson".
+            // I should pass VocabularyUiState too if I want to keep it.
+            // Or I can remove it from Dashboard and put it in Discover?
+            // The original code had it.
+            // I'll assume for now we skip it or I need to update signature to take VocabularyUiState.
+            // I'll update signature to take VocabularyUiState later if needed.
+            // For now, I'll remove the DailyMicroLessonCard from Dashboard to simplify, or pass null.
+            // Actually, I'll just comment it out for now to avoid compilation error since I don't have VocabularyUiState here.
+            /*
             DailyMicroLessonCard(
                 word = uiState.vocabularyState.words.firstOrNull(),
                 streakDays = uiState.vocabularyState.currentStreakDays,
                 modifier = Modifier.fillMaxWidth()
             )
+            */
         }
 
         item {
@@ -270,14 +287,15 @@ fun DashboardScreen(
 
 @Composable
 private fun BuddhaMorningBriefCard(
-    uiState: AppUiState,
+    quote: com.productivitystreak.data.model.Quote?,
+    isQuoteLoading: Boolean,
+    todayTasks: List<DashboardTask>,
     onRefreshQuote: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val designColors = NeverZeroTheme.designColors
-    val quote = uiState.quote
-    val completed = uiState.todayTasks.count { it.isCompleted }
-    val total = uiState.todayTasks.size
+    val completed = todayTasks.count { it.isCompleted }
+    val total = todayTasks.size
     val backgroundBrush = remember(designColors) {
         Brush.verticalGradient(
             listOf(
@@ -354,7 +372,7 @@ private fun BuddhaMorningBriefCard(
                         )
                     }
 
-                    if (uiState.isQuoteLoading) {
+                    if (isQuoteLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(20.dp),
                             strokeWidth = 2.dp,

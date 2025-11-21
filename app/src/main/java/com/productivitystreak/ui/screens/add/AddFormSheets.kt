@@ -122,14 +122,26 @@ fun AddEntryMenuSheet(
                 )
             }
             
-            // Row 2: Journal (full width)
-            CommandCenterCard(
-                icon = com.productivitystreak.ui.icons.AppIcons.AddJournal,
-                title = "Daily Journal",
-                subtitle = "Reflect and reset",
-                onClick = { onEntrySelected(AddEntryType.JOURNAL) },
+            // Row 2: Journal + Template
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) {
+                CommandCenterCard(
+                    icon = com.productivitystreak.ui.icons.AppIcons.AddJournal,
+                    title = "Daily Journal",
+                    subtitle = "Reflect & reset",
+                    onClick = { onEntrySelected(AddEntryType.JOURNAL) },
+                    modifier = Modifier.weight(1f)
+                )
+                CommandCenterCard(
+                    icon = Icons.Outlined.AutoGraph, // Using a generic icon for now, should be Template icon
+                    title = "Templates",
+                    subtitle = "Browse library",
+                    onClick = { onEntrySelected(AddEntryType.TEMPLATE) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }

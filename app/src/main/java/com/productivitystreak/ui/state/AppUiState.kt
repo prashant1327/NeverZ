@@ -64,4 +64,4 @@ data class AddUiState(
     val isSubmitting: Boolean = false
 )
 
-enum class AddEntryType { HABIT, WORD, JOURNAL }
+enum class AddEntryType { HABIT, WORD, JOURNAL, TEMPLATE }
