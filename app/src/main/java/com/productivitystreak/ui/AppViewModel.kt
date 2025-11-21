@@ -298,6 +298,24 @@ class AppViewModel(
         _uiState.update { it.copy(addUiState = AddUiState()) }
     }
 
+    private fun observeStreaks() {
+        viewModelScope.launch {
+            try {
+                streakRepository.observeStreaks().collectLatest { streaks ->
+                    _uiState.update { state ->
+                        state.copy(
+                            streaks = streaks,
+                            todayTasks = buildTasksForStreaks(streaks),
+                            statsState = buildStatsStateFromStreaks(streaks)
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("AppViewModel", "Error observing streaks", e)
+            }
+        }
+    }
+
     private fun showAddError(message: String) {
         pushUiMessage(message, type = UiMessageType.ERROR)
     }
@@ -1230,19 +1248,25 @@ class AppViewModel(
     }
 
     private fun observeLeaderboard() {
-        streakRepository.observeTopStreaks(5).collectLatest { topStreaks ->
-            _uiState.update { state ->
-                state.copy(
-                    statsState = state.statsState.copy(
-                        leaderboard = topStreaks.mapIndexed { index, streak ->
-                            LeaderboardEntry(
-                                position = index + 1,
-                                name = streak.name,
-                                streakDays = streak.currentCount
+        viewModelScope.launch {
+            try {
+                streakRepository.observeTopStreaks(5).collectLatest { topStreaks ->
+                    _uiState.update { state ->
+                        state.copy(
+                            statsState = state.statsState.copy(
+                                leaderboard = topStreaks.mapIndexed { index, streak ->
+                                    LeaderboardEntry(
+                                        position = index + 1,
+                                        name = streak.name,
+                                        streakDays = streak.currentCount
+                                    )
+                                }
                             )
-                        }
-                    )
-                )
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("AppViewModel", "Error observing leaderboard", e)
             }
         }
     }
