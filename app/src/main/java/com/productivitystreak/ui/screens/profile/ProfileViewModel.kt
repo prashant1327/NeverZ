@@ -203,7 +203,114 @@ class ProfileViewModel(
         )
     }
     
-    fun clearUiMessage() {
-        _uiState.update { it.copy(uiMessage = null) }
+    fun onSettingsThemeChange(mode: ThemeMode) {
+        val theme = when (mode) {
+            ThemeMode.LIGHT -> ProfileTheme.Light
+            ThemeMode.DARK -> ProfileTheme.Dark
+            ThemeMode.SYSTEM -> ProfileTheme.Auto
+        }
+        onChangeTheme(theme)
     }
-}
+
+    fun onSettingsDailyRemindersToggle(enabled: Boolean) {
+        onToggleNotifications(enabled)
+    }
+
+    fun onSettingsWeeklyBackupsToggle(enabled: Boolean) {
+        onToggleWeeklySummary(enabled)
+    }
+
+    fun onSettingsReminderTimeChange(time: String) {
+        viewModelScope.launch {
+            preferencesManager.setReminderTime(time)
+            _uiState.update { state ->
+                state.copy(settingsState = state.settingsState.copy(reminderTime = time))
+            }
+            if (_uiState.value.profileState.notificationEnabled) {
+                scheduleReminderForCurrentState()
+            }
+        }
+    }
+
+    fun onSettingsHapticFeedbackToggle(enabled: Boolean) {
+        onToggleHaptics(enabled)
+    }
+
+    fun onSettingsCreateBackup() {
+        // TODO: Implement backup creation
+        _uiState.update { it.copy(uiMessage = "Backup created (Simulated)") }
+    }
+
+    fun onSettingsRestoreBackup() {
+        // TODO: Show restore dialog
+    }
+
+    fun onSettingsRestoreFromFile(uri: android.net.Uri) {
+        // TODO: Implement restore from file
+        _uiState.update { it.copy(uiMessage = "Restore started (Simulated)") }
+    }
+
+    fun onSettingsDismissRestoreDialog() {
+        // TODO: Hide restore dialog
+    }
+
+    fun onSettingsDismissMessage() {
+        clearUiMessage()
+    }
+
+    fun onChangeReminderFrequency(frequency: ReminderFrequency) {
+        _uiState.update { state ->
+            state.copy(profileState = state.profileState.copy(reminderFrequency = frequency))
+        }
+        viewModelScope.launch {
+            val freqString = when (frequency) {
+                ReminderFrequency.Daily -> "daily"
+                ReminderFrequency.Weekly -> "weekly"
+                ReminderFrequency.None -> "none"
+            }
+            preferencesManager.setReminderFrequency(freqString)
+            if (_uiState.value.profileState.notificationEnabled) {
+                scheduleReminderForCurrentState()
+            }
+        }
+    }
+
+    fun onToggleWeeklySummary(enabled: Boolean) {
+        _uiState.update { state ->
+            state.copy(
+                profileState = state.profileState.copy(hasWeeklySummary = enabled),
+                settingsState = state.settingsState.copy(weeklyBackupsEnabled = enabled)
+            )
+        }
+        viewModelScope.launch {
+            preferencesManager.setWeeklySummaryEnabled(enabled)
+        }
+    }
+
+    fun onSaveTimeCapsuleReflection(id: String, reflection: String) {
+        viewModelScope.launch {
+            try {
+                timeCapsuleRepository.saveReflection(id, reflection)
+                _uiState.update { it.copy(uiMessage = "Reflection saved") }
+            } catch (e: Exception) {
+                Log.e("ProfileViewModel", "Error saving reflection", e)
+                _uiState.update { it.copy(uiMessage = "Error saving reflection") }
+            }
+        }
+    }
+
+    private fun scheduleReminderForCurrentState() {
+        val state = _uiState.value
+        if (!state.profileState.notificationEnabled) return
+
+        reminderScheduler.scheduleReminder(
+            frequency = state.profileState.reminderFrequency,
+            categories = state.profileState.activeCategories,
+            userName = state.userName
+        )
+    }
+
+    fun onSettingsDismissMessage() {
+        clearUiMessage()
+    }
+

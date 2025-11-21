@@ -217,49 +217,62 @@ fun NeverZeroApp(
                 label = "main-nav"
             ) { destination ->
                 when (destination) {
-                    MainDestination.HOME -> DashboardScreen(
-                        uiState = uiState,
-                        onToggleTask = onToggleTask,
-                        onRefreshQuote = onRefreshQuote,
-                        onAddHabitClick = onAddButtonTapped,
-                        onSelectStreak = onSelectStreak,
-                        onAddOneOffTask = onAddOneOffTask,
-                        onToggleOneOffTask = onToggleOneOffTask,
-                        onDeleteOneOffTask = onDeleteOneOffTask
-                    )
-                    MainDestination.STATS -> StatsScreen(
-                        statsState = uiState.statsState,
-                        onNavigateToSkillPaths = { showSkillPaths = true }
-                    )
-                    MainDestination.DISCOVER -> DiscoverScreen(
-                        state = uiState.discoverState,
-                        onAssetSelected = { assetId -> selectedAssetId = assetId }
-                    )
-                    MainDestination.PROFILE -> ProfileScreen(
-                        userName = uiState.userName,
-                        profileState = uiState.profileState,
-                        settingsState = uiState.settingsState,
-                        totalPoints = uiState.totalPoints,
-                        timeCapsules = uiState.timeCapsules,
-                        onSettingsThemeChange = onSettingsThemeChange,
-                        onSettingsDailyRemindersToggle = onSettingsDailyRemindersToggle,
-                        onSettingsWeeklyBackupsToggle = onSettingsWeeklyBackupsToggle,
-                        onSettingsReminderTimeChange = onSettingsReminderTimeChange,
-                        onSettingsHapticFeedbackToggle = onSettingsHapticFeedbackToggle,
-                        onSettingsCreateBackup = onSettingsCreateBackup,
-                        onSettingsRestoreBackup = onSettingsRestoreBackup,
-                        onSettingsRestoreFileSelected = onSettingsRestoreFileSelected,
-                        onSettingsDismissRestoreDialog = onSettingsDismissRestoreDialog,
-                        onSettingsDismissMessage = onSettingsDismissMessage,
-                        onToggleNotifications = onToggleNotifications,
-                        onChangeReminderFrequency = onChangeReminderFrequency,
-                        onToggleWeeklySummary = onToggleWeeklySummary,
-                        onToggleHaptics = onToggleHaptics,
-                        onRequestNotificationPermission = onRequestNotificationPermission,
-                        onRequestExactAlarmPermission = onRequestExactAlarmPermission,
-                        onCreateTimeCapsule = onCreateTimeCapsule,
-                        onSaveTimeCapsuleReflection = onSaveTimeCapsuleReflection
-                    )
+                    MainDestination.HOME -> {
+                        val streakState by androidx.lifecycle.compose.collectAsStateWithLifecycle(streakViewModel.uiState)
+                        DashboardScreen(
+                            streakUiState = streakState,
+                            appUiState = uiState,
+                            onToggleTask = streakViewModel::onToggleTask,
+                            onRefreshQuote = appViewModel::refreshQuote,
+                            onAddHabitClick = appViewModel::onAddButtonTapped,
+                            onSelectStreak = streakViewModel::onSelectStreak,
+                            onAddOneOffTask = streakViewModel::addOneOffTask,
+                            onToggleOneOffTask = streakViewModel::toggleOneOffTask,
+                            onDeleteOneOffTask = streakViewModel::deleteOneOffTask
+                        )
+                    }
+                    MainDestination.STATS -> {
+                        val streakState by androidx.lifecycle.compose.collectAsStateWithLifecycle(streakViewModel.uiState)
+                        StatsScreen(
+                            statsState = streakState.statsState,
+                            onNavigateToSkillPaths = { showSkillPaths = true }
+                        )
+                    }
+                    MainDestination.DISCOVER -> {
+                        val discoverState by androidx.lifecycle.compose.collectAsStateWithLifecycle(discoverViewModel.uiState)
+                        DiscoverScreen(
+                            state = discoverState,
+                            onAssetSelected = { assetId -> selectedAssetId = assetId }
+                        )
+                    }
+                    MainDestination.PROFILE -> {
+                        val profileState by androidx.lifecycle.compose.collectAsStateWithLifecycle(profileViewModel.uiState)
+                        ProfileScreen(
+                            userName = uiState.userName,
+                            profileState = profileState.profileState,
+                            settingsState = profileState.settingsState,
+                            totalPoints = uiState.totalPoints,
+                            timeCapsules = profileState.timeCapsules,
+                            onSettingsThemeChange = profileViewModel::onSettingsThemeChange,
+                            onSettingsDailyRemindersToggle = profileViewModel::onSettingsDailyRemindersToggle,
+                            onSettingsWeeklyBackupsToggle = profileViewModel::onSettingsWeeklyBackupsToggle,
+                            onSettingsReminderTimeChange = profileViewModel::onSettingsReminderTimeChange,
+                            onSettingsHapticFeedbackToggle = profileViewModel::onSettingsHapticFeedbackToggle,
+                            onSettingsCreateBackup = profileViewModel::onSettingsCreateBackup,
+                            onSettingsRestoreBackup = profileViewModel::onSettingsRestoreBackup,
+                            onSettingsRestoreFileSelected = profileViewModel::onSettingsRestoreFromFile,
+                            onSettingsDismissRestoreDialog = profileViewModel::onSettingsDismissRestoreDialog,
+                            onSettingsDismissMessage = profileViewModel::onSettingsDismissMessage,
+                            onToggleNotifications = profileViewModel::onToggleNotifications,
+                            onChangeReminderFrequency = profileViewModel::onChangeReminderFrequency,
+                            onToggleWeeklySummary = profileViewModel::onToggleWeeklySummary,
+                            onToggleHaptics = profileViewModel::onToggleHaptics,
+                            onRequestNotificationPermission = appViewModel::onShowNotificationPermissionDialog,
+                            onRequestExactAlarmPermission = appViewModel::onShowAlarmPermissionDialog,
+                            onCreateTimeCapsule = profileViewModel::onCreateTimeCapsule,
+                            onSaveTimeCapsuleReflection = profileViewModel::onSaveTimeCapsuleReflection
+                        )
+                    }
                 }
             }
 
