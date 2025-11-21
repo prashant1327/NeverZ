@@ -32,6 +32,7 @@ import com.productivitystreak.ui.theme.Spacing
 @Composable
 fun SkillPathsScreen(
     onBack: () -> Unit,
+    onPathSelected: (SkillPathProgress) -> Unit,
     paths: List<SkillPathProgress> = rememberDummySkillPaths(),
     modifier: Modifier = Modifier
 ) {
@@ -74,7 +75,7 @@ fun SkillPathsScreen(
             items(paths) { progress ->
                 SkillPathCard(
                     progress = progress,
-                    onClick = { /* TODO: Navigate to detail view */ }
+                    onClick = { onPathSelected(progress) }
                 )
             }
         }

@@ -304,7 +304,9 @@ fun NeverZeroApp(
             // Skill Paths Overlay
             if (showSkillPaths) {
                 com.productivitystreak.ui.screens.skills.SkillPathsScreen(
-                    onBack = { showSkillPaths = false }
+                    onBack = { showSkillPaths = false },
+                    onPathSelected = { /* TODO: show skill-path detail */ },
+                    paths = uiState.skillPathsState.pathsProgress
                 )
             }
 

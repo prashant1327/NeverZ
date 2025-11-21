@@ -817,6 +817,15 @@ class AppViewModel(
             try {
                 val snapshot = _uiState.value
                 
+                val lastActivityDate = snapshot.streaks
+                    .asSequence()
+                    .flatMap { it.history.asSequence() }
+                    .filter { it.completed > 0 }
+                    .mapNotNull { record ->
+                        runCatching { java.time.LocalDate.parse(record.date) }.getOrNull()
+                    }
+                    .maxOrNull()
+
                 // Build UserContext from current app state
                 val userContext = com.productivitystreak.data.model.UserContext(
                     userName = snapshot.userName,
@@ -824,7 +833,7 @@ class AppViewModel(
                     totalTasksToday = snapshot.todayTasks.size,
                     completedTasksToday = snapshot.todayTasks.count { it.isCompleted },
                     timeOfDay = java.time.LocalTime.now(),
-                    lastActivityDate = java.time.LocalDate.now(), // TODO: Track actual last activity
+                    lastActivityDate = lastActivityDate,
                     totalPoints = snapshot.totalPoints
                 )
                 

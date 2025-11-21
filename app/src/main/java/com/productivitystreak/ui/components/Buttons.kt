@@ -70,6 +70,7 @@ private object NeverZeroButtonDefaults {
         vertical = Spacing.sm
     )
 
+    @Composable
     fun glowModifier(glowAlpha: Float, shape: Shape): Modifier = Modifier.shadow(
         elevation = 18.dp,
         shape = shape,
@@ -79,6 +80,7 @@ private object NeverZeroButtonDefaults {
     )
 }
 
+@Composable
 private fun Modifier.neverZeroButtonBackground(
     brush: Brush,
     borderColor: Color,
