@@ -115,20 +115,15 @@ private fun LeaderboardSection(
 
     var selectedPosition by remember { mutableStateOf<Int?>(null) }
 
-    Card(
+    com.productivitystreak.ui.components.ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        onClick = {} // Non-clickable container
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(com.productivitystreak.ui.theme.Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(com.productivitystreak.ui.theme.Spacing.md)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -168,7 +163,7 @@ private fun LeaderboardSection(
             }
             
             Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(com.productivitystreak.ui.theme.Spacing.sm)
             ) {
                 entries
                     .sortedBy { it.position }
@@ -407,56 +402,25 @@ private fun StatisticCard(
     subtitle: String,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = value,
-                style = MaterialTheme.typography.displaySmall,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
-    }
+    com.productivitystreak.ui.components.StatCard(
+        title = title,
+        value = value,
+        subtitle = subtitle,
+        modifier = modifier
+    )
 }
 
 @Composable
 private fun StreakTrendCard(trend: AverageDailyTrend) {
-    Card(
+    com.productivitystreak.ui.components.ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        onClick = {}
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(com.productivitystreak.ui.theme.Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(com.productivitystreak.ui.theme.Spacing.md)
         ) {
             Text(
                 text = "Consistency over time",
@@ -467,7 +431,7 @@ private fun StreakTrendCard(trend: AverageDailyTrend) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(com.productivitystreak.ui.theme.Spacing.sm))
             TrendChart(trend = trend)
         }
     }
@@ -597,18 +561,14 @@ private fun HabitBreakdownCard(item: HabitBreakdown) {
         }
     }
 
-    Card(
-        shape = RoundedCornerShape(22.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    com.productivitystreak.ui.components.FilledCard(
+        modifier = Modifier.size(width = 180.dp, height = 120.dp),
+        onClick = {}
     ) {
         Column(
             modifier = Modifier
-                .size(width = 180.dp, height = 120.dp)
-                .padding(14.dp),
+                .fillMaxSize()
+                .padding(com.productivitystreak.ui.theme.Spacing.md),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
@@ -641,20 +601,15 @@ private fun HabitBreakdownCard(item: HabitBreakdown) {
 
 @Composable
 private fun HeatMapCard(heatMap: CalendarHeatMap) {
-    Card(
+    com.productivitystreak.ui.components.ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-            contentColor = MaterialTheme.colorScheme.onSurface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        onClick = {}
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(com.productivitystreak.ui.theme.Spacing.md),
+            verticalArrangement = Arrangement.spacedBy(com.productivitystreak.ui.theme.Spacing.md)
         ) {
             Text(
                 text = "Streak calendar",
@@ -665,7 +620,7 @@ private fun HeatMapCard(heatMap: CalendarHeatMap) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(com.productivitystreak.ui.theme.Spacing.sm))
             HeatMapGrid(heatMap)
         }
     }

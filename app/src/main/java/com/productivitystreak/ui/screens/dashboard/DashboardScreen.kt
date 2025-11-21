@@ -466,9 +466,6 @@ private fun DashboardEmptyState(onAddHabitClick: () -> Unit) {
         }
     }
 }
-        }
-    }
-}
 
 @Composable
 private fun SoftPrimaryButton(

@@ -50,7 +50,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.foundation.layout.offset
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -333,27 +336,27 @@ private fun NeverZeroBottomBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = com.productivitystreak.ui.theme.Spacing.md, vertical = com.productivitystreak.ui.theme.Spacing.sm),
         contentAlignment = Alignment.BottomCenter
     ) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth()
                 .blur(20.dp),
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-            tonalElevation = 6.dp,
-            shape = RoundedCornerShape(26.dp)
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+            tonalElevation = com.productivitystreak.ui.theme.Elevation.level2,
+            shape = com.productivitystreak.ui.theme.Shapes.extraLarge
         ) {}
 
         Surface(
             modifier = Modifier.fillMaxWidth(),
             color = Color.Transparent,
-            shape = RoundedCornerShape(26.dp)
+            shape = com.productivitystreak.ui.theme.Shapes.extraLarge
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                    .padding(horizontal = com.productivitystreak.ui.theme.Spacing.lg, vertical = com.productivitystreak.ui.theme.Spacing.sm),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -370,21 +373,12 @@ private fun NeverZeroBottomBar(
                     onClick = { onDestinationSelected(MainDestination.STATS) }
                 )
 
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .shadow(18.dp, CircleShape, clip = false)
-                        .clip(CircleShape)
-                        .background(NeverZeroTheme.gradientColors.PremiumStart)
-                        .clickable(onClick = onAddTapped),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Add,
-                        contentDescription = "Add",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
+                com.productivitystreak.ui.components.StyledFAB(
+                    icon = Icons.Outlined.Add,
+                    onClick = onAddTapped,
+                    containerColor = NeverZeroTheme.gradientColors.PremiumStart,
+                    contentColor = MaterialTheme.colorScheme.onPrimary
+                )
 
                 NavItem(
                     icon = Icons.Outlined.Search,
@@ -410,10 +404,21 @@ private fun NavItem(
     selected: Boolean,
     onClick: () -> Unit
 ) {
+    val scale by androidx.compose.animation.core.animateFloatAsState(
+        targetValue = if (selected) 1.1f else 1f,
+        label = "scale"
+    )
+    
+    val color by androidx.compose.animation.animateColorAsState(
+        targetValue = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+        label = "color"
+    )
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = Modifier
+            .scale(scale)
             .clip(RoundedCornerShape(999.dp))
             .clickable(onClick = onClick)
             .padding(horizontal = 4.dp, vertical = 2.dp)
@@ -421,15 +426,16 @@ private fun NavItem(
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+            tint = color
         )
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmall,
-            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+            color = color,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            fontSize = 11.sp
+            fontSize = 11.sp,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
         )
     }
 }

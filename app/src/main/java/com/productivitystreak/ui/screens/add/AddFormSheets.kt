@@ -112,18 +112,15 @@ private fun AddMenuCard(
     subtitle: String,
     onClick: () -> Unit
 ) {
-    androidx.compose.material3.Surface(
+    com.productivitystreak.ui.components.InteractiveCard(
         modifier = Modifier.fillMaxWidth(),
-        tonalElevation = 3.dp,
-        shape = RoundedCornerShape(24.dp),
-        onClick = onClick,
-        color = MaterialTheme.colorScheme.surface
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+                .padding(com.productivitystreak.ui.theme.Spacing.lg),
+            verticalArrangement = Arrangement.spacedBy(com.productivitystreak.ui.theme.Spacing.sm)
         ) {
             Text(text = title, style = MaterialTheme.typography.titleMedium)
             Text(
@@ -149,36 +146,36 @@ fun HabitFormSheet(
     var frequency by remember { mutableStateOf("Daily") }
 
     AddSheetContainer(title = "New habit", subtitle = "Craft a clear target and give it a friendly face.") {
-        OutlinedTextField(
+        com.productivitystreak.ui.components.StyledTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Habit name") },
+            label = "Habit name",
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth()
         )
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-            OutlinedTextField(
+            com.productivitystreak.ui.components.StyledTextField(
                 value = goalText,
                 onValueChange = { value -> if (value.length <= 3 && value.all { it.isDigit() }) goalText = value },
-                label = { Text("Goal") },
+                label = "Goal",
                 singleLine = true,
                 modifier = Modifier.weight(1f)
             )
-            OutlinedTextField(
+            com.productivitystreak.ui.components.StyledTextField(
                 value = unit,
                 onValueChange = { unit = it },
-                label = { Text("Unit") },
+                label = "Unit",
                 singleLine = true,
                 modifier = Modifier.weight(1f)
             )
         }
 
-        OutlinedTextField(
+        com.productivitystreak.ui.components.StyledTextField(
             value = category,
             onValueChange = { category = it },
-            label = { Text("Category") },
+            label = "Category",
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
@@ -198,7 +195,8 @@ fun HabitFormSheet(
         FrequencyRow(selected = frequency, onSelect = { frequency = it })
 
         val goal = goalText.toIntOrNull()?.coerceAtLeast(1) ?: 1
-        Button(
+        com.productivitystreak.ui.components.PrimaryButton(
+            text = if (isSubmitting) "Saving…" else "Save habit",
             onClick = {
                 onSubmit(
                     name.trim(),
@@ -210,11 +208,8 @@ fun HabitFormSheet(
                 )
             },
             enabled = !isSubmitting && name.isNotBlank(),
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-        ) {
-            Text(if (isSubmitting) "Saving…" else "Save habit")
-        }
+            modifier = Modifier.fillMaxWidth()
+        )
     }
 }
 
@@ -229,35 +224,34 @@ fun VocabularyFormSheet(
     var example by remember { mutableStateOf("") }
 
     AddSheetContainer(title = "Log word", subtitle = "Store the word, context, and meaning so it sticks.") {
-        OutlinedTextField(
+        com.productivitystreak.ui.components.StyledTextField(
             value = word,
             onValueChange = { word = it },
-            label = { Text("Word") },
+            label = "Word",
             singleLine = true,
             modifier = Modifier.fillMaxWidth()
         )
-        OutlinedTextField(
+        com.productivitystreak.ui.components.MultilineTextField(
             value = definition,
             onValueChange = { definition = it },
-            label = { Text("Definition") },
+            label = "Definition",
             modifier = Modifier.fillMaxWidth(),
             minLines = 2
         )
-        OutlinedTextField(
+        com.productivitystreak.ui.components.MultilineTextField(
             value = example,
             onValueChange = { example = it },
-            label = { Text("Example sentence (optional)") },
+            label = "Example sentence (optional)",
             modifier = Modifier.fillMaxWidth(),
             minLines = 2
         )
 
-        Button(
+        com.productivitystreak.ui.components.PrimaryButton(
+            text = if (isSubmitting) "Saving…" else "Save word",
             onClick = { onSubmit(word.trim(), definition.trim(), example.trim().ifBlank { null }) },
             enabled = !isSubmitting && word.isNotBlank() && definition.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(if (isSubmitting) "Saving…" else "Save word")
-        }
+        )
     }
 }
 
@@ -322,7 +316,8 @@ fun JournalFormSheet(
         JournalField(value = gratitude, onValueChange = { gratitude = it }, label = "Gratitude (optional)")
         JournalField(value = tomorrowGoals, onValueChange = { tomorrowGoals = it }, label = "Tomorrow’s focus (optional)")
 
-        Button(
+        com.productivitystreak.ui.components.PrimaryButton(
+            text = if (isSubmitting) "Saving…" else "Save entry",
             onClick = {
                 onSubmit(
                     mood.toInt(),
@@ -334,9 +329,7 @@ fun JournalFormSheet(
             },
             enabled = !isSubmitting && notes.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(if (isSubmitting) "Saving…" else "Save entry")
-        }
+        )
     }
 }
 
@@ -443,19 +436,12 @@ private fun JournalField(
     label: String,
     minLines: Int = 2
 ) {
-    OutlinedTextField(
+    com.productivitystreak.ui.components.MultilineTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp)),
-        minLines = minLines,
-        shape = RoundedCornerShape(24.dp),
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.surface,
-            unfocusedContainerColor = MaterialTheme.colorScheme.surface
-        )
+        label = label,
+        modifier = Modifier.fillMaxWidth(),
+        minLines = minLines
     )
 }
 

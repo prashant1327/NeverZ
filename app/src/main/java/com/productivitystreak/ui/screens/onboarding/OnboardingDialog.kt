@@ -108,13 +108,13 @@ fun OnboardingFlow(
                     )
                 )
             )
-            .padding(horizontal = 20.dp, vertical = 24.dp)
+            .padding(horizontal = com.productivitystreak.ui.theme.Spacing.lg, vertical = com.productivitystreak.ui.theme.Spacing.xl)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(com.productivitystreak.ui.theme.Spacing.lg)) {
                 StepHeader(currentStep = onboarding.currentStep, totalSteps = onboarding.totalSteps)
 
                 AnimatedContent(
@@ -798,40 +798,34 @@ private fun QuantitySelector(
 ) {
     Row(
         modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(com.productivitystreak.ui.theme.Spacing.sm),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FilledTonalIconButton(
+        com.productivitystreak.ui.components.FilledIconButton(
+            icon = Icons.Outlined.Remove,
             onClick = {
                 val newValue = (value - 1).coerceAtLeast(min)
                 if (newValue != value) onValueChange(newValue)
             },
-            enabled = value > min
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Remove,
-                contentDescription = "Decrease"
-            )
-        }
+            enabled = value > min,
+            contentDescription = "Decrease"
+        )
 
         Text(
             text = value.toString(),
             style = MaterialTheme.typography.titleMedium
         )
 
-        FilledTonalIconButton(
+        com.productivitystreak.ui.components.FilledIconButton(
+            icon = Icons.Outlined.Add,
             onClick = {
                 val upper = max ?: Int.MAX_VALUE
                 val newValue = (value + 1).coerceAtMost(upper)
                 if (newValue != value) onValueChange(newValue)
             },
-            enabled = max?.let { value < it } ?: true
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.Add,
-                contentDescription = "Increase"
-            )
-        }
+            enabled = max?.let { value < it } ?: true,
+            contentDescription = "Increase"
+        )
     }
 }
 
@@ -850,14 +844,17 @@ private fun PermissionDialog(
             )
         },
         confirmButton = {
-            TextButton(onClick = onAllow) {
-                Text("Allow reminders")
-            }
+            com.productivitystreak.ui.components.StyledTextButton(
+                text = "Allow reminders",
+                onClick = onAllow
+            )
         },
         dismissButton = {
-            TextButton(onClick = onSkip) {
-                Text("Not now")
-            }
+            com.productivitystreak.ui.components.StyledTextButton(
+                text = "Not now",
+                onClick = onSkip,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     )
 }
@@ -874,50 +871,25 @@ private fun OnboardingFooter(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 24.dp),
+            .padding(top = com.productivitystreak.ui.theme.Spacing.xl),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (canGoBack) {
-            Text(
+            com.productivitystreak.ui.components.StyledTextButton(
                 text = "Back",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f),
-                modifier = Modifier.clickable(onClick = onBack)
+                onClick = onBack,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
             )
         } else {
-            Spacer(modifier = Modifier.width(40.dp))
+            Spacer(modifier = Modifier.width(com.productivitystreak.ui.theme.Spacing.xxl))
         }
 
         val primaryLabel = if (isFinalStep) "Finish" else "Continue"
-        PrimaryOnboardingButton(text = primaryLabel, onClick = onPrimaryClick)
-    }
-}
-
-@Composable
-private fun PrimaryOnboardingButton(
-    text: String,
-    onClick: () -> Unit
-) {
-    var pressed by remember { mutableStateOf(false) }
-    Button(
-        onClick = {
-            pressed = true
-            onClick()
-            pressed = false
-        },
-        shape = RoundedCornerShape(999.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = MaterialTheme.colorScheme.onPrimary
-        ),
-        modifier = Modifier
-            .height(48.dp)
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.SemiBold
+        com.productivitystreak.ui.components.PrimaryButton(
+            text = primaryLabel,
+            onClick = onPrimaryClick,
+            modifier = Modifier.width(140.dp)
         )
     }
 }
