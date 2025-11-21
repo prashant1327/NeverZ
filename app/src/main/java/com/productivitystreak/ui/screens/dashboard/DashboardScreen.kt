@@ -239,7 +239,7 @@ fun DashboardScreen(
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Default.Add,
+                        imageVector = androidx.compose.material.icons.Icons.Filled.Add,
                         contentDescription = "Add Task",
                         tint = MaterialTheme.colorScheme.primary
                     )
@@ -1007,7 +1007,6 @@ private fun hexToColor(hex: String, fallback: Color): Color {
     }
 }
 
-
 @Composable
 private fun OneOffTaskRow(
     task: com.productivitystreak.data.model.Task,
@@ -1046,7 +1045,7 @@ private fun OneOffTaskRow(
 
             IconButton(onClick = onDelete, modifier = Modifier.size(20.dp)) {
                 Icon(
-                    imageVector = androidx.compose.material.icons.Icons.Default.Delete,
+                    imageVector = androidx.compose.material.icons.Icons.Filled.Delete,
                     contentDescription = "Delete",
                     tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
                 )
