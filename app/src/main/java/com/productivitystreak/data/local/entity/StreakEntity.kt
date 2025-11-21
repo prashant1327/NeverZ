@@ -1,12 +1,19 @@
 package com.productivitystreak.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.productivitystreak.data.model.Streak
 import com.productivitystreak.data.model.StreakDayRecord
 
-@Entity(tableName = "streaks")
+@Entity(
+    tableName = "streaks",
+    indices = [
+        Index(value = ["isArchived", "lastUpdated"]),
+        Index(value = ["category", "isArchived"])
+    ]
+)
 @TypeConverters(Converters::class)
 data class StreakEntity(
     @PrimaryKey

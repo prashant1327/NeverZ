@@ -1,10 +1,18 @@
 package com.productivitystreak.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 
-@Entity(tableName = "vocabulary_words")
+@Entity(
+    tableName = "vocabulary_words",
+    indices = [
+        Index(value = ["masteryLevel", "lastReviewedAt", "timesReviewed"]),
+        Index(value = ["word"]),
+        Index(value = ["createdAt"])
+    ]
+)
 @TypeConverters(Converters::class)
 data class VocabularyWordEntity(
     @PrimaryKey(autoGenerate = true)

@@ -1,9 +1,17 @@
 package com.productivitystreak.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "books")
+@Entity(
+    tableName = "books",
+    indices = [
+        Index(value = ["isArchived", "createdAt"]),
+        Index(value = ["isArchived", "finishedAt"]),
+        Index(value = ["isArchived", "startedAt"])
+    ]
+)
 data class BookEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
