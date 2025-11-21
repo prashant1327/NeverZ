@@ -75,16 +75,16 @@ fun FilledCard(
             modifier = modifier,
             enabled = enabled,
             shape = shape,
-            colors = CardDefaults.filledCardColors(),
-            elevation = CardDefaults.filledCardElevation(),
+            colors = CardDefaults.cardColors(),
+            elevation = CardDefaults.cardElevation(),
             content = content
         )
     } else {
         Card(
             modifier = modifier,
             shape = shape,
-            colors = CardDefaults.filledCardColors(),
-            elevation = CardDefaults.filledCardElevation(),
+            colors = CardDefaults.cardColors(),
+            elevation = CardDefaults.cardElevation(),
             content = content
         )
     }
@@ -194,7 +194,6 @@ fun GradientCard(
                 .fillMaxWidth()
                 .drawWithContent {
                     drawRect(gradient)
-                    drawContent()
                 }
         ) {
             content()
@@ -299,7 +298,8 @@ private fun ColumnScope.StatCardContent(
 private fun Modifier.drawWithContent(
     onDraw: androidx.compose.ui.graphics.drawscope.DrawScope.() -> Unit
 ): Modifier = this.then(
-    androidx.compose.ui.draw.DrawModifier {
+    androidx.compose.ui.draw.drawWithContent {
         onDraw()
+        drawContent()
     }
 )

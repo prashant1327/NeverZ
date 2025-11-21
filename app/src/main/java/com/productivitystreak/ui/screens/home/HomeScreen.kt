@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.productivitystreak.data.model.Streak
 import com.productivitystreak.ui.icons.AppIcons
@@ -215,7 +216,7 @@ fun DailyUpgradeTile(
                 text = content.content,
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
-                lineHeight = androidx.compose.ui.unit.sp(20)
+                lineHeight = 20.sp
             )
 
             Spacer(modifier = Modifier.height(8.dp))

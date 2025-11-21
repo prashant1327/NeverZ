@@ -852,8 +852,7 @@ private fun PermissionDialog(
         dismissButton = {
             com.productivitystreak.ui.components.StyledTextButton(
                 text = "Not now",
-                onClick = onSkip,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                onClick = onSkip
             )
         }
     )
@@ -878,8 +877,7 @@ private fun OnboardingFooter(
         if (canGoBack) {
             com.productivitystreak.ui.components.StyledTextButton(
                 text = "Back",
-                onClick = onBack,
-                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                onClick = onBack
             )
         } else {
             Spacer(modifier = Modifier.width(com.productivitystreak.ui.theme.Spacing.xxl))

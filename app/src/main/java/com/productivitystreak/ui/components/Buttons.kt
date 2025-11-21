@@ -164,7 +164,7 @@ fun StyledOutlinedButton(
         enabled = enabled,
         shape = shape,
         colors = ButtonDefaults.outlinedButtonColors(),
-        border = ButtonDefaults.outlinedButtonBorder(enabled),
+        border = ButtonDefaults.outlinedButtonBorder,
         contentPadding = PaddingValues(
             horizontal = Spacing.lg,
             vertical = Spacing.sm

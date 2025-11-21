@@ -64,6 +64,7 @@ import com.productivitystreak.ui.state.settings.SettingsState
 import com.productivitystreak.ui.state.settings.ThemeMode
 import com.productivitystreak.ui.utils.PermissionManager
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
     userName: String,
