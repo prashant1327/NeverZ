@@ -951,6 +951,7 @@ private fun DashboardEmptyState(onAddHabitClick: () -> Unit) {
                 modifier = Modifier.padding(top = 8.dp)
             )
         }
+        }
     }
 }
 
