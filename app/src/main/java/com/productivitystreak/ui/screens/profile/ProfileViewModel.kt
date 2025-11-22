@@ -45,6 +45,10 @@ class ProfileViewModel(
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
 
+    private fun clearUiMessage() {
+        _uiState.update { it.copy(uiMessage = null) }
+    }
+
     init {
         loadUserPreferences()
         loadSettingsPreferences()

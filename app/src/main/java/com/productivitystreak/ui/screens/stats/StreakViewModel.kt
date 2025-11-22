@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.roundToInt
 
 data class StreakUiState(
     val streaks: List<Streak> = emptyList(),
@@ -101,23 +102,63 @@ class StreakViewModel(
         )
     }
 
-    private fun computeAverageDailyTrend(streaks: List<Streak>): com.productivitystreak.ui.state.stats.AverageDailyTrend {
-        // Placeholder implementation - logic should be copied from AppViewModel if complex
-        // For now returning empty/default
+    private fun computeAverageDailyTrend(
+        streaks: List<Streak>,
+        windowSize: Int = 7
+    ): com.productivitystreak.ui.state.stats.AverageDailyTrend {
+        if (streaks.isEmpty()) {
+            return com.productivitystreak.ui.state.stats.AverageDailyTrend(
+                windowSize = windowSize,
+                points = emptyList()
+            )
+        }
+
+        val today = java.time.LocalDate.now()
+        val points = (0 until windowSize).map { index ->
+            val date = today.minusDays((windowSize - 1 - index).toLong())
+            val fractions = streaks.flatMap { streak ->
+                streak.history
+                    .filter { it.date == date.toString() }
+                    .map { it.completionFraction.coerceIn(0f, 1f) }
+            }
+            val percent = if (fractions.isNotEmpty()) {
+                (fractions.average() * 100).roundToInt()
+            } else {
+                0
+            }
+            com.productivitystreak.ui.state.stats.TrendPoint(
+                date = date.toString(),
+                percent = percent
+            )
+        }
+
         return com.productivitystreak.ui.state.stats.AverageDailyTrend(
-            points = emptyList(),
-            trendDirection = "stable",
-            changePercent = 0
+            windowSize = windowSize,
+            points = points
         )
     }
 
-    private fun computeStreakConsistency(streaks: List<Streak>): com.productivitystreak.ui.state.stats.ConsistencyScore {
-        // Placeholder implementation
-        return com.productivitystreak.ui.state.stats.ConsistencyScore(
-            score = 85,
-            level = com.productivitystreak.ui.state.stats.ConsistencyLevel.GOOD,
-            description = "You are doing great!"
-        )
+    private fun computeStreakConsistency(
+        streaks: List<Streak>
+    ): List<com.productivitystreak.ui.state.stats.ConsistencyScore> {
+        if (streaks.isEmpty()) return emptyList()
+
+        return streaks.map { streak ->
+            val completionPercent = (streak.progress * 100).toInt().coerceIn(0, 100)
+            val level = when {
+                completionPercent >= 80 -> com.productivitystreak.ui.state.stats.ConsistencyLevel.High
+                completionPercent >= 50 -> com.productivitystreak.ui.state.stats.ConsistencyLevel.Medium
+                else -> com.productivitystreak.ui.state.stats.ConsistencyLevel.NeedsAttention
+            }
+            com.productivitystreak.ui.state.stats.ConsistencyScore(
+                streakId = streak.id,
+                streakName = streak.name,
+                score = completionPercent,
+                completionRate = completionPercent,
+                variance = (1f - streak.progress).coerceIn(0f, 1f),
+                level = level
+            )
+        }
     }
 
     private fun computeCalendarHeatMap(
