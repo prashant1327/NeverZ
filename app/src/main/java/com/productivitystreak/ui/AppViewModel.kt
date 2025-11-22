@@ -94,6 +94,22 @@ class AppViewModel(
         }
     }
 
+    fun onDismissUiMessage() {
+        _uiState.update { it.copy(uiMessage = null) }
+    }
+
+    fun onAddButtonTapped() {
+        updateAddState { it.copy(isMenuOpen = true) }
+    }
+
+    fun onDismissAddMenu() {
+        updateAddState { it.copy(isMenuOpen = false) }
+    }
+
+    fun onAddEntrySelected(type: AddEntryType) {
+        updateAddState { it.copy(activeForm = type, isMenuOpen = false) }
+    }
+
     fun onDismissAddForm() {
         completeAddFlow()
     }

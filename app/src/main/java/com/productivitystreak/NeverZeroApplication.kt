@@ -1,6 +1,8 @@
 package com.productivitystreak
 
 import android.app.Application
+import com.productivitystreak.data.PersonalizedQuoteEngine
+import com.productivitystreak.data.QuoteRepository
 import com.productivitystreak.data.backup.BackupManager
 import com.productivitystreak.data.local.AppDatabase
 import com.productivitystreak.data.local.PreferencesManager
@@ -26,12 +28,11 @@ class NeverZeroApplication : Application() {
     val achievementRepository by lazy { AchievementRepository(database.achievementDao()) }
     val assetRepository by lazy { AssetRepository() }
     val timeCapsuleRepository by lazy { TimeCapsuleRepository(database.timeCapsuleDao()) }
-    val timeCapsuleRepository by lazy { TimeCapsuleRepository(database.timeCapsuleDao()) }
     val templateRepository by lazy { TemplateRepository() }
     
     // AI
     val geminiClient by lazy { com.productivitystreak.data.gemini.GeminiClient.getInstance() }
-    val quoteRepository by lazy { QuoteRepository(com.productivitystreak.data.PersonalizedQuoteEngine(geminiClient)) }
+    val quoteRepository by lazy { QuoteRepository(PersonalizedQuoteEngine(geminiClient)) }
 
     // Utilities
     val backupManager by lazy { BackupManager(this, database) }

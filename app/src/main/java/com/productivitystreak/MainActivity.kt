@@ -21,7 +21,8 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val viewModel: AppViewModel by viewModels { AppViewModelFactory(application) }
+        val appViewModelFactory = AppViewModelFactory(application)
+        val viewModel: AppViewModel by viewModels { appViewModelFactory }
         setContent {
             val state = viewModel.uiState.collectAsStateWithLifecycle()
             val themeMode = state.value.profileState.theme
@@ -31,59 +32,8 @@ class MainActivity : ComponentActivity() {
             ) {
                 Surface {
                     NeverZeroApp(
-                        uiState = state.value,
-                        onRefreshQuote = viewModel::refreshQuote,
-                        onSelectStreak = viewModel::onSelectStreak,
-                        onToggleTask = viewModel::onToggleTask,
-                        onAddOneOffTask = viewModel::addOneOffTask,
-                        onToggleOneOffTask = viewModel::toggleOneOffTask,
-                        onDeleteOneOffTask = viewModel::deleteOneOffTask,
-                        onSimulateTaskCompletion = viewModel::simulateTaskCompletion,
-                        onLogReadingProgress = viewModel::onLogReadingProgress,
-                        onAddVocabularyWord = viewModel::onAddVocabularyWord,
-                        onToggleOnboardingCategory = viewModel::onToggleOnboardingCategory,
-                        onSetOnboardingGoal = viewModel::onSetOnboardingGoal,
-                        onSetOnboardingCommitment = viewModel::onSetOnboardingCommitment,
-                        onNextOnboardingStep = viewModel::onNextOnboardingStep,
-                        onPreviousOnboardingStep = viewModel::onPreviousOnboardingStep,
-                        onToggleOnboardingNotifications = viewModel::onToggleOnboardingNotifications,
-                        onSetOnboardingReminderTime = viewModel::onSetOnboardingReminderTime,
-                        onCompleteOnboarding = viewModel::onCompleteOnboarding,
-                        onDismissOnboarding = viewModel::onDismissOnboarding,
-                        onToggleNotifications = viewModel::onToggleNotifications,
-                        onChangeReminderFrequency = viewModel::onChangeReminderFrequency,
-                        onToggleWeeklySummary = viewModel::onToggleWeeklySummary,
-                        onChangeTheme = viewModel::onChangeTheme,
-                        onToggleHaptics = viewModel::onToggleHaptics,
-                        onSettingsThemeChange = viewModel::onSettingsThemeChange,
-                        onSettingsDailyRemindersToggle = viewModel::onSettingsDailyRemindersToggle,
-                        onSettingsWeeklyBackupsToggle = viewModel::onSettingsWeeklyBackupsToggle,
-                        onSettingsReminderTimeChange = viewModel::onSettingsReminderTimeChange,
-                        onSettingsHapticFeedbackToggle = viewModel::onSettingsHapticFeedbackToggle,
-                        onSettingsCreateBackup = viewModel::onSettingsCreateBackup,
-                        onSettingsRestoreBackup = viewModel::onSettingsRestoreBackup,
-                        onSettingsRestoreFileSelected = viewModel::onSettingsRestoreFromFile,
-                        onSettingsDismissRestoreDialog = viewModel::onSettingsDismissRestoreDialog,
-                        onSettingsDismissMessage = viewModel::onSettingsDismissMessage,
-                        onAssetConsumed = viewModel::onAssetConsumed,
-                        onAssetTestPassed = viewModel::onAssetTestPassed,
-                        onCreateTimeCapsule = viewModel::onCreateTimeCapsule,
-                        onSaveTimeCapsuleReflection = viewModel::onSaveTimeCapsuleReflection,
-                        onDismissUiMessage = viewModel::onDismissUiMessage,
-                        onOpenAddEntry = viewModel::onAddButtonTapped,
-                        onAddButtonTapped = viewModel::onAddButtonTapped,
-                        onDismissAddMenu = viewModel::onDismissAddMenu,
-                        onAddEntrySelected = viewModel::onAddEntrySelected,
-                        onDismissAddForm = viewModel::onDismissAddForm,
-                        onSubmitHabit = viewModel::onSubmitNewHabit,
-                        onSubmitWord = viewModel::onSubmitVocabularyEntry,
-                        onSubmitJournal = viewModel::onSubmitJournalEntry,
-                        onRequestNotificationPermission = {
-                            notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                        },
-                        onRequestExactAlarmPermission = {
-                            PermissionManager.launchExactAlarmSettings(this)
-                        }
+                        appViewModel = viewModel,
+                        viewModelFactory = appViewModelFactory
                     )
                 }
             }

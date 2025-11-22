@@ -38,7 +38,8 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
             }
             modelClass.isAssignableFrom(StreakViewModel::class.java) -> {
                 StreakViewModel(
-                    streakRepository = app.streakRepository
+                    streakRepository = app.streakRepository,
+                    reminderScheduler = StreakReminderScheduler(application)
                 ) as T
             }
             modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {

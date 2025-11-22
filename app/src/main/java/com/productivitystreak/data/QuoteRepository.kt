@@ -6,8 +6,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
-class QuoteRepository {
-    private val personalizedEngine = PersonalizedQuoteEngine()
+class QuoteRepository(
+    private val personalizedEngine: PersonalizedQuoteEngine
+) {
     
     private val fallbackQuotes = listOf(
         Quote(
