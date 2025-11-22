@@ -19,3 +19,14 @@ node_modules/
 package.json
 package-lock.json
 index.js
+
+# Local build logs and file snapshots
+/build_log*.txt
+/compile_log.txt
+/all_tracked_files.txt
+/filelist.txt
+/tracked_files.txt
+
+# Local backup overrides
+/backup_strings_override/
+/app/libs/biometric-fixed/
