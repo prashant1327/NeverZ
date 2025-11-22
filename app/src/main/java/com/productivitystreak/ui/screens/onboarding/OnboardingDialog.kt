@@ -17,7 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import com.productivitystreak.ui.screens.onboarding.components.*
-import com.productivitystreak.ui.state.AppUiState
+import com.productivitystreak.ui.state.onboarding.OnboardingState
 import com.productivitystreak.ui.theme.NeverZeroTheme
 import com.productivitystreak.ui.theme.Spacing
 import kotlinx.coroutines.launch
@@ -25,7 +25,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun OnboardingFlow(
-    uiState: AppUiState,
+    onboardingState: OnboardingState,
     onToggleOnboardingCategory: (String) -> Unit,
     onSetOnboardingGoal: (String) -> Unit,
     onSetOnboardingCommitment: (Int, Int) -> Unit,
@@ -38,7 +38,7 @@ fun OnboardingFlow(
     onRequestNotificationPermission: () -> Unit,
     onRequestExactAlarmPermission: () -> Unit
 ) {
-    val onboarding = uiState.onboardingState
+    val onboarding = onboardingState
     val coroutineScope = rememberCoroutineScope()
     var showFinishRipple by remember { mutableStateOf(false) }
     val finishRipple = remember { Animatable(0f) }

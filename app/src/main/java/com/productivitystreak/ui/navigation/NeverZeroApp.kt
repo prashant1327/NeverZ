@@ -115,7 +115,7 @@ fun NeverZeroApp(
     if (showOnboarding) {
         val onboardingState by onboardingViewModel.uiState.collectAsStateWithLifecycle()
         OnboardingFlow(
-            uiState = onboardingState,
+            onboardingState = onboardingState,
             onToggleOnboardingCategory = onboardingViewModel::onToggleOnboardingCategory,
             onSetOnboardingGoal = onboardingViewModel::onSetOnboardingGoal,
             onSetOnboardingCommitment = onboardingViewModel::onSetOnboardingCommitment,
