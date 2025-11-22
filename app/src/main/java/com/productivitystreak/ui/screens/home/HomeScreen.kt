@@ -131,10 +131,32 @@ fun HomeScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
+                // Animated Fire Icon
+                val infiniteTransition = androidx.compose.animation.core.rememberInfiniteTransition(label = "fire-pulse")
+                val fireScale by infiniteTransition.animateFloat(
+                    initialValue = 1f,
+                    targetValue = 1.2f,
+                    animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+                        animation = androidx.compose.animation.core.tween(1000, easing = androidx.compose.animation.core.FastOutSlowInEasing),
+                        repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
+                    ),
+                    label = "fire-scale"
+                )
+                val fireAlpha by infiniteTransition.animateFloat(
+                    initialValue = 0.8f,
+                    targetValue = 1f,
+                    animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+                        animation = androidx.compose.animation.core.tween(1000, easing = androidx.compose.animation.core.LinearEasing),
+                        repeatMode = androidx.compose.animation.core.RepeatMode.Reverse
+                    ),
+                    label = "fire-alpha"
+                )
+
                 Icon(
                     imageVector = Icons.Outlined.LocalFireDepartment,
                     contentDescription = "Streak",
-                    tint = streakColor
+                    tint = streakColor.copy(alpha = fireAlpha),
+                    modifier = Modifier.scale(fireScale)
                 )
                 Text(
                     text = streakDays.toString(),
@@ -181,16 +203,41 @@ fun HomeScreen(
             color = MaterialTheme.colorScheme.onBackground
         )
 
+        var listVisible by remember { mutableStateOf(false) }
+        LaunchedEffect(Unit) {
+            listVisible = true
+        }
+
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(uiState.todayTasks, key = { it.id }) { task ->
-                HabitItemRow(
-                    task = task,
-                    onToggle = { onHabitToggle(task.id) },
-                    modifier = Modifier.fillMaxWidth()
-                )
+            items(
+                items = uiState.todayTasks,
+                key = { it.id }
+            ) { task ->
+                val index = uiState.todayTasks.indexOf(task)
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = listVisible,
+                    enter = androidx.compose.animation.fadeIn(
+                        animationSpec = androidx.compose.animation.core.tween(
+                            durationMillis = 300,
+                            delayMillis = index * 50
+                        )
+                    ) + androidx.compose.animation.slideInVertically(
+                        animationSpec = androidx.compose.animation.core.spring(
+                            stiffness = androidx.compose.animation.core.Spring.StiffnessLow,
+                            dampingRatio = androidx.compose.animation.core.Spring.DampingRatioMediumBouncy
+                        ),
+                        initialOffsetY = { 50 }
+                    )
+                ) {
+                    HabitItemRow(
+                        task = task,
+                        onToggle = { onHabitToggle(task.id) },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }
@@ -204,15 +251,15 @@ fun DailyUpgradeTile(
 ) {
     if (content == null) return
 
-    com.productivitystreak.ui.components.InteractiveCard(
+    com.productivitystreak.ui.components.InteractiveGlassCard(
         onClick = onAction,
         modifier = modifier,
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
+                .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Label with subtle background
@@ -256,7 +303,7 @@ fun DailyUpgradeTile(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            com.productivitystreak.ui.components.PrimaryButton(
+            com.productivitystreak.ui.components.GradientPrimaryButton(
                 text = content.actionLabel,
                 onClick = onAction,
                 modifier = Modifier.fillMaxWidth()

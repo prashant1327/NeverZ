@@ -34,10 +34,11 @@ fun SidequestCard(
     onAccept: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    InteractiveCard(
+    com.productivitystreak.ui.components.InteractiveGlassCard(
         onClick = onAccept,
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp)
+        shape = RoundedCornerShape(20.dp),
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
     ) {
         Row(
             modifier = Modifier

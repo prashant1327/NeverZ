@@ -43,10 +43,10 @@ fun BuddhaInsightCard(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    InteractiveCard(
-        onClick = {}, // Not clickable, just informational
+    com.productivitystreak.ui.components.GlassCard(
         modifier = modifier,
-        shape = RoundedCornerShape(20.dp)
+        shape = RoundedCornerShape(24.dp),
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
     ) {
         Box(
             modifier = Modifier
@@ -54,8 +54,8 @@ fun BuddhaInsightCard(
                 .background(
                     Brush.verticalGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.1f)
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f),
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.05f)
                         )
                     )
                 )

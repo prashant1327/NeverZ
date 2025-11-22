@@ -507,3 +507,90 @@ fun PillButton(
         fullWidth = true
     )
 }
+
+/**
+ * Gradient Primary Button - Premium button with shimmer effect
+ * Best for the most important action on the screen
+ */
+@Composable
+fun GradientPrimaryButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    icon: ImageVector? = null,
+    hapticEnabled: Boolean = true,
+    shape: Shape = NeverZeroButtonDefaults.DefaultShape,
+    fullWidth: Boolean = false
+) {
+    val haptics = LocalHapticFeedback.current
+    val designColors = NeverZeroTheme.designColors
+    
+    // Shimmer Animation
+    val transition = androidx.compose.animation.core.rememberInfiniteTransition(label = "shimmer")
+    val translateAnim by transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = androidx.compose.animation.core.infiniteRepeatable(
+            animation = androidx.compose.animation.core.tween(
+                durationMillis = 3000,
+                easing = androidx.compose.animation.core.LinearEasing
+            ),
+            repeatMode = androidx.compose.animation.core.RepeatMode.Restart
+        ),
+        label = "shimmer-translation"
+    )
+
+    val gradient = Brush.linearGradient(
+        colors = listOf(
+            designColors.primary,
+            designColors.secondary,
+            designColors.primary
+        ),
+        start = androidx.compose.ui.geometry.Offset(translateAnim, translateAnim),
+        end = androidx.compose.ui.geometry.Offset(translateAnim + 300f, translateAnim + 300f)
+    )
+
+    val disabledGradient = Brush.linearGradient(
+        listOf(designColors.primaryMuted, designColors.primaryMuted)
+    )
+
+    Button(
+        onClick = {
+            if (hapticEnabled) {
+                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+            }
+            onClick()
+        },
+        modifier = modifier
+            .then(if (fullWidth) Modifier.fillMaxWidth() else Modifier)
+            .height(TouchTarget.minimum)
+            .neverZeroButtonBackground(
+                brush = if (enabled) gradient else disabledGradient,
+                borderColor = if (enabled) designColors.border else designColors.border.copy(alpha = 0.4f),
+                shape = shape
+            ),
+        enabled = enabled,
+        shape = shape,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = designColors.onPrimary,
+            disabledContainerColor = Color.Transparent,
+            disabledContentColor = designColors.disabled
+        ),
+        contentPadding = NeverZeroButtonDefaults.ContentPadding
+    ) {
+        if (icon != null) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                modifier = Modifier.size(IconSize.medium)
+            )
+            Spacer(modifier = Modifier.width(Spacing.xs))
+        }
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge
+        )
+    }
+}
