@@ -76,6 +76,9 @@ import com.productivitystreak.ui.state.AppUiState
 import com.productivitystreak.ui.state.UiMessageType
 import com.productivitystreak.ui.theme.NeverZeroTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.launch
+
+enum class MainDestination { HOME, STATS, DISCOVER, PROFILE }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -83,16 +86,7 @@ fun NeverZeroApp(
     appViewModel: com.productivitystreak.ui.AppViewModel,
     viewModelFactory: androidx.lifecycle.ViewModelProvider.Factory
 ) {
-    val uiState by androidx.lifecycle.compose.collectAsStateWithLifecycle(appViewModel.uiState)
-    
-    // Event handlers
-    val onDismissUiMessage = appViewModel::onDismissUiMessage
-    val onAssetConsumed = discoverViewModel::onAssetConsumed
-    val onAssetTestPassed = discoverViewModel::onAssetTestPassed
-    val onAddEntrySelected = appViewModel::onAddEntrySelected
-    val onDismissAddMenu = appViewModel::onDismissAddMenu
-    val onDismissAddForm = appViewModel::onDismissAddForm
-    val onAddButtonTapped = appViewModel::onAddButtonTapped
+    val uiState by collectAsStateWithLifecycle(appViewModel.uiState)
     
     // Feature ViewModels
     val streakViewModel: com.productivitystreak.ui.screens.stats.StreakViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = viewModelFactory)
