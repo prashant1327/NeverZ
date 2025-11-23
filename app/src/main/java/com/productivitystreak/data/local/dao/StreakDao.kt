@@ -44,4 +44,7 @@ interface StreakDao {
 
     @Query("SELECT COUNT(*) FROM streaks WHERE isArchived = 0")
     suspend fun getActiveStreakCount(): Int
+
+    @Query("DELETE FROM streaks")
+    suspend fun deleteAllStreaks()
 }

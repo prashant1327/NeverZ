@@ -4,6 +4,7 @@ import android.database.sqlite.SQLiteException
 import com.productivitystreak.data.local.dao.StreakDao
 import com.productivitystreak.data.local.entity.StreakEntity
 import com.productivitystreak.data.local.entity.toEntity
+import com.productivitystreak.data.local.entity.toStreak
 import com.productivitystreak.data.model.Streak
 import com.productivitystreak.data.model.StreakDayRecord
 import com.productivitystreak.data.model.StreakDifficulty

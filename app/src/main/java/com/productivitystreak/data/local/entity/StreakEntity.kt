@@ -33,7 +33,7 @@ data class StreakEntity(
     val isArchived: Boolean
 )
 
-fun StreakEntity.toDomain(): Streak {
+fun StreakEntity.toStreak(): Streak {
     return Streak(
         id = id,
         name = name,
