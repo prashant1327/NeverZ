@@ -6,8 +6,17 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface StreakDao {
-    @Query("SELECT * FROM streaks")
+    @Query("SELECT * FROM streaks WHERE isArchived = 0")
     fun getAllStreaks(): Flow<List<StreakEntity>>
+
+    @Query("SELECT * FROM streaks WHERE isArchived = 1")
+    fun getArchivedStreaks(): Flow<List<StreakEntity>>
+
+    @Query("SELECT * FROM streaks WHERE category = :category AND isArchived = 0")
+    fun getStreaksByCategory(category: String): Flow<List<StreakEntity>>
+
+    @Query("SELECT * FROM streaks WHERE isArchived = 0 ORDER BY currentCount DESC LIMIT :limit")
+    fun getTopStreaks(limit: Int): Flow<List<StreakEntity>>
 
     @Query("SELECT * FROM streaks WHERE id = :id")
     suspend fun getStreakById(id: String): StreakEntity?
@@ -15,9 +24,24 @@ interface StreakDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertStreak(streak: StreakEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertStreaks(streaks: List<StreakEntity>)
+
     @Update
     suspend fun updateStreak(streak: StreakEntity)
 
     @Delete
     suspend fun deleteStreak(streak: StreakEntity)
+
+    @Query("DELETE FROM streaks WHERE id = :id")
+    suspend fun deleteStreakById(id: String)
+
+    @Query("UPDATE streaks SET isArchived = 1 WHERE id = :id")
+    suspend fun archiveStreak(id: String)
+
+    @Query("UPDATE streaks SET isArchived = 0 WHERE id = :id")
+    suspend fun unarchiveStreak(id: String)
+
+    @Query("SELECT COUNT(*) FROM streaks WHERE isArchived = 0")
+    suspend fun getActiveStreakCount(): Int
 }

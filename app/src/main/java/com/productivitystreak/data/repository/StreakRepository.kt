@@ -6,6 +6,8 @@ import com.productivitystreak.data.local.entity.StreakEntity
 import com.productivitystreak.data.local.entity.toEntity
 import com.productivitystreak.data.model.Streak
 import com.productivitystreak.data.model.StreakDayRecord
+import com.productivitystreak.data.model.StreakDifficulty
+import com.productivitystreak.data.model.StreakFrequency
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
@@ -56,7 +58,19 @@ class StreakRepository(private val streakDao: StreakDao) {
                 category = category,
                 history = emptyList(),
                 color = color,
-                icon = icon
+                icon = icon,
+                frequency = StreakFrequency.DAILY,
+                targetPerPeriod = null,
+                customDaysOfWeek = emptyList(),
+                reminderEnabled = true,
+                reminderTime = "09:00",
+                difficulty = StreakDifficulty.BALANCED,
+                allowFreezeDays = true,
+                rescuedDates = emptyList(),
+                freezeDaysAvailable = 0,
+                freezeDaysUsed = 0,
+                lastUpdated = System.currentTimeMillis(),
+                isArchived = false
             )
             streakDao.insertStreak(streak)
             RepositoryResult.Success(id)
@@ -191,7 +205,19 @@ class StreakRepository(private val streakDao: StreakDao) {
                     category = "Reading",
                     history = history(30),
                     color = "#8B5CF6",
-                    icon = "book"
+                    icon = "book",
+                    frequency = StreakFrequency.DAILY,
+                    targetPerPeriod = null,
+                    customDaysOfWeek = emptyList(),
+                    reminderEnabled = true,
+                    reminderTime = "09:00",
+                    difficulty = StreakDifficulty.BALANCED,
+                    allowFreezeDays = true,
+                    rescuedDates = emptyList(),
+                    freezeDaysAvailable = 0,
+                    freezeDaysUsed = 0,
+                    lastUpdated = System.currentTimeMillis(),
+                    isArchived = false
                 ),
                 StreakEntity(
                     id = "vocabulary",
@@ -203,7 +229,19 @@ class StreakRepository(private val streakDao: StreakDao) {
                     category = "Vocabulary",
                     history = history(5),
                     color = "#10B981",
-                    icon = "school"
+                    icon = "school",
+                    frequency = StreakFrequency.DAILY,
+                    targetPerPeriod = null,
+                    customDaysOfWeek = emptyList(),
+                    reminderEnabled = true,
+                    reminderTime = "09:00",
+                    difficulty = StreakDifficulty.BALANCED,
+                    allowFreezeDays = true,
+                    rescuedDates = emptyList(),
+                    freezeDaysAvailable = 0,
+                    freezeDaysUsed = 0,
+                    lastUpdated = System.currentTimeMillis(),
+                    isArchived = false
                 ),
                 StreakEntity(
                     id = "wellness",
@@ -215,7 +253,19 @@ class StreakRepository(private val streakDao: StreakDao) {
                     category = "Wellness",
                     history = history(10),
                     color = "#F59E0B",
-                    icon = "spa"
+                    icon = "spa",
+                    frequency = StreakFrequency.DAILY,
+                    targetPerPeriod = null,
+                    customDaysOfWeek = emptyList(),
+                    reminderEnabled = true,
+                    reminderTime = "09:00",
+                    difficulty = StreakDifficulty.BALANCED,
+                    allowFreezeDays = true,
+                    rescuedDates = emptyList(),
+                    freezeDaysAvailable = 0,
+                    freezeDaysUsed = 0,
+                    lastUpdated = System.currentTimeMillis(),
+                    isArchived = false
                 )
             )
         }

@@ -26,7 +26,11 @@ data class StreakEntity(
     val reminderTime: String,
     val difficulty: StreakDifficulty,
     val allowFreezeDays: Boolean,
-    val rescuedDates: List<String>
+    val rescuedDates: List<String>,
+    val freezeDaysAvailable: Int,
+    val freezeDaysUsed: Int,
+    val lastUpdated: Long,
+    val isArchived: Boolean
 )
 
 fun StreakEntity.toDomain(): Streak {
@@ -48,7 +52,11 @@ fun StreakEntity.toDomain(): Streak {
         reminderTime = reminderTime,
         difficulty = difficulty,
         allowFreezeDays = allowFreezeDays,
-        rescuedDates = rescuedDates
+        rescuedDates = rescuedDates,
+        freezeDaysAvailable = freezeDaysAvailable,
+        freezeDaysUsed = freezeDaysUsed,
+        lastUpdated = lastUpdated,
+        isArchived = isArchived
     )
 }
 
@@ -71,6 +79,10 @@ fun Streak.toEntity(): StreakEntity {
         reminderTime = reminderTime,
         difficulty = difficulty,
         allowFreezeDays = allowFreezeDays,
-        rescuedDates = rescuedDates
+        rescuedDates = rescuedDates,
+        freezeDaysAvailable = freezeDaysAvailable,
+        freezeDaysUsed = freezeDaysUsed,
+        lastUpdated = lastUpdated,
+        isArchived = isArchived
     )
 }

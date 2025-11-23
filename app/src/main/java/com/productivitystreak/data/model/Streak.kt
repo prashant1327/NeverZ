@@ -18,7 +18,11 @@ data class Streak(
     val reminderTime: String = "09:00",
     val difficulty: StreakDifficulty = StreakDifficulty.BALANCED,
     val allowFreezeDays: Boolean = true,
-    val rescuedDates: List<String> = emptyList()
+    val rescuedDates: List<String> = emptyList(),
+    val freezeDaysAvailable: Int = 0,
+    val freezeDaysUsed: Int = 0,
+    val lastUpdated: Long = System.currentTimeMillis(),
+    val isArchived: Boolean = false
 ) {
     val progress: Float
         get() = history.lastOrNull()?.completionFraction ?: 0f
