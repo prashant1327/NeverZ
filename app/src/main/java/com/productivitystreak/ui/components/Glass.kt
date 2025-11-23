@@ -1,8 +1,11 @@
 package com.productivitystreak.ui.components
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -14,14 +17,18 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.productivitystreak.ui.theme.GradientColors
+import com.productivitystreak.ui.theme.MotionSpec
 import com.productivitystreak.ui.theme.Spacing
 
 /**
@@ -128,12 +135,12 @@ fun InteractiveGlassCard(
     contentPadding: PaddingValues = PaddingValues(Spacing.lg),
     content: @Composable ColumnScope.() -> Unit
 ) {
-    val interactionSource = androidx.compose.runtime.remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-    val isPressed by androidx.compose.foundation.interaction.collectIsPressedAsState(interactionSource)
-    
-    val scale by androidx.compose.animation.core.animateFloatAsState(
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed by interactionSource.collectIsPressedAsState()
+
+    val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.97f else 1f,
-        animationSpec = com.productivitystreak.ui.theme.MotionSpec.quickScale(),
+        animationSpec = MotionSpec.quickScale(),
         label = "glass-card-scale"
     )
     
@@ -147,7 +154,7 @@ fun InteractiveGlassCard(
     Surface(
         onClick = onClick,
         modifier = modifier
-            .androidx.compose.ui.graphics.graphicsLayer {
+            .graphicsLayer {
                 scaleX = scale
                 scaleY = scale
             }
