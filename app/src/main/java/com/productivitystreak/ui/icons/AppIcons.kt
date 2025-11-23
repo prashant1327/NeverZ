@@ -21,7 +21,8 @@ import androidx.compose.material.icons.rounded.EmojiEvents
 import androidx.compose.material.icons.rounded.LocalFireDepartment
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Spa
-import androidx.compose.material.icons.rounded.TrendingUp
+import androidx.compose.material.icons.automirrored.rounded.TrendingUp
+import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -52,11 +53,11 @@ object AppIcons {
     val FireStreak: ImageVector = Icons.Rounded.LocalFireDepartment // Flame for streaks
     val Lightning: ImageVector = Icons.Rounded.Bolt // Lightning for XP/energy
     val Seedling: ImageVector = Icons.Rounded.Spa // Zen/growth for beginner
-    val TrendUp: ImageVector = Icons.Rounded.TrendingUp // Upward trend
+    val TrendUp: ImageVector = Icons.AutoMirrored.Rounded.TrendingUp // Upward trend
     
     // Command Center Menu Icons (Thin-line/Outlined style)
     val AddHabit: ImageVector = Icons.Outlined.AddTask // Add new habit
-    val AddWord: ImageVector = Icons.Outlined.MenuBook // Log vocabulary word
+    val AddWord: ImageVector = Icons.AutoMirrored.Outlined.MenuBook // Log vocabulary word
     val AddJournal: ImageVector = Icons.Outlined.EditNote // Journal entry
 
     private val categoryMap: Map<String, ImageVector> = mapOf(

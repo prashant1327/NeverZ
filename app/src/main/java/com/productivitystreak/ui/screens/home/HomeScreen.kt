@@ -336,21 +336,20 @@ private fun HabitItemRow(
         }
     }
 
-    ElevatedCard(
+    com.productivitystreak.ui.components.InteractiveGlassCard(
+        onClick = {
+            if (!tapped) {
+                haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                tapped = true
+            }
+        },
         modifier = modifier
             .fillMaxWidth()
-            .scale(scale)
-            .clickable {
-                if (!tapped) {
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    tapped = true
-                }
-            }
+            .scale(scale),
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(

@@ -15,28 +15,33 @@ import com.productivitystreak.ui.state.profile.ProfileState
 
 @Composable
 fun LegalLinks(profileState: ProfileState) {
-    Column(
+    com.productivitystreak.ui.components.GlassCard(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
     ) {
-        Text(
-            text = "Legal",
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        profileState.legalLinks.forEach { item ->
-            val context = LocalContext.current
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             Text(
-                text = item.label,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
-                    context.startActivity(intent)
-                },
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                text = "Legal",
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            profileState.legalLinks.forEach { item ->
+                val context = LocalContext.current
+                Text(
+                    text = item.label,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.url))
+                        context.startActivity(intent)
+                    },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

@@ -15,16 +15,12 @@ fun ThemeSettingsCard(
     selectedTheme: ThemeMode,
     onSettingsThemeChange: (ThemeMode) -> Unit
 ) {
-    Card(
+    com.productivitystreak.ui.components.GlassCard(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Text(text = "Appearance", style = MaterialTheme.typography.titleMedium)

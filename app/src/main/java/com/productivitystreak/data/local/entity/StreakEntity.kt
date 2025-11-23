@@ -1,23 +1,15 @@
 package com.productivitystreak.data.local.entity
 
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
 import com.productivitystreak.data.model.Streak
 import com.productivitystreak.data.model.StreakDayRecord
+import com.productivitystreak.data.model.StreakDifficulty
+import com.productivitystreak.data.model.StreakFrequency
 
-@Entity(
-    tableName = "streaks",
-    indices = [
-        Index(value = ["isArchived", "lastUpdated"]),
-        Index(value = ["category", "isArchived"])
-    ]
-)
-@TypeConverters(Converters::class)
+@Entity(tableName = "streaks")
 data class StreakEntity(
-    @PrimaryKey
-    val id: String,
+    @PrimaryKey val id: String,
     val name: String,
     val currentCount: Int,
     val longestCount: Int,
@@ -25,15 +17,20 @@ data class StreakEntity(
     val unit: String,
     val category: String,
     val history: List<StreakDayRecord>,
-    val createdAt: Long = System.currentTimeMillis(),
-    val lastUpdated: Long = System.currentTimeMillis(),
-    val color: String = "#6366F1",
-    val icon: String = "flag",
-    val isArchived: Boolean = false,
-    val freezeDaysUsed: Int = 0,
-    val freezeDaysAvailable: Int = 3
-) {
-    fun toStreak() = Streak(
+    val color: String,
+    val icon: String,
+    val frequency: StreakFrequency,
+    val targetPerPeriod: Int?,
+    val customDaysOfWeek: List<String>,
+    val reminderEnabled: Boolean,
+    val reminderTime: String,
+    val difficulty: StreakDifficulty,
+    val allowFreezeDays: Boolean,
+    val rescuedDates: List<String>
+)
+
+fun StreakEntity.toDomain(): Streak {
+    return Streak(
         id = id,
         name = name,
         currentCount = currentCount,
@@ -43,19 +40,37 @@ data class StreakEntity(
         category = category,
         history = history,
         color = color,
-        icon = icon
+        icon = icon,
+        frequency = frequency,
+        targetPerPeriod = targetPerPeriod,
+        customDaysOfWeek = customDaysOfWeek,
+        reminderEnabled = reminderEnabled,
+        reminderTime = reminderTime,
+        difficulty = difficulty,
+        allowFreezeDays = allowFreezeDays,
+        rescuedDates = rescuedDates
     )
 }
 
-fun Streak.toEntity() = StreakEntity(
-    id = id,
-    name = name,
-    currentCount = currentCount,
-    longestCount = longestCount,
-    goalPerDay = goalPerDay,
-    unit = unit,
-    category = category,
-    history = history,
-    color = color,
-    icon = icon
-)
+fun Streak.toEntity(): StreakEntity {
+    return StreakEntity(
+        id = id,
+        name = name,
+        currentCount = currentCount,
+        longestCount = longestCount,
+        goalPerDay = goalPerDay,
+        unit = unit,
+        category = category,
+        history = history,
+        color = color,
+        icon = icon,
+        frequency = frequency,
+        targetPerPeriod = targetPerPeriod,
+        customDaysOfWeek = customDaysOfWeek,
+        reminderEnabled = reminderEnabled,
+        reminderTime = reminderTime,
+        difficulty = difficulty,
+        allowFreezeDays = allowFreezeDays,
+        rescuedDates = rescuedDates
+    )
+}
