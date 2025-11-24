@@ -28,7 +28,7 @@ fun WordOfTheDayCard(
 
     GlassCard(
         modifier = modifier.fillMaxWidth(),
-        containerColor = NeverZeroTheme.designColors.glassSurface.copy(alpha = 0.5f)
+        containerColor = NeverZeroTheme.designColors.surface.copy(alpha = 0.5f)
     ) {
         Column(
             modifier = Modifier
@@ -45,7 +45,7 @@ fun WordOfTheDayCard(
                     text = "WORD OF THE DAY",
                     style = MaterialTheme.typography.labelSmall,
                     color = NeverZeroTheme.designColors.secondary,
-                    letterSpacing = androidx.compose.ui.unit.sp(1.5)
+                    letterSpacing = 1.5.sp
                 )
                 Text(
                     text = "AI Curated",

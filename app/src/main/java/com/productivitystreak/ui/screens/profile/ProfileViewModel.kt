@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.productivitystreak.data.local.PreferencesManager
+import com.productivitystreak.data.repository.RepositoryResult
 import com.productivitystreak.data.repository.TimeCapsuleRepository
 import com.productivitystreak.notifications.StreakReminderScheduler
 import com.productivitystreak.ui.state.profile.ProfileState

@@ -20,7 +20,7 @@ fun BuddhaInsightCard(
 ) {
     GlassCard(
         modifier = modifier.fillMaxWidth(),
-        containerColor = NeverZeroTheme.designColors.glassSurface.copy(alpha = 0.6f)
+        containerColor = NeverZeroTheme.designColors.surface.copy(alpha = 0.6f)
     ) {
         Column(
             modifier = Modifier
@@ -33,7 +33,7 @@ fun BuddhaInsightCard(
                 text = "DAILY INSIGHT",
                 style = MaterialTheme.typography.labelSmall,
                 color = NeverZeroTheme.designColors.primary,
-                letterSpacing = androidx.compose.ui.unit.sp(2)
+                letterSpacing = 2.sp
             )
             
             Text(
