@@ -38,7 +38,10 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
             }
             modelClass.isAssignableFrom(StreakViewModel::class.java) -> {
                 StreakViewModel(
-                    streakRepository = app.streakRepository
+                    streakRepository = app.streakRepository,
+                    preferencesManager = app.preferencesManager,
+                    moshi = moshi,
+                    geminiClient = app.geminiClient
                 ) as T
             }
             modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {
@@ -52,7 +55,8 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
             modelClass.isAssignableFrom(VocabularyViewModel::class.java) -> {
                 VocabularyViewModel(
                     preferencesManager = app.preferencesManager,
-                    moshi = moshi
+                    moshi = moshi,
+                    geminiClient = app.geminiClient
                 ) as T
             }
             modelClass.isAssignableFrom(ReadingViewModel::class.java) -> {

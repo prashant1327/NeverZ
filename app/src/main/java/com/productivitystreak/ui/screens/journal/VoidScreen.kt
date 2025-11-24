@@ -43,6 +43,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
+    // Animation Logic
+    LaunchedEffect(isSaving) {
+        if (isSaving) {
+            // Wait for text to dissolve (faster)
+            delay(1200)
+            showBuddhaResponse = true
+            
+            // Wait for response to be read (shorter, but allow manual exit)
+            delay(2500)
+            
+            // We don't auto-reset immediately, we let the user linger or exit.
+            // But if they want to write again:
+            delay(2000)
+            showBuddhaResponse = false
+            text = ""
+            isSaving = false
+        }
+    }
+}
+
 @Composable
 fun VoidScreen(
     onNavigateBack: () -> Unit
@@ -75,19 +95,19 @@ fun VoidScreen(
     // Smoke/Dissolve animation state
     val textAlpha by animateFloatAsState(
         targetValue = if (isSaving) 0f else 1f,
-        animationSpec = tween(durationMillis = 1500, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 1000, easing = FastOutSlowInEasing),
         label = "textAlpha"
     )
     
     val textTranslationY by animateFloatAsState(
-        targetValue = if (isSaving) -100f else 0f,
-        animationSpec = tween(durationMillis = 2000, easing = FastOutSlowInEasing),
+        targetValue = if (isSaving) -50f else 0f,
+        animationSpec = tween(durationMillis = 1200, easing = FastOutSlowInEasing),
         label = "textTranslation"
     )
     
     val responseAlpha by animateFloatAsState(
         targetValue = if (showBuddhaResponse) 1f else 0f,
-        animationSpec = tween(durationMillis = 1000),
+        animationSpec = tween(durationMillis = 800),
         label = "responseAlpha"
     )
 
@@ -125,7 +145,8 @@ fun VoidScreen(
             ) {
                 TextButton(
                     onClick = onNavigateBack,
-                    enabled = !isSaving
+                    // ALWAYS ENABLED so user is never stuck
+                    enabled = true 
                 ) {
                     Text(
                         text = "exit void",
@@ -186,11 +207,6 @@ fun VoidScreen(
                             .graphicsLayer {
                                 alpha = textAlpha
                                 translationY = textTranslationY
-                                // Add a slight blur if saving (simulated with scale for now as blur is API 31+)
-                                if (isSaving) {
-                                    scaleX = 1f + (1f - textAlpha) * 0.1f
-                                    scaleY = 1f + (1f - textAlpha) * 0.1f
-                                }
                             }
                     )
                     
@@ -210,40 +226,37 @@ fun VoidScreen(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = buddhaMessage,
-                            color = Color.White,
-                            style = MaterialTheme.typography.bodyLarge,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                            modifier = Modifier
-                                .alpha(responseAlpha)
-                                .padding(horizontal = 32.dp)
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(24.dp)
+                        ) {
+                            Text(
+                                text = buddhaMessage,
+                                color = Color.White,
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                modifier = Modifier
+                                    .alpha(responseAlpha)
+                                    .padding(horizontal = 32.dp)
+                            )
+                            
+                            // Explicit Done button to clear state faster if desired
+                            TextButton(
+                                onClick = {
+                                    showBuddhaResponse = false
+                                    text = ""
+                                    isSaving = false
+                                },
+                                modifier = Modifier.alpha(responseAlpha)
+                            ) {
+                                Text("clear", color = Color.Gray)
+                            }
+                        }
                     }
                 }
             }
         }
     }
-    
-    // Animation Logic
-    LaunchedEffect(isSaving) {
-        if (isSaving) {
-            // Wait for text to dissolve
-            delay(2000)
-            showBuddhaResponse = true
-            
-            // Wait for response to be read
-            delay(4000)
-            
-            // Reset or navigate back? For now, let's just reset to allow more journaling
-            // or we could auto-exit. Let's fade out response and reset.
-            showBuddhaResponse = false
-            delay(1000)
-            text = ""
-            isSaving = false
-        }
-    }
-}
 
 private fun mockBuddhaAnalysis(input: String): String {
     val length = input.length

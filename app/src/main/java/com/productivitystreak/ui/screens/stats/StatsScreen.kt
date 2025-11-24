@@ -110,6 +110,30 @@ fun StatsScreen(
                 entries = statsState.leaderboard,
                 onEntrySelected = onLeaderboardEntrySelected
             )
+        } else {
+            // Empty Leaderboard State
+            com.productivitystreak.ui.components.ElevatedCard(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {}
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(com.productivitystreak.ui.theme.Spacing.md),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Leaderboard",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                    Text(
+                        text = "Start a streak to join the ranks.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
         }
 
         statsState.calendarHeatMap?.let {

@@ -23,28 +23,6 @@ import com.productivitystreak.ui.components.SecondaryButton
 import com.productivitystreak.ui.screens.dashboard.components.*
 import com.productivitystreak.ui.state.AppUiState
 import com.productivitystreak.ui.theme.NeverZeroTheme
-import com.productivitystreak.ui.theme.Spacing
-import kotlinx.coroutines.delay
-import java.time.LocalTime
-
-@Composable
-fun DashboardScreen(
-    streakUiState: com.productivitystreak.ui.screens.stats.StreakUiState,
-    uiState: AppUiState,
-    onToggleTask: (String) -> Unit,
-    onRefreshQuote: () -> Unit,
-    onAddHabitClick: () -> Unit,
-    onSelectStreak: (String) -> Unit,
-    onAddOneOffTask: (String) -> Unit,
-    onToggleOneOffTask: (String) -> Unit,
-    onDeleteOneOffTask: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val haptics = LocalHapticFeedback.current
-    val greetingPrefix = remember {
-        val hour = LocalTime.now().hour
-        when {
-            hour in 5..11 -> "Good Morning"
             hour in 12..16 -> "Good Afternoon"
             hour in 17..21 -> "Good Evening"
             else -> "Hello"
@@ -143,6 +121,23 @@ fun DashboardScreen(
                     onClick = { onSelectStreak(leadStreak.id) }
                 )
             }
+        }
+
+        // 3.5 Buddha Insight
+        streakUiState.buddhaInsight?.let { insight ->
+            item {
+                BuddhaInsightCard(
+                    insight = insight,
+                    modifier = Modifier.padding(vertical = Spacing.xs)
+                )
+            }
+        }
+
+        // 3.6 AI Word of the Day
+        item {
+            WordOfTheDayCard(
+                modifier = Modifier.padding(vertical = Spacing.xs)
+            )
         }
 
         // 4. Quick Actions

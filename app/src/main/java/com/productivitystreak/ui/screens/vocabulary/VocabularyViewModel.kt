@@ -18,12 +18,14 @@ import java.time.LocalDate
 
 class VocabularyViewModel(
     private val preferencesManager: PreferencesManager,
-    private val moshi: Moshi
+    private val moshi: Moshi,
+    private val geminiClient: com.productivitystreak.data.gemini.GeminiClient
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(VocabularyState())
     val uiState: StateFlow<VocabularyState> = _uiState.asStateFlow()
 
+    // ... (rest of the properties)
     private val _isSubmitting = MutableStateFlow(false)
     val isSubmitting: StateFlow<Boolean> = _isSubmitting.asStateFlow()
     
@@ -35,8 +37,26 @@ class VocabularyViewModel(
 
     init {
         loadVocabularyData()
+        fetchWordOfTheDay()
     }
 
+    private fun fetchWordOfTheDay() {
+        viewModelScope.launch {
+            // In a real app, we'd check if we already have a word for today in Preferences
+            // For now, let's fetch a new one or use a cached one if we implement caching for it.
+            // To keep it simple and robust, we'll fetch every time for now (or rely on GeminiClient caching if we added it, which we didn't).
+            // Ideally, we should store "lastWordOfTheDay" and "lastWordDate" in Preferences.
+            
+            // Let's assume we want to fetch fresh for now to demonstrate the AI.
+            val word = geminiClient.generateWordOfTheDay()
+            if (word != null) {
+                _uiState.update { it.copy(wordOfTheDay = word) }
+            }
+        }
+    }
+
+    // ... (rest of the methods: loadVocabularyData, onSubmitVocabularyEntry, onAddVocabularyWord, checkVocabularyAchievements, clearMessages)
+    
     private fun loadVocabularyData() {
         viewModelScope.launch {
             try {

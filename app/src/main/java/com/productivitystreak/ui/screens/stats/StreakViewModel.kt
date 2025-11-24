@@ -29,20 +29,86 @@ data class StreakUiState(
     val skillPathsState: SkillPathsState = SkillPathsState(),
     val isSubmitting: Boolean = false,
     val errorMessage: String? = null,
-    val successMessage: String? = null
+    val successMessage: String? = null,
+    val buddhaInsight: String? = null
 )
 
 class StreakViewModel(
-    private val streakRepository: StreakRepository
+    private val streakRepository: StreakRepository,
+    private val preferencesManager: com.productivitystreak.data.local.PreferencesManager,
+    private val moshi: com.squareup.moshi.Moshi,
+    private val geminiClient: com.productivitystreak.data.gemini.GeminiClient
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(StreakUiState())
     val uiState: StateFlow<StreakUiState> = _uiState.asStateFlow()
 
+    private val taskListAdapter = moshi.adapter<List<com.productivitystreak.data.model.Task>>(
+        com.squareup.moshi.Types.newParameterizedType(List::class.java, com.productivitystreak.data.model.Task::class.java)
+    )
+
     init {
         observeStreaks()
         observeTopStreakLeaderboard()
+        observeOneOffTasks()
+        fetchBuddhaInsight()
     }
+
+    private fun fetchBuddhaInsight() {
+        viewModelScope.launch {
+            // In a real app, check cache first. For now, fetch fresh to demonstrate AI.
+            val insight = geminiClient.generateBuddhaInsight()
+            _uiState.update { it.copy(buddhaInsight = insight) }
+        }
+    }
+
+    // ... (rest of the file)
+
+    private fun observeOneOffTasks() {
+        viewModelScope.launch {
+            preferencesManager.oneOffTasks.collectLatest { json ->
+                val tasks = try {
+                    taskListAdapter.fromJson(json) ?: emptyList()
+                } catch (e: Exception) {
+                    emptyList()
+                }
+                _uiState.update { it.copy(oneOffTasks = tasks) }
+            }
+        }
+    }
+
+    private fun saveOneOffTasks(tasks: List<com.productivitystreak.data.model.Task>) {
+        viewModelScope.launch {
+            val json = taskListAdapter.toJson(tasks)
+            preferencesManager.setOneOffTasks(json)
+        }
+    }
+
+    // ... (existing methods)
+
+    fun addOneOffTask(title: String) {
+        if (title.isBlank()) return
+        val newTask = com.productivitystreak.data.model.Task(title = title)
+        val currentTasks = _uiState.value.oneOffTasks
+        saveOneOffTasks(currentTasks + newTask)
+    }
+
+    fun toggleOneOffTask(taskId: String) {
+        val currentTasks = _uiState.value.oneOffTasks
+        val updatedTasks = currentTasks.map { 
+            if (it.id == taskId) it.copy(isCompleted = !it.isCompleted) else it 
+        }
+        saveOneOffTasks(updatedTasks)
+    }
+
+    fun deleteOneOffTask(taskId: String) {
+        val currentTasks = _uiState.value.oneOffTasks
+        val updatedTasks = currentTasks.filter { it.id != taskId }
+        saveOneOffTasks(updatedTasks)
+    }
+
+    // ... (rest of the file)
+
 
     private fun observeStreaks() {
         viewModelScope.launch {

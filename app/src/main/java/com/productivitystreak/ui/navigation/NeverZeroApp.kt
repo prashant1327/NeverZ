@@ -353,28 +353,6 @@ fun NeverZeroApp(
                 )
             }
 
-            val selectedAsset = selectedAssetId?.let { id ->
-                uiState.discoverState.assets.firstOrNull { it.id == id }
-            }
-
-            if (selectedAsset != null) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.4f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    AssetDetailScreen(
-                        asset = selectedAsset,
-                        onDismiss = { selectedAssetId = null },
-                        onComplete = { onAssetConsumed(selectedAsset.id) },
-                        onTestPassed = { onAssetTestPassed(selectedAsset.id) }
-                    )
-                }
-            }
-        }
-    }
-}
 
 @Composable
 private fun NeverZeroBottomBar(

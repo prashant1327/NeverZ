@@ -3,195 +3,181 @@ package com.productivitystreak.ui.theme
 import androidx.compose.ui.graphics.Color
 
 // ==================== CORE BRAND COLORS ====================
+// Premium Glassmorphism Palette
 
-private val Ion = Color(0xFF4BF2FF)
-private val Plasma = Color(0xFF8A7CFF)
-private val Laser = Color(0xFF12E09F)
-private val Ember = Color(0xFFFF5C4D)
+private val ElectricBlue = Color(0xFF2E86DE)
+private val NeonCyan = Color(0xFF00D2D3)
+private val HotPink = Color(0xFFFF9FF3)
+private val DeepPurple = Color(0xFF5F27CD)
 
-private val Obsidian = Color(0xFF000000)
-private val Stealth = Color(0xFF06080F)
-private val MatteGlass = Color(0xFF0B111C)
-private val BorderGraphite = Color(0xFF1D2738)
-private val Silver = Color(0xFFC6D2E4)
-private val Graphite = Color(0xFF7E8AA3)
-private val Ink = Color(0xFF05070D)
-private val Frost = Color(0xFFE8F6FF)
+private val Obsidian = Color(0xFF121212)
+private val Void = Color(0xFF000000)
+private val Glass = Color(0xFF1E1E2E)
+private val Graphite = Color(0xFF2F3640)
+private val Silver = Color(0xFFC8D6E5)
+private val Platinum = Color(0xFFF5F6FA)
+private val White = Color(0xFFFFFFFF)
 
 // ==================== LIGHT THEME COLORS ====================
 
-val Primary = Ion
-val OnPrimary = Ink
-val PrimaryContainer = Ion.copy(alpha = 0.14f)
-val OnPrimaryContainer = Ion
+val Primary = ElectricBlue
+val OnPrimary = White
+val PrimaryContainer = ElectricBlue.copy(alpha = 0.1f)
+val OnPrimaryContainer = ElectricBlue
 
-val Secondary = Plasma
-val OnSecondary = Ink
-val SecondaryContainer = Plasma.copy(alpha = 0.18f)
-val OnSecondaryContainer = Plasma
+val Secondary = DeepPurple
+val OnSecondary = White
+val SecondaryContainer = DeepPurple.copy(alpha = 0.1f)
+val OnSecondaryContainer = DeepPurple
 
-val Tertiary = Laser
-val OnTertiary = Ink
-val TertiaryContainer = Laser.copy(alpha = 0.2f)
-val OnTertiaryContainer = Laser
+val Tertiary = NeonCyan
+val OnTertiary = Void
+val TertiaryContainer = NeonCyan.copy(alpha = 0.1f)
+val OnTertiaryContainer = Color(0xFF006C6C)
 
-val Error = Ember
-val OnError = Color(0xFF1A0A07)
-val ErrorContainer = Ember.copy(alpha = 0.18f)
-val OnErrorContainer = Ember
+val Error = Color(0xFFEE5253)
+val OnError = White
+val ErrorContainer = Color(0xFFFFCDD2)
+val OnErrorContainer = Color(0xFFB71C1C)
 
-val Background = Color(0xFFF4F6FB)
-val OnBackground = Ink
-val Surface = Color(0xFFF7F9FF)
-val OnSurface = Ink
-val SurfaceVariant = Color(0xFFE5E9F5)
-val OnSurfaceVariant = Graphite
+val Background = Platinum
+val OnBackground = Graphite
+val Surface = White
+val OnSurface = Graphite
+val SurfaceVariant = Color(0xFFDBE4ED)
+val OnSurfaceVariant = Color(0xFF49454F)
 
-val Outline = BorderGraphite.copy(alpha = 0.6f)
-val OutlineVariant = BorderGraphite.copy(alpha = 0.35f)
+val Outline = Color(0xFF79747E)
+val OutlineVariant = Color(0xFFCAC4D0)
 
 // ==================== DARK THEME COLORS ====================
 
-val DarkPrimary = Ion
-val DarkOnPrimary = Obsidian
-val DarkPrimaryContainer = Ion.copy(alpha = 0.22f)
-val DarkOnPrimaryContainer = Frost
+val DarkPrimary = Color(0xFF54A0FF)
+val DarkOnPrimary = Void
+val DarkPrimaryContainer = Color(0xFF00497D)
+val DarkOnPrimaryContainer = Color(0xFFD1E4FF)
 
-val DarkSecondary = Plasma
-val DarkOnSecondary = Obsidian
-val DarkSecondaryContainer = Plasma.copy(alpha = 0.24f)
-val DarkOnSecondaryContainer = Frost
+val DarkSecondary = Color(0xFFA29BFE)
+val DarkOnSecondary = Void
+val DarkSecondaryContainer = Color(0xFF483D8B)
+val DarkOnSecondaryContainer = Color(0xFFEADDFF)
 
-val DarkTertiary = Laser
-val DarkOnTertiary = Obsidian
-val DarkTertiaryContainer = Laser.copy(alpha = 0.24f)
-val DarkOnTertiaryContainer = Frost
+val DarkTertiary = NeonCyan
+val DarkOnTertiary = Void
+val DarkTertiaryContainer = Color(0xFF004F4F)
+val DarkOnTertiaryContainer = Color(0xFF9CF8F8)
 
-val DarkError = Ember
-val DarkOnError = Obsidian
-val DarkErrorContainer = Ember.copy(alpha = 0.28f)
-val DarkOnErrorContainer = Frost
+val DarkError = Color(0xFFFF6B6B)
+val DarkOnError = Color(0xFF690005)
+val DarkErrorContainer = Color(0xFF93000A)
+val DarkOnErrorContainer = Color(0xFFFFDAD6)
 
-val DarkBackground = Obsidian
+val DarkBackground = Void
 val DarkOnBackground = Silver
-val DarkSurface = MatteGlass
+val DarkSurface = Glass
 val DarkOnSurface = Silver
-val DarkSurfaceVariant = Stealth
-val DarkOnSurfaceVariant = Graphite
+val DarkSurfaceVariant = Graphite
+val DarkOnSurfaceVariant = Color(0xFFCAC4D0)
 
-val DarkOutline = BorderGraphite
-val DarkOutlineVariant = BorderGraphite.copy(alpha = 0.5f)
+val DarkOutline = Color(0xFF938F99)
+val DarkOutlineVariant = Color(0xFF49454F)
 
 // ==================== CATEGORY/STREAK ACCENT COLORS ====================
-// Vibrant, modern colors for different streak categories
 
 object StreakColors {
-    // Focus Domain (Reading, Learning) -> Ion (Cyan)
-    val Reading = Ion
-    val ReadingContainer = Ion.copy(alpha = 0.15f)
-    val OnReadingContainer = Ion.copy(alpha = 0.9f) // Darker for contrast if needed, or keep Ion for glow
+    val Reading = Color(0xFF48DBFB) // Cyan
+    val ReadingContainer = Reading.copy(alpha = 0.1f)
+    val OnReadingContainer = Reading
 
-    val Learning = Ion
-    val LearningContainer = Ion.copy(alpha = 0.15f)
-    val OnLearningContainer = Ion.copy(alpha = 0.9f)
+    val Learning = Color(0xFFFECA57) // Yellow
+    val LearningContainer = Learning.copy(alpha = 0.1f)
+    val OnLearningContainer = Learning
 
-    // Create Domain (Creative, Vocabulary) -> Plasma (Purple)
-    val Vocabulary = Plasma
-    val VocabularyContainer = Plasma.copy(alpha = 0.15f)
-    val OnVocabularyContainer = Plasma.copy(alpha = 0.9f)
+    val Vocabulary = Color(0xFF5F27CD) // Purple
+    val VocabularyContainer = Vocabulary.copy(alpha = 0.1f)
+    val OnVocabularyContainer = Vocabulary
 
-    val Creative = Plasma
-    val CreativeContainer = Plasma.copy(alpha = 0.15f)
-    val OnCreativeContainer = Plasma.copy(alpha = 0.9f)
+    val Creative = Color(0xFFFF9FF3) // Pink
+    val CreativeContainer = Creative.copy(alpha = 0.1f)
+    val OnCreativeContainer = Creative
 
-    // Move Domain (Exercise, Wellness) -> Ember (Red)
-    val Exercise = Ember
-    val ExerciseContainer = Ember.copy(alpha = 0.15f)
-    val OnExerciseContainer = Ember.copy(alpha = 0.9f)
+    val Exercise = Color(0xFFFF6B6B) // Red
+    val ExerciseContainer = Exercise.copy(alpha = 0.1f)
+    val OnExerciseContainer = Exercise
 
-    val Wellness = Ember
-    val WellnessContainer = Ember.copy(alpha = 0.15f)
-    val OnWellnessContainer = Ember.copy(alpha = 0.9f)
+    val Wellness = Color(0xFF1DD1A1) // Green
+    val WellnessContainer = Wellness.copy(alpha = 0.1f)
+    val OnWellnessContainer = Wellness
 
-    // Reflect Domain (Meditation, Journal) -> Laser (Green)
-    val Meditation = Laser
-    val MeditationContainer = Laser.copy(alpha = 0.15f)
-    val OnMeditationContainer = Laser.copy(alpha = 0.9f)
+    val Meditation = Color(0xFF54A0FF) // Blue
+    val MeditationContainer = Meditation.copy(alpha = 0.1f)
+    val OnMeditationContainer = Meditation
 
-    // Productivity -> Mapped to Focus (Ion) or Create (Plasma)? Let's go with Focus (Ion)
-    val Productivity = Ion
-    val ProductivityContainer = Ion.copy(alpha = 0.15f)
-    val OnProductivityContainer = Ion.copy(alpha = 0.9f)
+    val Productivity = Color(0xFF00D2D3) // Teal
+    val ProductivityContainer = Productivity.copy(alpha = 0.1f)
+    val OnProductivityContainer = Productivity
 }
 
 // ==================== GRADIENT COLORS ====================
-// Modern gradient combinations for visual interest
 
 object GradientColors {
-    // Sunrise gradient
-    val SunriseStart = Color(0xFFFF6B6B)
-    val SunriseEnd = Color(0xFFFFD93D)
+    // Premium Blue-Purple
+    val PremiumStart = Color(0xFF2E86DE)
+    val PremiumEnd = Color(0xFF5F27CD)
 
-    // Ocean gradient
-    val OceanStart = Color(0xFF0061FE)
-    val OceanEnd = Color(0xFF00D9A5)
+    // Sunset
+    val SunriseStart = Color(0xFFFF9FF3)
+    val SunriseEnd = Color(0xFFFECA57)
 
-    // Twilight gradient
-    val TwilightStart = Color(0xFF6C5CE7)
-    val TwilightEnd = Color(0xFFE84393)
+    // Ocean
+    val OceanStart = Color(0xFF48DBFB)
+    val OceanEnd = Color(0xFF00D2D3)
 
-    // Success gradient
-    val SuccessStart = Color(0xFF00D9A5)
-    val SuccessEnd = Color(0xFF00B894)
-
-    // Premium gradient
-    val PremiumStart = Color(0xFF0061FE)
-    val PremiumEnd = Color(0xFF6C5CE7)
+    // Success
+    val SuccessStart = Color(0xFF1DD1A1)
+    val SuccessEnd = Color(0xFF10AC84)
+    
+    // Twilight
+    val TwilightStart = Color(0xFF5F27CD)
+    val TwilightEnd = Color(0xFF341F97)
 }
 
 // ==================== SEMANTIC COLORS ====================
-// Contextual colors for specific UI states
 
 object SemanticColors {
-    // Success
-    val Success = Color(0xFF00D9A5)
-    val OnSuccess = Color(0xFFFFFFFF)
-    val SuccessContainer = Color(0xFFD6FFF3)
-    val OnSuccessContainer = Color(0xFF003829)
+    val Success = Color(0xFF1DD1A1)
+    val OnSuccess = White
+    val SuccessContainer = Color(0xFF1DD1A1).copy(alpha = 0.1f)
+    val OnSuccessContainer = Color(0xFF1DD1A1)
 
-    // Warning
-    val Warning = Color(0xFFFF9F43)
-    val OnWarning = Color(0xFFFFFFFF)
-    val WarningContainer = Color(0xFFFFEFDD)
-    val OnWarningContainer = Color(0xFF4D2800)
+    val Warning = Color(0xFFFECA57)
+    val OnWarning = Void
+    val WarningContainer = Color(0xFFFECA57).copy(alpha = 0.1f)
+    val OnWarningContainer = Color(0xFFFECA57)
 
-    // Info
-    val Info = Color(0xFF0095FF)
-    val OnInfo = Color(0xFFFFFFFF)
-    val InfoContainer = Color(0xFFD4EBFF)
-    val OnInfoContainer = Color(0xFF001D33)
+    val Info = Color(0xFF54A0FF)
+    val OnInfo = White
+    val InfoContainer = Color(0xFF54A0FF).copy(alpha = 0.1f)
+    val OnInfoContainer = Color(0xFF54A0FF)
 }
 
 // ==================== UTILITY COLORS ====================
 
-// Overlay and scrim colors
 val Scrim = Color(0xFF000000)
 val ScrimTransparent = Color(0x00000000)
 
-// Divider colors
 val DividerLight = Color(0xFFE1E2EC)
 val DividerDark = Color(0xFF44474F)
 
 // ==================== MATERIAL 3 TONAL SURFACES ====================
-// Enhanced surface colors for Material You design
 
 // Light theme tonal surfaces
-val SurfaceDim = Color(0xFFDDD8E1)
+val SurfaceDim = Color(0xFFDED8E1)
 val SurfaceBright = Color(0xFFFEF7FF)
 val SurfaceContainerLowest = Color(0xFFFFFFFF)
 val SurfaceContainerLow = Color(0xFFF7F2FA)
-val SurfaceContainer = Color(0xFFF1ECF4)
-val SurfaceContainerHigh = Color(0xFFEBE6EE)
+val SurfaceContainer = Color(0xFFF3EDF7)
+val SurfaceContainerHigh = Color(0xFFECE6F0)
 val SurfaceContainerHighest = Color(0xFFE6E0E9)
 
 // Dark theme tonal surfaces
@@ -204,7 +190,6 @@ val DarkSurfaceContainerHigh = Color(0xFF2B2930)
 val DarkSurfaceContainerHighest = Color(0xFF36343B)
 
 // ==================== INTERACTION STATE COLORS ====================
-// State layer colors for interactive components
 
 object StateLayerOpacity {
     const val hover = 0.08f
@@ -239,84 +224,75 @@ data class NeverZeroDesignColors(
 object NeverZeroDesignPalettes {
     val Dark = NeverZeroDesignColors(
         isDark = true,
-        background = Obsidian,
-        backgroundAlt = Stealth,
-        surface = MatteGlass,
-        surfaceElevated = Color(0xFF111929),
-        border = BorderGraphite,
-        glow = Ion.copy(alpha = 0.35f),
-        primary = Ion,
-        onPrimary = Obsidian,
-        primaryMuted = Ion.copy(alpha = 0.45f),
-        secondary = Plasma,
-        onSecondary = Obsidian,
+        background = Void,
+        backgroundAlt = Glass,
+        surface = Glass,
+        surfaceElevated = Graphite,
+        border = Graphite,
+        glow = ElectricBlue.copy(alpha = 0.3f),
+        primary = ElectricBlue,
+        onPrimary = White,
+        primaryMuted = ElectricBlue.copy(alpha = 0.5f),
+        secondary = DeepPurple,
+        onSecondary = White,
         textPrimary = Silver,
-        textSecondary = Graphite,
-        disabled = Graphite.copy(alpha = 0.4f),
-        success = Laser,
-        warning = Color(0xFFFFC857),
-        error = Ember
+        textSecondary = Color(0xFF9CA3AF),
+        disabled = Color(0xFF4B5563),
+        success = Color(0xFF1DD1A1),
+        warning = Color(0xFFFECA57),
+        error = Color(0xFFFF6B6B)
     )
 
     val Light = NeverZeroDesignColors(
         isDark = false,
-        background = Background,
-        backgroundAlt = Color(0xFFE8ECF6),
-        surface = Color(0xFFFDFEFF),
-        surfaceElevated = Color(0xFFF0F4FF),
-        border = Outline,
-        glow = Ion.copy(alpha = 0.2f),
-        primary = Ion,
-        onPrimary = Ink,
-        primaryMuted = Ion.copy(alpha = 0.6f),
-        secondary = Plasma,
-        onSecondary = Ink,
-        textPrimary = Color(0xFF0F1726),
-        textSecondary = Graphite,
-        disabled = Graphite.copy(alpha = 0.48f),
-        success = Laser,
+        background = Platinum,
+        backgroundAlt = White,
+        surface = White,
+        surfaceElevated = Color(0xFFF1F2F6),
+        border = Color(0xFFDFE6E9),
+        glow = ElectricBlue.copy(alpha = 0.2f),
+        primary = ElectricBlue,
+        onPrimary = White,
+        primaryMuted = ElectricBlue.copy(alpha = 0.6f),
+        secondary = DeepPurple,
+        onSecondary = White,
+        textPrimary = Graphite,
+        textSecondary = Color(0xFF636E72),
+        disabled = Color(0xFFB2BEC3),
+        success = Color(0xFF10AC84),
         warning = Color(0xFFFF9F43),
-        error = Ember
+        error = Color(0xFFEE5253)
     )
 }
 
 // ==================== EXTENDED SEMANTIC COLORS ====================
-// Additional semantic colors for specific UI states
 
 object ExtendedSemanticColors {
-    // Focus indicator
-    val Focus = Color(0xFF0061FE)
-    val DarkFocus = Color(0xFFAAC7FF)
+    val Focus = ElectricBlue
+    val DarkFocus = Color(0xFF54A0FF)
     
-    // Disabled states
     val DisabledContent = Color(0xFF1C1B1F).copy(alpha = 0.38f)
     val DisabledContainer = Color(0xFF1C1B1F).copy(alpha = 0.12f)
     val DarkDisabledContent = Color(0xFFE6E1E5).copy(alpha = 0.38f)
     val DarkDisabledContainer = Color(0xFFE6E1E5).copy(alpha = 0.12f)
     
-    // Loading state
     val LoadingShimmer = Color(0xFFE1E2EC)
     val DarkLoadingShimmer = Color(0xFF44474F)
 }
 
 // ==================== CUSTOM ACCENT COLORS ====================
-// Additional accent colors for special features
 
 object AccentColors {
-    // Achievement gold
-    val Achievement = Color(0xFFFFB300)
-    val AchievementContainer = Color(0xFFFFECB3)
+    val Achievement = Color(0xFFFFD700) // Gold
+    val AchievementContainer = Color(0xFFFFF8E1)
     
-    // Premium purple
-    val Premium = Color(0xFF6C5CE7)
-    val PremiumContainer = Color(0xFFEAE6FF)
+    val Premium = DeepPurple
+    val PremiumContainer = Color(0xFFEDE7F6)
     
-    // Streak fire
-    val StreakFire = Color(0xFFFF6B35)
-    val StreakFireContainer = Color(0xFFFFE8E0)
+    val StreakFire = Color(0xFFFF6B6B)
+    val StreakFireContainer = Color(0xFFFFEBEE)
     
-    // Focus mode
-    val Focus = Color(0xFF00BFA5)
-    val FocusContainer = Color(0xFFB2DFDB)
+    val Focus = NeonCyan
+    val FocusContainer = Color(0xFFE0F7FA)
 }
 
