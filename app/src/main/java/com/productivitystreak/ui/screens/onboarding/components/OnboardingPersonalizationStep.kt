@@ -28,7 +28,6 @@ import com.productivitystreak.ui.theme.NeverZeroTheme
 import com.productivitystreak.ui.theme.Spacing
 
 @Composable
-@Composable
 fun OnboardingPersonalizationStep(
     userName: String,
     onUserNameChange: (String) -> Unit,
