@@ -57,21 +57,6 @@ fun QuickActionsWidget(
                     onClick = onAddHabit
                 )
                 QuickActionButton(
-                    icon = Icons.Default.BarChart,
-                    label = "Stats",
-                    color = NeverZeroTheme.designColors.secondary,
-                    onClick = onViewStats
-                )
-                QuickActionButton(
-                    icon = Icons.Default.Settings,
-                    label = "Settings",
-                    color = NeverZeroTheme.designColors.tertiary, // Assuming tertiary exists or use another color
-                    onClick = onSettings
-                )
-            }
-        }
-    }
-}
 
 @Composable
 private fun QuickActionButton(

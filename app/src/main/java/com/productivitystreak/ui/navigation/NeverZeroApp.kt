@@ -277,18 +277,14 @@ fun NeverZeroApp(
                     MainDestination.STATS -> {
                         val streakState by streakViewModel.uiState.collectAsStateWithLifecycle()
                         StatsScreen(
-                            uiState = streakState,
-                            onBack = { currentDestination = MainDestination.HOME }
+                            statsState = streakState.statsState
                         )
                     }
                     MainDestination.DISCOVER -> {
                         val discoverState by discoverViewModel.uiState.collectAsStateWithLifecycle()
                         DiscoverScreen(
-                            uiState = discoverState,
-                            onAssetSelected = { assetId -> selectedAssetId = assetId },
-                            onRefresh = discoverViewModel::refreshAssets,
-                            onSearch = discoverViewModel::onSearchQueryChanged,
-                            onFilterSelected = discoverViewModel::onFilterSelected
+                            state = discoverState,
+                            onAssetSelected = { assetId -> selectedAssetId = assetId }
                         )
                     }
                 }

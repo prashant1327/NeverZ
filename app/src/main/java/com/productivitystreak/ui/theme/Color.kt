@@ -164,7 +164,7 @@ object NeverZeroDesignPalettes {
     val DeepSpace = NeverZeroDesignColors(
         isDark = true,
         background = Void,
-        backgroundAlt = DeepSpace,
+        backgroundAlt = com.productivitystreak.ui.theme.DeepSpace,
         surface = SurfaceDark,
         surfaceElevated = Glass,
         border = Color(0xFF333333),

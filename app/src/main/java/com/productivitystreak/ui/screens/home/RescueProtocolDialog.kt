@@ -136,27 +136,6 @@ fun RescueProtocolDialog(
                 // Supporting message
                 Text(
                     text = "Your ${currentStreak}-day streak for \"$endangeredStreakName\" is at risk. Commit to just 1 minute of focused work right now to save it.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(horizontal = Spacing.sm)
-                )
-
-                Spacer(modifier = Modifier.height(Spacing.sm))
-
-                // Action buttons
-                PillButton(
-                    text = "Log 1-Min Action",
-                    onClick = onQuickAction,
-                    modifier = Modifier.fillMaxWidth(),
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                )
-
-                StyledTextButton(
-                    text = "Not Now",
-                    onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth()
                 )
             }
         }

@@ -658,7 +658,7 @@ fun TeachWordSheet(
             onValueChange = onWordChange,
             label = "Word to teach",
             singleLine = true,
-            placeholder = { Text("e.g., incisive") },
+            placeholder = "e.g., incisive",
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -666,7 +666,7 @@ fun TeachWordSheet(
             value = uiState.learnerContext,
             onValueChange = onContextChange,
             label = "Context (audience, scenario, goal)",
-            placeholder = { Text("Explaining to a senior stakeholder in a weekly review…") },
+            placeholder = "Explaining to a senior stakeholder in a weekly review…",
             minLines = 2,
             modifier = Modifier.fillMaxWidth()
         )

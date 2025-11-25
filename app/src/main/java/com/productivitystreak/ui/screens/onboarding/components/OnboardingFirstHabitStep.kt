@@ -201,30 +201,32 @@ private fun QuantitySelector(
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        FilledIconButton(
-            icon = Icons.Outlined.Remove,
+        androidx.compose.material3.FilledIconButton(
             onClick = {
                 val newValue = (value - 1).coerceAtLeast(min)
                 if (newValue != value) onValueChange(newValue)
             },
             enabled = value > min,
-            contentDescription = "Decrease"
-        )
+            modifier = Modifier.size(40.dp)
+        ) {
+            androidx.compose.material3.Icon(Icons.Outlined.Remove, contentDescription = "Decrease")
+        }
 
         Text(
             text = value.toString(),
             style = MaterialTheme.typography.titleMedium
         )
 
-        FilledIconButton(
-            icon = Icons.Outlined.Add,
+        androidx.compose.material3.FilledIconButton(
             onClick = {
                 val upper = max ?: Int.MAX_VALUE
                 val newValue = (value + 1).coerceAtMost(upper)
                 if (newValue != value) onValueChange(newValue)
             },
             enabled = max?.let { value < it } ?: true,
-            contentDescription = "Increase"
-        )
+            modifier = Modifier.size(40.dp)
+        ) {
+            androidx.compose.material3.Icon(Icons.Outlined.Add, contentDescription = "Increase")
+        }
     }
 }
