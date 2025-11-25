@@ -175,6 +175,27 @@ object NeverZeroDesignPalettes {
         warning = SemanticColors.Warning,
         error = Error
     )
+
+    val Light = NeverZeroDesignColors(
+        isDark = false,
+        background = Color(0xFFF7F8FA),
+        backgroundAlt = Color(0xFFFFFFFF),
+        surface = Color(0xFFFFFFFF),
+        surfaceElevated = Color(0xFFFFFFFF),
+        border = Color(0xFFE2E4EA),
+        glow = Color.Transparent,
+        primary = NeonGreen,
+        onPrimary = White,
+        primaryMuted = NeonGreen.copy(alpha = 0.5f),
+        secondary = Color(0xFF1B1B1F),
+        onSecondary = White,
+        textPrimary = Color(0xFF1B1B1F),
+        textSecondary = Color(0xFF757575),
+        disabled = Color(0xFFE0E0E0),
+        success = SemanticColors.Success,
+        warning = SemanticColors.Warning,
+        error = Error
+    )
 }
 
 object ExtendedSemanticColors {

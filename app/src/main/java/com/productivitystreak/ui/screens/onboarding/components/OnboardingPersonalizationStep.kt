@@ -28,6 +28,7 @@ import com.productivitystreak.ui.theme.NeverZeroTheme
 import com.productivitystreak.ui.theme.Spacing
 
 @Composable
+@Composable
 fun OnboardingPersonalizationStep(
     userName: String,
     onUserNameChange: (String) -> Unit,
@@ -53,180 +54,216 @@ fun OnboardingPersonalizationStep(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = Spacing.md),
+            .background(Color.White) // Enforce white background for this step as per design
+            .padding(horizontal = Spacing.lg),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(Spacing.lg))
 
-        Text(
-            text = "One Last Step",
-            style = MaterialTheme.typography.titleMedium,
-            color = NeverZeroTheme.designColors.textPrimary
-        )
-
-        Spacer(modifier = Modifier.height(Spacing.xl))
-
         // Profile Photo Placeholder
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .size(120.dp)
                 .clip(CircleShape)
-                .background(NeverZeroTheme.designColors.surfaceElevated)
-                .border(1.dp, NeverZeroTheme.designColors.border, CircleShape)
+                .background(Color(0xFFF5F5F5)) // Light gray background
+                .border(1.dp, Color(0xFFE0E0E0), CircleShape) // Dashed border simulation (solid for now)
                 .clickable { /* TODO: Implement photo picker */ },
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Default.CameraAlt,
                 contentDescription = "Add Photo",
-                tint = NeverZeroTheme.designColors.textSecondary
+                tint = Color(0xFF757575),
+                modifier = Modifier.size(32.dp)
             )
         }
         
-        Spacer(modifier = Modifier.height(Spacing.sm))
+        Spacer(modifier = Modifier.height(Spacing.md))
         
         Text(
             text = "Set Up Your Profile",
-            style = MaterialTheme.typography.titleMedium,
-            color = NeverZeroTheme.designColors.textPrimary,
-            fontWeight = FontWeight.Bold
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
         )
         Text(
             text = "Add a Photo (Optional)",
-            style = MaterialTheme.typography.bodySmall,
-            color = NeverZeroTheme.designColors.textSecondary
+            style = MaterialTheme.typography.bodyMedium.copy(
+                color = Color(0xFF9E9E9E)
+            )
         )
 
-        Spacer(modifier = Modifier.height(Spacing.lg))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         // Name Input
-        OutlinedTextField(
-            value = userName,
-            onValueChange = onUserNameChange,
-            label = { Text("Your Name") },
-            placeholder = { Text("What should we call you?") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = NeverZeroTheme.designColors.primary,
-                unfocusedBorderColor = NeverZeroTheme.designColors.border,
-                focusedLabelColor = NeverZeroTheme.designColors.primary,
-                unfocusedLabelColor = NeverZeroTheme.designColors.textSecondary
-            ),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Words,
-                imeAction = ImeAction.Next
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Your Name",
+                style = MaterialTheme.typography.labelLarge.copy(
+                    color = Color.Black,
+                    fontWeight = FontWeight.SemiBold
+                ),
+                modifier = Modifier.padding(bottom = 8.dp)
             )
-        )
+            
+            OutlinedTextField(
+                value = userName,
+                onValueChange = onUserNameChange,
+                placeholder = { 
+                    Text(
+                        "What should we call you?", 
+                        color = Color(0xFFBDBDBD)
+                    ) 
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFE0E0E0),
+                    unfocusedBorderColor = Color(0xFFF5F5F5),
+                    focusedContainerColor = Color(0xFFFAFAFA),
+                    unfocusedContainerColor = Color(0xFFFAFAFA),
+                    cursorColor = NeverZeroTheme.designColors.primary,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                ),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Words,
+                    imeAction = ImeAction.Next
+                )
+            )
+        }
+
+        Spacer(modifier = Modifier.height(Spacing.xl))
+
+        // Habit Setup Section
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "What's Your First Goal?",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            )
+            Text(
+                text = "Start with something small. The goal is to never have a zero day.",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color(0xFF757575)
+                ),
+                modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
+            )
+
+            Text(
+                text = "Habit Name",
+                style = MaterialTheme.typography.labelLarge.copy(
+                    color = Color.Black,
+                    fontWeight = FontWeight.SemiBold
+                ),
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            OutlinedTextField(
+                value = habitName,
+                onValueChange = onHabitNameChange,
+                placeholder = { 
+                    Text(
+                        "e.g., Read for 10 minutes", 
+                        color = Color(0xFFBDBDBD)
+                    ) 
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color(0xFFE0E0E0),
+                    unfocusedBorderColor = Color(0xFFF5F5F5),
+                    focusedContainerColor = Color(0xFFFAFAFA),
+                    unfocusedContainerColor = Color(0xFFFAFAFA),
+                    cursorColor = NeverZeroTheme.designColors.primary,
+                    focusedTextColor = Color.Black,
+                    unfocusedTextColor = Color.Black
+                ),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.Sentences,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = { focusManager.clearFocus() }
+                )
+            )
+        }
 
         Spacer(modifier = Modifier.height(Spacing.lg))
 
-        // Habit Setup Section
-        Text(
-            text = "What's Your First Goal?",
-            style = MaterialTheme.typography.titleMedium,
-            color = NeverZeroTheme.designColors.textPrimary,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.Start)
-        )
-        Text(
-            text = "Start with something small. The goal is to never have a zero day.",
-            style = MaterialTheme.typography.bodySmall,
-            color = NeverZeroTheme.designColors.textSecondary,
-            modifier = Modifier.align(Alignment.Start)
-        )
-
-        Spacer(modifier = Modifier.height(Spacing.md))
-
-        OutlinedTextField(
-            value = habitName,
-            onValueChange = onHabitNameChange,
-            label = { Text("Habit Name") },
-            placeholder = { Text("e.g., Read for 10 minutes") },
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = NeverZeroTheme.designColors.primary,
-                unfocusedBorderColor = NeverZeroTheme.designColors.border,
-                focusedLabelColor = NeverZeroTheme.designColors.primary,
-                unfocusedLabelColor = NeverZeroTheme.designColors.textSecondary
-            ),
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.Sentences,
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions(
-                onDone = { focusManager.clearFocus() }
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = "Choose an Icon",
+                style = MaterialTheme.typography.labelLarge.copy(
+                    color = Color.Black,
+                    fontWeight = FontWeight.SemiBold
+                ),
+                modifier = Modifier.padding(bottom = 12.dp)
             )
-        )
-
-        Spacer(modifier = Modifier.height(Spacing.md))
-
-        Text(
-            text = "Choose an Icon",
-            style = MaterialTheme.typography.bodyMedium,
-            color = NeverZeroTheme.designColors.textPrimary,
-            modifier = Modifier.align(Alignment.Start)
-        )
-        
-        Spacer(modifier = Modifier.height(Spacing.sm))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(Spacing.md)
-        ) {
-            icons.forEach { (id, icon) ->
-                val isSelected = selectedIcon == id
-                Surface(
-                    shape = CircleShape,
-                    color = if (isSelected) NeverZeroTheme.designColors.primary else NeverZeroTheme.designColors.surfaceElevated,
-                    modifier = Modifier
-                        .size(48.dp)
-                        .clickable { onIconSelected(id) }
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = null,
-                            tint = if (isSelected) NeverZeroTheme.designColors.onPrimary else NeverZeroTheme.designColors.textSecondary,
-                            modifier = Modifier.size(24.dp)
-                        )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md)
+            ) {
+                icons.forEach { (id, icon) ->
+                    val isSelected = selectedIcon == id
+                    Surface(
+                        shape = CircleShape,
+                        color = if (isSelected) Color(0xFFB9F6CA) else Color(0xFFEEEEEE), // Light Green vs Light Gray
+                        modifier = Modifier
+                            .size(56.dp)
+                            .clickable { onIconSelected(id) }
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = null,
+                                tint = if (isSelected) Color(0xFF00C853) else Color(0xFF616161), // Vibrant Green vs Dark Gray
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
                     }
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(Spacing.lg))
+        Spacer(modifier = Modifier.height(Spacing.xl))
 
         // Daily Reminder Toggle
         Surface(
-            shape = RoundedCornerShape(24.dp),
-            color = NeverZeroTheme.designColors.surfaceElevated,
-            border = androidx.compose.foundation.BorderStroke(1.dp, NeverZeroTheme.designColors.border),
+            shape = RoundedCornerShape(32.dp),
+            color = Color(0xFFFAFAFA),
+            border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFE0E0E0)),
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = Spacing.md, vertical = Spacing.sm)
+                    .padding(horizontal = Spacing.lg, vertical = Spacing.md)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = "Set a Daily Reminder",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = NeverZeroTheme.designColors.textPrimary
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.Black,
+                        fontWeight = FontWeight.Medium
+                    )
                 )
                 Switch(
                     checked = dailyReminderEnabled,
                     onCheckedChange = onDailyReminderToggle,
                     colors = SwitchDefaults.colors(
-                        checkedThumbColor = NeverZeroTheme.designColors.onPrimary,
-                        checkedTrackColor = NeverZeroTheme.designColors.primary,
-                        uncheckedThumbColor = NeverZeroTheme.designColors.textSecondary,
-                        uncheckedTrackColor = NeverZeroTheme.designColors.surface
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = Color(0xFF00E676), // Neon Green
+                        uncheckedThumbColor = Color.White,
+                        uncheckedTrackColor = Color(0xFFE0E0E0),
+                        uncheckedBorderColor = Color.Transparent
                     )
                 )
             }
@@ -234,13 +271,32 @@ fun OnboardingPersonalizationStep(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        GradientPrimaryButton(
-            text = "Complete Setup & Start",
+        Button(
             onClick = onComplete,
             enabled = userName.isNotBlank() && habitName.isNotBlank(),
-            modifier = Modifier.fillMaxWidth()
-        )
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(28.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF00E676), // Neon Green
+                contentColor = Color.Black,
+                disabledContainerColor = Color(0xFFE0E0E0),
+                disabledContentColor = Color(0xFF9E9E9E)
+            ),
+            elevation = ButtonDefaults.buttonElevation(
+                defaultElevation = 0.dp,
+                pressedElevation = 0.dp
+            )
+        ) {
+            Text(
+                text = "Complete Setup & Start",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
         
-        Spacer(modifier = Modifier.height(Spacing.lg))
+        Spacer(modifier = Modifier.height(Spacing.xl))
     }
 }

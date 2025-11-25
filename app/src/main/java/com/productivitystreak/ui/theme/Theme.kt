@@ -5,6 +5,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
@@ -45,6 +46,34 @@ private val DeepSpaceColorScheme = darkColorScheme(
     scrim = Scrim
 )
 
+private val LightColorScheme = lightColorScheme(
+    primary = NeonGreen,
+    onPrimary = White,
+    primaryContainer = NeonGreen.copy(alpha = 0.2f),
+    onPrimaryContainer = Color(0xFF003300),
+    secondary = Color(0xFF1B1B1F),
+    onSecondary = White,
+    secondaryContainer = Color(0xFFEADDFF),
+    onSecondaryContainer = Color(0xFF21005D),
+    tertiary = NeonCyan,
+    onTertiary = Color.Black,
+    tertiaryContainer = NeonCyan.copy(alpha = 0.2f),
+    onTertiaryContainer = Color(0xFF004F4F),
+    error = Error,
+    onError = White,
+    errorContainer = ErrorContainer,
+    onErrorContainer = OnErrorContainer,
+    background = Color(0xFFF7F8FA),
+    onBackground = Color(0xFF1B1B1F),
+    surface = Color(0xFFFFFFFF),
+    onSurface = Color(0xFF1B1B1F),
+    surfaceVariant = Color(0xFFE0E0E0),
+    onSurfaceVariant = Color(0xFF49454F),
+    outline = Color(0xFF79747E),
+    outlineVariant = Color(0xFFCAC4D0),
+    scrim = Color.Black
+)
+
 /**
  * Material 3 Shape System
  * Consistent corner radius for all components
@@ -67,20 +96,22 @@ val LocalDesignColors = staticCompositionLocalOf { NeverZeroDesignPalettes.DeepS
 
 /**
  * Never Zero Theme
- * Enforces Deep Space Dark Mode
+ * Supports Dark and Light modes
  */
 @Composable
 fun AppTheme(
-    darkTheme: Boolean = true, // Force Dark Mode
+    darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = false, // Disable dynamic color
     content: @Composable () -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
+    val colorScheme = if (darkTheme) DeepSpaceColorScheme else LightColorScheme
+    val designColors = if (darkTheme) NeverZeroDesignPalettes.DeepSpace else NeverZeroDesignPalettes.Light
     
     SideEffect {
         systemUiController.setSystemBarsColor(
-            color = Void,
-            darkIcons = false
+            color = if (darkTheme) Void else Color(0xFFF7F8FA),
+            darkIcons = !darkTheme
         )
     }
 
@@ -88,10 +119,10 @@ fun AppTheme(
         LocalStreakColors provides StreakColors,
         LocalGradientColors provides GradientColors,
         LocalSemanticColors provides SemanticColors,
-        LocalDesignColors provides NeverZeroDesignPalettes.DeepSpace
+        LocalDesignColors provides designColors
     ) {
         MaterialTheme(
-            colorScheme = DeepSpaceColorScheme,
+            colorScheme = colorScheme,
             typography = NeverZeroTypography,
             shapes = AppShapes,
             content = content
@@ -101,13 +132,18 @@ fun AppTheme(
 
 @Composable
 fun ProductivityStreakTheme(
-    themeMode: com.productivitystreak.ui.state.profile.ProfileTheme = com.productivitystreak.ui.state.profile.ProfileTheme.Dark,
+    themeMode: com.productivitystreak.ui.state.profile.ProfileTheme = com.productivitystreak.ui.state.profile.ProfileTheme.System,
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    // Ignore user preference for now to enforce the redesign aesthetic
+    val darkTheme = when (themeMode) {
+        com.productivitystreak.ui.state.profile.ProfileTheme.Light -> false
+        com.productivitystreak.ui.state.profile.ProfileTheme.Dark -> true
+        com.productivitystreak.ui.state.profile.ProfileTheme.System -> isSystemInDarkTheme()
+    }
+
     AppTheme(
-        darkTheme = true,
+        darkTheme = darkTheme,
         dynamicColor = false,
         content = content
     )

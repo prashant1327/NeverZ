@@ -48,16 +48,27 @@ fun OnboardingFlow(
     var showFinishRipple by remember { mutableStateOf(false) }
     val finishRipple = remember { Animatable(0f) }
 
+    val isDark = NeverZeroTheme.designColors.isDark
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(
-                    colors = listOf(
-                        NeverZeroTheme.gradientColors.PremiumStart.copy(alpha = 0.18f),
-                        NeverZeroTheme.gradientColors.PremiumEnd.copy(alpha = 0.08f)
+                if (isDark) {
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            NeverZeroTheme.gradientColors.PremiumStart.copy(alpha = 0.18f),
+                            NeverZeroTheme.gradientColors.PremiumEnd.copy(alpha = 0.08f)
+                        )
                     )
-                )
+                } else {
+                    Brush.linearGradient(
+                        colors = listOf(
+                            NeverZeroTheme.designColors.background,
+                            NeverZeroTheme.designColors.background
+                        )
+                    )
+                }
             )
             .padding(horizontal = Spacing.lg, vertical = Spacing.xl)
     ) {
