@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -57,6 +58,21 @@ fun QuickActionsWidget(
                     onClick = onAddHabit
                 )
                 QuickActionButton(
+                    icon = Icons.Default.BarChart,
+                    label = "Stats",
+                    color = NeverZeroTheme.designColors.secondary,
+                    onClick = onViewStats
+                )
+                QuickActionButton(
+                    icon = Icons.Default.Settings,
+                    label = "Settings",
+                    color = NeverZeroTheme.designColors.secondary,
+                    onClick = onSettings
+                )
+            }
+        }
+    }
+}
 
 @Composable
 private fun QuickActionButton(
