@@ -63,9 +63,14 @@ class AppViewModel(
         // Observe Theme Mode
         viewModelScope.launch {
             preferencesManager.themeMode.collect { mode ->
+                val theme = when (mode.lowercase()) {
+                    "light" -> com.productivitystreak.ui.state.profile.ProfileTheme.Light
+                    "dark" -> com.productivitystreak.ui.state.profile.ProfileTheme.Dark
+                    else -> com.productivitystreak.ui.state.profile.ProfileTheme.Auto
+                }
                 _uiState.update { 
                     it.copy(
-                        profileState = it.profileState.copy(theme = mode)
+                        profileState = it.profileState.copy(theme = theme)
                     ) 
                 }
             }
