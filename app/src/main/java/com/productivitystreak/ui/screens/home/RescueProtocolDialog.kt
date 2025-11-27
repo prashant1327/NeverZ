@@ -93,14 +93,7 @@ fun RescueProtocolDialog(
                     modifier = Modifier
                         .size(80.dp)
                         .clip(CircleShape)
-                        .background(
-                            Brush.linearGradient(
-                                colors = listOf(
-                                    NeverZeroTheme.gradientColors.PremiumStart.copy(alpha = 0.2f),
-                                    NeverZeroTheme.gradientColors.PremiumEnd.copy(alpha = 0.2f)
-                                )
-                            )
-                        )
+                        .background(MaterialTheme.colorScheme.primaryContainer)
                         .scale(scale),
                     contentAlignment = Alignment.Center
                 ) {
@@ -108,7 +101,7 @@ fun RescueProtocolDialog(
                         imageVector = Icons.Rounded.Timer,
                         contentDescription = null,
                         modifier = Modifier.size(40.dp),
-                        tint = MaterialTheme.colorScheme.primary
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
 
@@ -145,7 +138,7 @@ fun RescueProtocolDialog(
                 Spacer(modifier = Modifier.height(Spacing.sm))
 
                 // Action buttons
-                GradientButton(
+                com.productivitystreak.ui.components.PrimaryButton(
                     text = "Log 1-Min Action",
                     onClick = onQuickAction,
                     modifier = Modifier.fillMaxWidth()
@@ -154,7 +147,8 @@ fun RescueProtocolDialog(
                 StyledTextButton(
                     text = "Not Now",
                     onClick = onDismiss,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
             }

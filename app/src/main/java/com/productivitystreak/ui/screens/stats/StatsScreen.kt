@@ -306,7 +306,7 @@ private fun EnhancedLeaderboardRow(
     }
 
     val rankBadgeTextColor = when (entry.position) {
-        1, 2, 3 -> Color.Black
+        1, 2, 3 -> Color.White
         else -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
@@ -528,10 +528,8 @@ private fun TrendChart(trend: AverageDailyTrend) {
 
     val maxPercent = 100f
     val minPercent = 0f
-    val gridColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.18f)
-    val gradientColors = NeverZeroTheme.gradientColors
-    val oceanStart = gradientColors.OceanStart
-    val oceanEnd = gradientColors.OceanEnd
+    val gridColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+    val primaryColor = MaterialTheme.colorScheme.primary
     val surfaceColor = MaterialTheme.colorScheme.surface
 
     Canvas(
@@ -547,7 +545,6 @@ private fun TrendChart(trend: AverageDailyTrend) {
         val usableWidth = chartWidth - 2 * horizontalPadding
         val usableHeight = chartHeight - 2 * verticalPadding
 
-        // Baseline grid
         // Baseline grid
         repeat(4) { index ->
             val y = verticalPadding + (usableHeight / 3f) * index
@@ -586,7 +583,7 @@ private fun TrendChart(trend: AverageDailyTrend) {
 
         val gradient = Brush.verticalGradient(
             colors = listOf(
-                oceanStart.copy(alpha = 0.35f),
+                primaryColor.copy(alpha = 0.2f),
                 Color.Transparent
             ),
             startY = verticalPadding,
@@ -597,7 +594,7 @@ private fun TrendChart(trend: AverageDailyTrend) {
 
         drawPath(
             path = path,
-            color = oceanEnd,
+            color = primaryColor,
             style = Stroke(width = 3.dp.toPx())
         )
 
@@ -612,7 +609,7 @@ private fun TrendChart(trend: AverageDailyTrend) {
                 center = Offset(x, y)
             )
             drawCircle(
-                color = oceanEnd,
+                color = primaryColor,
                 radius = 4.dp.toPx(),
                 center = Offset(x, y)
             )
@@ -716,9 +713,7 @@ private fun HeatMapGrid(heatMap: CalendarHeatMap) {
     val weeks = heatMap.weeks
     if (weeks.isEmpty()) return
 
-    val gradientColors = NeverZeroTheme.gradientColors
-    val sunriseStart = gradientColors.SunriseStart
-    val sunriseEnd = gradientColors.SunriseEnd
+    val primaryColor = MaterialTheme.colorScheme.primary
     val onSurface = MaterialTheme.colorScheme.onSurface
 
     Canvas(
@@ -739,12 +734,7 @@ private fun HeatMapGrid(heatMap: CalendarHeatMap) {
                 val brush = if (intensity <= 0f) {
                     SolidColor(onSurface.copy(alpha = 0.05f))
                 } else {
-                    Brush.verticalGradient(
-                        listOf(
-                            sunriseStart.copy(alpha = 0.3f + 0.5f * intensity),
-                            sunriseEnd.copy(alpha = 0.3f + 0.5f * intensity)
-                        )
-                    )
+                    SolidColor(primaryColor.copy(alpha = 0.2f + 0.8f * intensity))
                 }
                 val left = xIndex * cellWidth + 4f
                 val top = yIndex * cellHeight + 4f

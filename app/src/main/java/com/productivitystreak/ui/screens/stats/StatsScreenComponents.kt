@@ -41,9 +41,9 @@ fun ConsistencyScoreCard(score: ConsistencyScore) {
     }
 
     val levelColor = when (tier) {
-        "BEGINNER" -> Color(0xFF9E9E9E)
-        "BUILDING" -> Color(0xFF2196F3)
-        "CONSISTENT" -> Color(0xFF4CAF50)
+        "BEGINNER" -> MaterialTheme.colorScheme.outline
+        "BUILDING" -> MaterialTheme.colorScheme.primary
+        "CONSISTENT" -> MaterialTheme.colorScheme.tertiary
         "UNSTOPPABLE" -> Color(0xFFFFD700)
         else -> MaterialTheme.colorScheme.primary
     }
