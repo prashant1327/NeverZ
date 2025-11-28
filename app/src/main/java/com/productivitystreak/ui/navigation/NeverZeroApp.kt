@@ -314,7 +314,6 @@ fun NeverZeroApp(
                     onPathSelected = { /* TODO: show skill-path detail */ },
                     paths = streakState.skillPathsState.pathsProgress
                 )
-                )
             }
 
             // Buddha Chat Overlay

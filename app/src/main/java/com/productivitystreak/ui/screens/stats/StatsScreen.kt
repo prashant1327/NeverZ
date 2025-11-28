@@ -232,6 +232,19 @@ private fun LeaderboardSection(
                         val isSelected = selectedPosition == entry.position
                         val isCurrentUser = entry.name == "You"
                         EnhancedLeaderboardRow(
+                            entry = entry,
+                            highlight = false,
+                            selected = isSelected,
+                            isCurrentUser = isCurrentUser,
+                            onClick = { onEntrySelected(entry.position) }
+                        )
+                    }
+            }
+        }
+    }
+}
+
+@Composable
 private fun LeaderboardToggleOption(
     text: String,
     isSelected: Boolean,

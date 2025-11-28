@@ -28,7 +28,6 @@ class BuddhaRepository {
                 responseMimeType = "text/plain"
             }
         )
-        )
     }
 
     /**
