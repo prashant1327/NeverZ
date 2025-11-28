@@ -236,7 +236,7 @@ private fun LeaderboardSection(
                             highlight = false,
                             selected = isSelected,
                             isCurrentUser = isCurrentUser,
-                            onClick = { onEntrySelected(entry.position) }
+                            onClick = { onEntrySelected(entry) }
                         )
                     }
             }
