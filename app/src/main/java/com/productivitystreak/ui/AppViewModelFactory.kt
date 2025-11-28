@@ -86,6 +86,14 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
                     geminiClient = app.geminiClient
                 ) as T
             }
+            modelClass.isAssignableFrom(com.productivitystreak.ui.screens.ai.BuddhaChatViewModel::class.java) -> {
+                com.productivitystreak.ui.screens.ai.BuddhaChatViewModel(
+                    repository = app.buddhaRepository
+                ) as T
+            }
+            modelClass.isAssignableFrom(com.productivitystreak.ui.screens.leaderboard.LeaderboardViewModel::class.java) -> {
+                com.productivitystreak.ui.screens.leaderboard.LeaderboardViewModel() as T
+            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }

@@ -28,6 +28,19 @@ class BuddhaRepository {
                 responseMimeType = "text/plain"
             }
         )
+        )
+    }
+
+    /**
+     * Start a new chat session with Buddha
+     */
+    fun createChatSession(): com.google.ai.client.generativeai.Chat {
+        return generativeModel.startChat(
+            history = listOf(
+                content(role = "user") { text("hello") },
+                content(role = "model") { text("i am here. what is on your mind?") }
+            )
+        )
     }
     
     /**

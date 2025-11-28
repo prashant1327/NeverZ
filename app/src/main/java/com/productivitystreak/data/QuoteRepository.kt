@@ -7,7 +7,9 @@ import kotlinx.coroutines.withContext
 import kotlin.random.Random
 
 class QuoteRepository(
-    private val personalizedEngine: PersonalizedQuoteEngine
+    private val personalizedEngine: PersonalizedQuoteEngine,
+    private val reflectionRepository: com.productivitystreak.data.repository.ReflectionRepository,
+    private val timeCapsuleRepository: com.productivitystreak.data.repository.TimeCapsuleRepository
 ) {
     
     private val fallbackQuotes = listOf(
@@ -31,7 +33,23 @@ class QuoteRepository(
 
     suspend fun getPersonalizedQuote(userContext: UserContext): Quote = withContext(Dispatchers.IO) {
         try {
-            personalizedEngine.generateQuote(userContext)
+            // Enrich user context with recent reflections and time capsules
+            val recentReflections = reflectionRepository.observeRecentReflections(limit = 3)
+                .kotlinx.coroutines.flow.firstOrNull() ?: emptyList()
+            
+            val reflectionNotes = recentReflections.mapNotNull { it.notes.takeIf { note -> note.isNotBlank() } }
+            
+            val timeCapsules = timeCapsuleRepository.observeTimeCapsules()
+                .kotlinx.coroutines.flow.firstOrNull() ?: emptyList()
+                
+            val futureSelfMessages = timeCapsules.map { it.message }
+
+            val enrichedContext = userContext.copy(
+                recentJournalEntries = reflectionNotes,
+                futureSelfMessages = futureSelfMessages
+            )
+
+            personalizedEngine.generateQuote(enrichedContext)
         } catch (exception: Exception) {
             fallbackQuotes.random(Random(System.currentTimeMillis()))
         }

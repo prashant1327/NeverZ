@@ -167,6 +167,8 @@ fun NeverZeroApp(
     var selectedAssetId by rememberSaveable { mutableStateOf<String?>(null) }
     var showSkillPaths by rememberSaveable { mutableStateOf(false) }
     var showTemplates by rememberSaveable { mutableStateOf(false) }
+    var showBuddhaChat by rememberSaveable { mutableStateOf(false) }
+    var showLeaderboard by rememberSaveable { mutableStateOf(false) }
 
     val addUi = uiState.addUiState
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -255,7 +257,8 @@ fun NeverZeroApp(
                             onAddOneOffTask = streakViewModel::addOneOffTask,
                             onToggleOneOffTask = streakViewModel::toggleOneOffTask,
                             onDeleteOneOffTask = streakViewModel::deleteOneOffTask,
-                            onAssetSelected = { assetId -> selectedAssetId = assetId }
+                            onAssetSelected = { assetId -> selectedAssetId = assetId },
+                            onOpenBuddhaChat = { showBuddhaChat = true }
                         )
                     }
                     MainDestination.PROFILE -> {
@@ -289,7 +292,8 @@ fun NeverZeroApp(
                     MainDestination.STATS -> {
                         val streakState by streakViewModel.uiState.collectAsStateWithLifecycle()
                         StatsScreen(
-                            statsState = streakState.statsState
+                            statsState = streakState.statsState,
+                            onOpenLeaderboard = { showLeaderboard = true }
                         )
                     }
                     MainDestination.DISCOVER -> {
@@ -309,6 +313,26 @@ fun NeverZeroApp(
                     onBack = { showSkillPaths = false },
                     onPathSelected = { /* TODO: show skill-path detail */ },
                     paths = streakState.skillPathsState.pathsProgress
+                )
+                )
+            }
+
+            // Buddha Chat Overlay
+            if (showBuddhaChat) {
+                val app = appViewModel.getApplication<com.productivitystreak.NeverZeroApplication>()
+                com.productivitystreak.ui.screens.ai.BuddhaChatScreen(
+                    onBackClick = { showBuddhaChat = false },
+                    repository = app.buddhaRepository,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            // Leaderboard Overlay
+            if (showLeaderboard) {
+                val leaderboardViewModel: com.productivitystreak.ui.screens.leaderboard.LeaderboardViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = viewModelFactory)
+                com.productivitystreak.ui.screens.leaderboard.LeaderboardScreen(
+                    viewModel = leaderboardViewModel,
+                    onBackClick = { showLeaderboard = false }
                 )
             }
 

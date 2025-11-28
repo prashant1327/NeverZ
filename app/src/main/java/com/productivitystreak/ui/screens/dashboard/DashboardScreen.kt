@@ -33,6 +33,7 @@ fun DashboardScreen(
     onAssetSelected: (String) -> Unit,
     onOpenJournal: () -> Unit = {},
     onOpenTimeCapsule: () -> Unit = {},
+    onOpenBuddhaChat: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val maxStreak = streakUiState.streaks.maxOfOrNull { it.currentCount } ?: 0
@@ -74,7 +75,9 @@ fun DashboardScreen(
             streakUiState.buddhaInsight?.let { insight ->
                 BuddhaInsightCard(
                     insight = insight,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onOpenBuddhaChat() }
                 )
             }
         }

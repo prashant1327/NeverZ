@@ -43,34 +43,35 @@ fun BuddhaInsightCard(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    com.productivitystreak.ui.components.ElevatedCard(
+    com.productivitystreak.ui.components.GlassCard(
         modifier = modifier,
         shape = RoundedCornerShape(24.dp),
-        elevation = 2.dp
+        elevation = 0.dp,
+        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
+                .padding(horizontal = 8.dp, vertical = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Header
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(bottom = 12.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .size(32.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.SelfImprovement,
                         contentDescription = "Buddha",
-                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp)
                     )
                 }
@@ -80,7 +81,8 @@ fun BuddhaInsightCard(
                 Text(
                     text = "buddha",
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
+                    color = MaterialTheme.colorScheme.primary,
+                    letterSpacing = 1.sp
                 )
             }
 
@@ -102,7 +104,7 @@ fun BuddhaInsightCard(
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
+                                modifier = Modifier.size(20.dp),
                                 strokeWidth = 2.dp,
                                 color = MaterialTheme.colorScheme.primary
                             )

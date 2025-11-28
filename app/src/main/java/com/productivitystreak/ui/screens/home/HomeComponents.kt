@@ -34,14 +34,13 @@ fun JournalPromptCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    com.productivitystreak.ui.components.InteractiveGlassCard(
+        onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(140.dp)
-            .clickable(onClick = onClick),
+            .height(140.dp),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
-        elevation = CardDefaults.cardElevation(0.dp)
+        contentPadding = PaddingValues(0.dp)
     ) {
         Box(
             modifier = Modifier
@@ -49,8 +48,8 @@ fun JournalPromptCard(
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFF6A11CB), // Deep Purple
-                            Color(0xFF2575FC)  // Blue
+                            Color(0xFF6A11CB).copy(alpha = 0.8f), // Deep Purple
+                            Color(0xFF2575FC).copy(alpha = 0.8f)  // Blue
                         )
                     )
                 )
@@ -90,18 +89,14 @@ fun TimeCapsuleCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick),
+    com.productivitystreak.ui.components.InteractiveGlassCard(
+        onClick = onClick,
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
-        elevation = CardDefaults.cardElevation(0.dp)
+        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
     ) {
         Row(
-            modifier = Modifier
-                .padding(20.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
@@ -109,13 +104,13 @@ fun TimeCapsuleCard(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
+                    .background(MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.2f)),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Outlined.HourglassEmpty,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
             
@@ -141,39 +136,17 @@ fun ImprovedHabitRow(
     onToggle: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var tapped by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(
-        targetValue = if (tapped) 0.95f else 1f,
-        animationSpec = spring(stiffness = Spring.StiffnessMedium),
-        label = "habit-scale"
-    )
-    
-    LaunchedEffect(tapped) {
-        if (tapped) {
-            delay(100)
-            onToggle()
-            tapped = false
-        }
-    }
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .scale(scale)
-            .clickable { tapped = true },
+    com.productivitystreak.ui.components.InteractiveGlassCard(
+        onClick = onToggle,
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (task.isCompleted) 
-                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-            else 
-                MaterialTheme.colorScheme.surface
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        containerColor = if (task.isCompleted) 
+            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f)
+        else 
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
     ) {
         Row(
-            modifier = Modifier
-                .padding(16.dp)
-                .fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -196,7 +169,8 @@ fun ImprovedHabitRow(
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
+                        color = if (task.isCompleted) MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface
                     )
                     if (task.streakCount > 0) {
                         Text(
@@ -220,7 +194,8 @@ fun ImprovedHabitRow(
                     modifier = Modifier
                         .size(28.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), CircleShape)
                 )
             }
         }

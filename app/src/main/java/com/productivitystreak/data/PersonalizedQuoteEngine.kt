@@ -201,6 +201,14 @@ class PersonalizedQuoteEngine(
     }
 
     private fun buildPrompt(context: UserContext): String {
+        val journalContext = if (context.recentJournalEntries.isNotEmpty()) {
+            "Recent journal themes: ${context.recentJournalEntries.joinToString("; ")}"
+        } else ""
+
+        val futureSelfContext = if (context.futureSelfMessages.isNotEmpty()) {
+            "Messages to future self: ${context.futureSelfMessages.joinToString("; ")}"
+        } else ""
+
         return """
             Generate a short, punchy motivational quote for a user named ${context.userName}.
             Context:
@@ -208,8 +216,12 @@ class PersonalizedQuoteEngine(
             - Time of day: ${formatTime(context.timeOfDay.hour)}
             - Total points: ${context.totalPoints}
             - Completion rate today: ${context.completionRate}%
+            $journalContext
+            $futureSelfContext
             
-            The quote should be direct, encouraging, and under 20 words. Do not use quotes around the text.
+            The quote should be direct, encouraging, and under 20 words. 
+            If journal themes or future self messages are present, subtly reference them to make it feel personal, but don't be creepy or too specific.
+            Do not use quotes around the text.
         """.trimIndent()
     }
 

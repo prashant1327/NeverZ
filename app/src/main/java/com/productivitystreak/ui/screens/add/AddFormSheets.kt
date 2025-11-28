@@ -82,92 +82,119 @@ fun AddEntryMenuSheet(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+            .padding(horizontal = 24.dp, vertical = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // Header
-        Column(
+        Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Command Center",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = "Choose your action",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
+            Column {
+                Text(
+                    text = "Command Center",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Quick actions",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
-
-
-        // 2-Column Grid of Actions
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // Row 1: Habits + Teach
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                CommandCenterCard(
+        // Compact Grid
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                CompactActionCard(
                     icon = com.productivitystreak.ui.icons.AppIcons.AddHabit,
-                    title = "New Habit",
-                    subtitle = "Track progress",
+                    label = "New Habit",
+                    color = Color(0xFF4ADE80),
                     onClick = { onEntrySelected(AddEntryType.HABIT) },
                     modifier = Modifier.weight(1f)
                 )
-                CommandCenterCard(
+                CompactActionCard(
                     icon = com.productivitystreak.ui.icons.AppIcons.TeachWord,
-                    title = "Teach word",
-                    subtitle = "AI coach",
+                    label = "Teach Word",
+                    color = Color(0xFF22D3EE),
                     onClick = { onEntrySelected(AddEntryType.TEACH) },
                     modifier = Modifier.weight(1f)
                 )
             }
-
-            // Row 2: Vocabulary + Journal
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                CommandCenterCard(
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                CompactActionCard(
                     icon = com.productivitystreak.ui.icons.AppIcons.AddWord,
-                    title = "Log word",
-                    subtitle = "Capture context",
+                    label = "Log Word",
+                    color = Color(0xFFFACC15),
                     onClick = { onEntrySelected(AddEntryType.WORD) },
                     modifier = Modifier.weight(1f)
                 )
-                CommandCenterCard(
+                CompactActionCard(
                     icon = com.productivitystreak.ui.icons.AppIcons.AddJournal,
-                    title = "Daily journal",
-                    subtitle = "Reflect & reset",
+                    label = "Journal",
+                    color = Color(0xFFFB7185),
                     onClick = { onEntrySelected(AddEntryType.JOURNAL) },
                     modifier = Modifier.weight(1f)
                 )
             }
-
-            // Row 3: Templates + spacer (future actions)
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                CommandCenterCard(
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                CompactActionCard(
                     icon = com.productivitystreak.ui.icons.AppIcons.Search,
-                    title = "Templates",
-                    subtitle = "Browse library",
+                    label = "Templates",
+                    color = Color(0xFFA78BFA),
                     onClick = { onEntrySelected(AddEntryType.TEMPLATE) },
                     modifier = Modifier.weight(1f)
                 )
+                // Placeholder for balance
                 Spacer(modifier = Modifier.weight(1f))
             }
+        }
+    }
+}
+
+@Composable
+private fun CompactActionCard(
+    icon: ImageVector,
+    label: String,
+    color: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    androidx.compose.material3.Surface(
+        onClick = onClick,
+        modifier = modifier.height(80.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(color.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = color,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }

@@ -10,7 +10,9 @@ data class UserContext(
     val completedTasksToday: Int,
     val timeOfDay: LocalTime,
     val lastActivityDate: LocalDate?,
-    val totalPoints: Int
+    val totalPoints: Int,
+    val recentJournalEntries: List<String> = emptyList(),
+    val futureSelfMessages: List<String> = emptyList()
 ) {
     val completionRate: Int
         get() = if (totalTasksToday > 0) {

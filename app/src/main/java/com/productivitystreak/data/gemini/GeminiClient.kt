@@ -209,7 +209,7 @@ class GeminiClient private constructor() {
 
     companion object {
         private const val TAG = "GeminiClient"
-        private const val MODEL_NAME = "models/gemini-2.5-flash"
+        private const val MODEL_NAME = "gemini-1.5-flash"
 
         @Volatile
         private var instance: GeminiClient? = null

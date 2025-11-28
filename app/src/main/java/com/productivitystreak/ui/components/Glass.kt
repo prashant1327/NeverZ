@@ -222,8 +222,13 @@ fun InteractiveGlassCard(
         label = "glass-card-scale"
     )
     
+    val haptic = androidx.compose.ui.platform.LocalHapticFeedback.current
+    
     Surface(
-        onClick = onClick,
+        onClick = {
+            haptic.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress) // Using LongPress for a heavier feel, or TextHandleMove for lighter
+            onClick()
+        },
         modifier = modifier
             .graphicsLayer {
                 scaleX = scale

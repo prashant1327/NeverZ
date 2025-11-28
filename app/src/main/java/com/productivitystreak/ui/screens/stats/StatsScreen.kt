@@ -67,7 +67,8 @@ fun StatsScreen(
     modifier: Modifier = Modifier,
     onLeaderboardEntrySelected: (LeaderboardEntry) -> Unit = {},
     onLeaderboardTypeSelected: (LeaderboardType) -> Unit = {},
-    onNavigateToSkillPaths: () -> Unit = {}
+    onNavigateToSkillPaths: () -> Unit = {},
+    onOpenLeaderboard: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -112,7 +113,8 @@ fun StatsScreen(
         LeaderboardSection(
             statsState = statsState,
             onEntrySelected = onLeaderboardEntrySelected,
-            onTypeSelected = onLeaderboardTypeSelected
+            onTypeSelected = onLeaderboardTypeSelected,
+            onOpenLeaderboard = onOpenLeaderboard
         )
 
         statsState.calendarHeatMap?.let {
@@ -125,7 +127,8 @@ fun StatsScreen(
 private fun LeaderboardSection(
     statsState: StatsState,
     onEntrySelected: (LeaderboardEntry) -> Unit,
-    onTypeSelected: (LeaderboardType) -> Unit
+    onTypeSelected: (LeaderboardType) -> Unit,
+    onOpenLeaderboard: () -> Unit
 ) {
     val entries = if (statsState.leaderboardType == LeaderboardType.Personal) {
         statsState.leaderboard
@@ -229,22 +232,6 @@ private fun LeaderboardSection(
                         val isSelected = selectedPosition == entry.position
                         val isCurrentUser = entry.name == "You"
                         EnhancedLeaderboardRow(
-                            entry = entry,
-                            highlight = entry.position == 1 || isCurrentUser,
-                            selected = isSelected,
-                            isCurrentUser = isCurrentUser,
-                            onClick = {
-                                selectedPosition = entry.position
-                                onEntrySelected(entry)
-                            }
-                        )
-                    }
-            }
-        }
-    }
-}
-
-@Composable
 private fun LeaderboardToggleOption(
     text: String,
     isSelected: Boolean,
