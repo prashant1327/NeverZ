@@ -35,12 +35,12 @@ class QuoteRepository(
         try {
             // Enrich user context with recent reflections and time capsules
             val recentReflections = reflectionRepository.observeRecentReflections(limit = 3)
-                .kotlinx.coroutines.flow.firstOrNull() ?: emptyList()
+                .firstOrNull() ?: emptyList()
             
             val reflectionNotes = recentReflections.mapNotNull { it.notes.takeIf { note -> note.isNotBlank() } }
             
             val timeCapsules = timeCapsuleRepository.observeTimeCapsules()
-                .kotlinx.coroutines.flow.firstOrNull() ?: emptyList()
+                .firstOrNull() ?: emptyList()
                 
             val futureSelfMessages = timeCapsules.map { it.message }
 
