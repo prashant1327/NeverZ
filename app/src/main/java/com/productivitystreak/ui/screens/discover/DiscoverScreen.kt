@@ -94,28 +94,6 @@ fun DiscoverScreen(
             }
         }
 
-        if (state.communityStories.isNotEmpty()) {
-            item {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Text(
-                        text = "Community stories",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp)
-                    ) {
-                        itemsIndexed(state.communityStories, key = { _, story -> story.id }) { index, story ->
-                            CommunityStoryAvatar(story = story, isOnline = index == 0)
-                        }
-                    }
-                }
-            }
-        }
-
         if (state.featuredContent.title.isNotBlank()) {
             item {
                 FeaturedCard(content = state.featuredContent)
@@ -180,12 +158,6 @@ private fun AssetLibrarySection(
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        Text(
-            text = "High-value asset library",
-            style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
         val grouped = assets.groupBy { it.category }
         grouped.forEach { (category, categoryAssets) ->
             val label = when (category) {

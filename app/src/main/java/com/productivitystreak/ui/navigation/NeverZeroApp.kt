@@ -258,7 +258,10 @@ fun NeverZeroApp(
                             onToggleOneOffTask = streakViewModel::toggleOneOffTask,
                             onDeleteOneOffTask = streakViewModel::deleteOneOffTask,
                             onAssetSelected = { assetId -> selectedAssetId = assetId },
-                            onOpenBuddhaChat = { showBuddhaChat = true }
+                            onOpenBuddhaChat = { showBuddhaChat = true },
+                            onOpenJournal = { appViewModel.onAddEntrySelected(AddEntryType.JOURNAL) },
+                            onOpenTimeCapsule = { appViewModel.onAddEntrySelected(AddEntryType.TIME_CAPSULE) },
+                            onOpenLeaderboard = { showLeaderboard = true }
                         )
                     }
                     MainDestination.PROFILE -> {

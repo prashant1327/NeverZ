@@ -72,8 +72,17 @@ class GeminiClient private constructor() {
         return@withContext try {
             val response = generativeModel.generateContent(content { text(prompt) })
             val json = response.text?.cleanJsonBlock() ?: return@withContext fallback
+            // Extract JSON object if wrapped in other text
+            val jsonStart = json.indexOf("{")
+            val jsonEnd = json.lastIndexOf("}")
+            val cleanJson = if (jsonStart != -1 && jsonEnd != -1) {
+                json.substring(jsonStart, jsonEnd + 1)
+            } else {
+                json
+            }
+            
             val adapter = moshi.adapter(TeachingPlanResponse::class.java)
-            val plan = adapter.fromJson(json) ?: return@withContext fallback
+            val plan = adapter.fromJson(cleanJson) ?: return@withContext fallback
             TeachingLesson(
                 word = plan.word.ifBlank { word },
                 definition = plan.definition.trim(),

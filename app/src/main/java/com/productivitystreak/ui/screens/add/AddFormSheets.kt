@@ -24,6 +24,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -84,102 +85,84 @@ fun AddEntryMenuSheet(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 24.dp, vertical = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Header
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column {
-                Text(
-                    text = "Command Center",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Quick actions",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(
+                text = "Command Center",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Text(
+                text = "What would you like to do?",
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
 
-        // Compact Grid
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                CompactActionCard(
-                    icon = com.productivitystreak.ui.icons.AppIcons.AddHabit,
-                    label = "New Habit",
-                    color = Color(0xFF4ADE80),
-                    onClick = { onEntrySelected(AddEntryType.HABIT) },
-                    modifier = Modifier.weight(1f)
-                )
-                CompactActionCard(
-                    icon = com.productivitystreak.ui.icons.AppIcons.TeachWord,
-                    label = "Teach Word",
-                    color = Color(0xFF22D3EE),
-                    onClick = { onEntrySelected(AddEntryType.TEACH) },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                CompactActionCard(
-                    icon = com.productivitystreak.ui.icons.AppIcons.AddWord,
-                    label = "Log Word",
-                    color = Color(0xFFFACC15),
-                    onClick = { onEntrySelected(AddEntryType.WORD) },
-                    modifier = Modifier.weight(1f)
-                )
-                CompactActionCard(
-                    icon = com.productivitystreak.ui.icons.AppIcons.AddJournal,
-                    label = "Journal",
-                    color = Color(0xFFFB7185),
-                    onClick = { onEntrySelected(AddEntryType.JOURNAL) },
-                    modifier = Modifier.weight(1f)
-                )
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                CompactActionCard(
-                    icon = com.productivitystreak.ui.icons.AppIcons.Search,
-                    label = "Templates",
-                    color = Color(0xFFA78BFA),
-                    onClick = { onEntrySelected(AddEntryType.TEMPLATE) },
-                    modifier = Modifier.weight(1f)
-                )
-                // Placeholder for balance
-                Spacer(modifier = Modifier.weight(1f))
-            }
-        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+        // Actions List
+        CommandCenterItem(
+            icon = com.productivitystreak.ui.icons.AppIcons.AddHabit,
+            title = "New Habit",
+            subtitle = "Build a new routine",
+            color = Color(0xFF4ADE80),
+            onClick = { onEntrySelected(AddEntryType.HABIT) }
+        )
+        CommandCenterItem(
+            icon = com.productivitystreak.ui.icons.AppIcons.TeachWord,
+            title = "Teach Word",
+            subtitle = "Expand your vocabulary",
+            color = Color(0xFF22D3EE),
+            onClick = { onEntrySelected(AddEntryType.TEACH) }
+        )
+        CommandCenterItem(
+            icon = com.productivitystreak.ui.icons.AppIcons.AddWord,
+            title = "Log Word",
+            subtitle = "Quickly add a new word",
+            color = Color(0xFFFACC15),
+            onClick = { onEntrySelected(AddEntryType.WORD) }
+        )
+        CommandCenterItem(
+            icon = com.productivitystreak.ui.icons.AppIcons.AddJournal,
+            title = "Journal",
+            subtitle = "Reflect on your day",
+            color = Color(0xFFFB7185),
+            onClick = { onEntrySelected(AddEntryType.JOURNAL) }
+        )
+        CommandCenterItem(
+            icon = com.productivitystreak.ui.icons.AppIcons.Search,
+            title = "Templates",
+            subtitle = "Browse community templates",
+            color = Color(0xFFA78BFA),
+            onClick = { onEntrySelected(AddEntryType.TEMPLATE) }
+        )
     }
 }
 
 @Composable
-private fun CompactActionCard(
+private fun CommandCenterItem(
     icon: ImageVector,
-    label: String,
+    title: String,
+    subtitle: String,
     color: Color,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit
 ) {
-    androidx.compose.material3.Surface(
+    com.productivitystreak.ui.components.InteractiveGlassCard(
         onClick = onClick,
-        modifier = modifier.height(80.dp),
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f))
+        modifier = Modifier.fillMaxWidth(),
+        contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = 16.dp, vertical = 16.dp)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Box(
                 modifier = Modifier
-                    .size(40.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
                     .background(color.copy(alpha = 0.15f)),
                 contentAlignment = Alignment.Center
@@ -188,13 +171,28 @@ private fun CompactActionCard(
                     imageVector = icon,
                     contentDescription = null,
                     tint = color,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(24.dp)
                 )
             }
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Medium
+            Column {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = subtitle,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = androidx.compose.material.icons.Icons.Default.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                modifier = Modifier.size(24.dp)
             )
         }
     }

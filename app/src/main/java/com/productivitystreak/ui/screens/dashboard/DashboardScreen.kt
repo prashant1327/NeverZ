@@ -1,12 +1,3 @@
-package com.productivitystreak.ui.screens.dashboard
-
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -35,6 +26,8 @@ fun DashboardScreen(
     onOpenJournal: () -> Unit = {},
     onOpenTimeCapsule: () -> Unit = {},
     onOpenBuddhaChat: () -> Unit = {},
+    onOpenLeaderboard: () -> Unit = {},
+    onAddEntrySelected: (AddEntryType) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val maxStreak = streakUiState.streaks.maxOfOrNull { it.currentCount } ?: 0
@@ -71,7 +64,7 @@ fun DashboardScreen(
             com.productivitystreak.ui.screens.home.TimeCapsuleCard(onClick = onOpenTimeCapsule)
         }
 
-        // 3. Buddha Insight
+        // 3. Buddha's Wisdom
         item {
             streakUiState.buddhaInsight?.let { insight ->
                 BuddhaInsightCard(
@@ -83,7 +76,23 @@ fun DashboardScreen(
             }
         }
 
-        // 4. Today's Focus
+        // 4. Teach Me a Word (AI Highlight)
+        item {
+            com.productivitystreak.ui.screens.dashboard.components.TeachWordWidget(
+                onClick = { onAddEntrySelected(AddEntryType.TEACH) }
+            )
+        }
+
+        // 5. Leaderboard Preview
+        item {
+            LeaderboardWidget(
+                entries = streakUiState.leaderboard,
+                onEntrySelected = { /* TODO: View profile */ },
+                onViewAll = onOpenLeaderboard
+            )
+        }
+
+        // 6. Today's Focus
         item {
             Text(
                 text = "TODAY'S FOCUS",
