@@ -96,7 +96,7 @@ fun DashboardScreen(
         // 5. Leaderboard Preview
         item {
             LeaderboardWidget(
-                entries = streakUiState.leaderboard,
+                entries = streakUiState.statsState.leaderboard,
                 onEntrySelected = { /* TODO: View profile */ },
                 onViewAll = onOpenLeaderboard
             )
