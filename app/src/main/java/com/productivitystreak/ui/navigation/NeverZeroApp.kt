@@ -86,7 +86,7 @@ import kotlinx.coroutines.launch
 
 enum class MainDestination { HOME, STATS, MENTOR, PROFILE }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
 fun NeverZeroApp(
     appViewModel: com.productivitystreak.ui.AppViewModel,
