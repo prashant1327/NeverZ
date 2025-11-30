@@ -53,10 +53,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.productivitystreak.data.ai.BuddhaRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BuddhaChatScreen(
     onBackClick: () -> Unit,
     repository: BuddhaRepository, // Pass repository to create factory
+    hapticsEnabled: Boolean = true,
     modifier: Modifier = Modifier
 ) {
     val viewModel: BuddhaChatViewModel = viewModel(
@@ -65,6 +67,7 @@ fun BuddhaChatScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     var inputText by remember { mutableStateOf("") }
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
 
     // Auto-scroll to bottom when new messages arrive
     LaunchedEffect(uiState.messages.size) {
@@ -150,6 +153,9 @@ fun BuddhaChatScreen(
                     keyboardActions = KeyboardActions(
                         onSend = {
                             if (inputText.isNotBlank()) {
+                                if (hapticsEnabled) {
+                                    haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                                }
                                 viewModel.sendMessage(inputText)
                                 inputText = ""
                             }
@@ -162,6 +168,9 @@ fun BuddhaChatScreen(
                 IconButton(
                     onClick = {
                         if (inputText.isNotBlank()) {
+                            if (hapticsEnabled) {
+                                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                            }
                             viewModel.sendMessage(inputText)
                             inputText = ""
                         }

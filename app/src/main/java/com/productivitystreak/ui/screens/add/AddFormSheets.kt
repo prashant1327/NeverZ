@@ -81,6 +81,7 @@ import com.productivitystreak.ui.state.vocabulary.TeachWordUiState
 fun AddEntryMenuSheet(
     onEntrySelected: (AddEntryType) -> Unit
 ) {
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -110,35 +111,50 @@ fun AddEntryMenuSheet(
             title = "New Habit",
             subtitle = "Build a new routine",
             color = Color(0xFF4ADE80),
-            onClick = { onEntrySelected(AddEntryType.HABIT) }
+            onClick = { 
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                onEntrySelected(AddEntryType.HABIT) 
+            }
         )
         CommandCenterItem(
             icon = com.productivitystreak.ui.icons.AppIcons.TeachWord,
             title = "Teach Word",
             subtitle = "Expand your vocabulary",
             color = Color(0xFF22D3EE),
-            onClick = { onEntrySelected(AddEntryType.TEACH) }
+            onClick = { 
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                onEntrySelected(AddEntryType.TEACH) 
+            }
         )
         CommandCenterItem(
             icon = com.productivitystreak.ui.icons.AppIcons.AddWord,
             title = "Log Word",
             subtitle = "Quickly add a new word",
             color = Color(0xFFFACC15),
-            onClick = { onEntrySelected(AddEntryType.WORD) }
+            onClick = { 
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                onEntrySelected(AddEntryType.WORD) 
+            }
         )
         CommandCenterItem(
             icon = com.productivitystreak.ui.icons.AppIcons.AddJournal,
             title = "Journal",
             subtitle = "Reflect on your day",
             color = Color(0xFFFB7185),
-            onClick = { onEntrySelected(AddEntryType.JOURNAL) }
+            onClick = { 
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                onEntrySelected(AddEntryType.JOURNAL) 
+            }
         )
         CommandCenterItem(
             icon = com.productivitystreak.ui.icons.AppIcons.Search,
             title = "Templates",
             subtitle = "Browse community templates",
             color = Color(0xFFA78BFA),
-            onClick = { onEntrySelected(AddEntryType.TEMPLATE) }
+            onClick = { 
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                onEntrySelected(AddEntryType.TEMPLATE) 
+            }
         )
     }
 }
@@ -358,9 +374,11 @@ fun HabitFormSheet(
         FrequencyRow(selected = frequency, onSelect = { frequency = it })
 
         val goal = goalText.toIntOrNull()?.coerceAtLeast(1) ?: 1
+        val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
         com.productivitystreak.ui.components.PrimaryButton(
             text = if (isSubmitting) "Saving…" else "Save habit",
             onClick = {
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                 onSubmit(
                     name.trim(),
                     goal,
@@ -409,9 +427,13 @@ fun VocabularyFormSheet(
             minLines = 2
         )
 
+        val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
         com.productivitystreak.ui.components.PrimaryButton(
             text = if (isSubmitting) "Saving…" else "Save word",
-            onClick = { onSubmit(word.trim(), definition.trim(), example.trim().ifBlank { null }) },
+            onClick = { 
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                onSubmit(word.trim(), definition.trim(), example.trim().ifBlank { null }) 
+            },
             enabled = !isSubmitting && word.isNotBlank() && definition.isNotBlank(),
             modifier = Modifier.fillMaxWidth()
         )
@@ -479,9 +501,11 @@ fun JournalFormSheet(
         JournalField(value = gratitude, onValueChange = { gratitude = it }, label = "Gratitude (optional)")
         JournalField(value = tomorrowGoals, onValueChange = { tomorrowGoals = it }, label = "Tomorrow’s focus (optional)")
 
+        val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
         com.productivitystreak.ui.components.PrimaryButton(
             text = if (isSubmitting) "Saving…" else "Save entry",
             onClick = {
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                 onSubmit(
                     mood.toInt(),
                     notes.trim(),
@@ -656,7 +680,8 @@ fun TeachWordSheet(
     onContextChange: (String) -> Unit,
     onGenerateLesson: () -> Unit,
     onLogLesson: (TeachingLesson) -> Unit,
-    onDismissLesson: () -> Unit
+    onDismissLesson: () -> Unit,
+    onNextWord: () -> Unit = {} // New callback for skipping
 ) {
     val focusManager = LocalFocusManager.current
     Column(
@@ -668,55 +693,101 @@ fun TeachWordSheet(
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(
-                text = "Teach a word",
+                text = "Discover & Learn",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = "Generate a micro-lesson and keep vocabulary mature—no childish gamification.",
+                text = "AI-curated vocabulary to elevate your thinking.",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
 
-        com.productivitystreak.ui.components.StyledTextField(
-            value = uiState.wordInput,
-            onValueChange = onWordChange,
-            label = "Word to teach",
-            singleLine = true,
-            placeholder = "e.g., incisive",
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (uiState.isGenerating && uiState.lesson == null && uiState.suggestedWord == null) {
+             Box(modifier = Modifier.fillMaxWidth().height(200.dp), contentAlignment = Alignment.Center) {
+                 CircularProgressIndicator()
+             }
+        } else if (uiState.suggestedWord != null) {
+            // AI Suggested Word Card
+            WordDiscoveryCard(
+                word = uiState.suggestedWord,
+                onSkip = onNextWord,
+                onLearn = onGenerateLesson
+            )
+        } else {
+            // Fallback or Initial State (shouldn't happen often if auto-suggest works)
+             Button(onClick = onNextWord, modifier = Modifier.fillMaxWidth()) {
+                 Text("Find a word")
+             }
+        }
 
-        com.productivitystreak.ui.components.MultilineTextField(
-            value = uiState.learnerContext,
-            onValueChange = onContextChange,
-            label = "Context (audience, scenario, goal)",
-            placeholder = "Explaining to a senior stakeholder in a weekly review…",
-            minLines = 2,
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        AssistChip(
-            onClick = {
-                val preset = "Explaining to a busy operator who wants actionable language"
-                onContextChange(preset)
-                focusManager.clearFocus()
-            },
-            label = { Text("Use business preset") }
-        )
-
+        // Show Lesson if generated
         TeachLessonCTA(
-            isGenerating = uiState.isGenerating,
+            isGenerating = uiState.isGenerating && uiState.lesson == null && uiState.suggestedWord != null, // Only show spinner here if generating lesson
             lesson = uiState.lesson,
             error = uiState.errorMessage,
-            onGenerateLesson = {
-                focusManager.clearFocus()
-                onGenerateLesson()
-            },
+            onGenerateLesson = onGenerateLesson,
             onDismissLesson = onDismissLesson,
             onLogLesson = onLogLesson
         )
+    }
+}
+
+@Composable
+fun WordDiscoveryCard(
+    word: VocabularyWord,
+    onSkip: () -> Unit,
+    onLearn: () -> Unit
+) {
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+    ) {
+        Column(
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = word.word,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Text(
+                text = word.definition,
+                style = MaterialTheme.typography.bodyLarge,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                OutlinedButton(
+                    onClick = {
+                        haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        onSkip()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Skip")
+                }
+                Button(
+                    onClick = {
+                        haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                        onLearn()
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Learn")
+                }
+            }
+        }
     }
 }
 
@@ -730,20 +801,10 @@ private fun TeachLessonCTA(
     onLogLesson: (TeachingLesson) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        Button(
-            onClick = onGenerateLesson,
-            enabled = !isGenerating,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (isGenerating) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(16.dp)
-                        .padding(end = 8.dp),
-                    strokeWidth = 2.dp
-                )
-            }
-            Text(if (isGenerating) "Generating lesson…" else "Generate lesson")
+        if (lesson == null) {
+             // Only show this button if we are NOT in the suggested word flow (or if we want a manual override, but let's hide it for now to clean UI)
+             // Actually, the 'Learn' button in WordDiscoveryCard calls onGenerateLesson.
+             // So we don't need this button here if a suggested word is present.
         }
 
         error?.let {

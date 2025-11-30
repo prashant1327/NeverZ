@@ -183,7 +183,9 @@ private fun AssetLibrarySection(
                         text = "See all",
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.clickable { /* TODO: Navigate to category */ }
+                        modifier = Modifier.clickable { 
+                            android.widget.Toast.makeText(androidx.compose.ui.platform.LocalContext.current, "More $label coming soon", android.widget.Toast.LENGTH_SHORT).show()
+                        }
                     )
                 }
 
@@ -416,7 +418,9 @@ private fun FocusAreaChip(item: CategoryItem) {
             .clip(RoundedCornerShape(12.dp))
             .background(MaterialTheme.colorScheme.surface)
             .border(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-            .clickable { /* TODO */ }
+            .clickable { 
+                android.widget.Toast.makeText(androidx.compose.ui.platform.LocalContext.current, "Category: ${item.title}", android.widget.Toast.LENGTH_SHORT).show()
+            }
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Row(
@@ -447,11 +451,14 @@ private fun FeaturedCard(content: FeaturedContent) {
             .getOrElse { defaultColor }
     }
 
+    val context = androidx.compose.ui.platform.LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .height(180.dp)
-            .clickable { /* TODO */ },
+            .clickable { 
+                android.widget.Toast.makeText(context, "Spotlight content coming soon", android.widget.Toast.LENGTH_SHORT).show()
+            },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = Color.Transparent),
         elevation = CardDefaults.cardElevation(4.dp)

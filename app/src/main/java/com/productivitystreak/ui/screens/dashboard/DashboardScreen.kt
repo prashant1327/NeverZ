@@ -53,6 +53,15 @@ fun DashboardScreen(
         )
     }
 
+    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
+    val hapticsEnabled = uiState.profileState.hapticsEnabled
+
+    fun performHaptic(type: androidx.compose.ui.hapticfeedback.HapticFeedbackType = androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress) {
+        if (hapticsEnabled) {
+            haptics.performHapticFeedback(type)
+        }
+    }
+
     androidx.compose.foundation.lazy.LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -66,43 +75,7 @@ fun DashboardScreen(
             DashboardHeader(userName = uiState.userName)
         }
 
-        // 2. Journal & Time Capsule
-        item {
-            com.productivitystreak.ui.screens.home.JournalPromptCard(onClick = onOpenJournal)
-        }
-        item {
-            com.productivitystreak.ui.screens.home.TimeCapsuleCard(onClick = onOpenTimeCapsule)
-        }
-
-        // 3. Buddha's Wisdom
-        item {
-            streakUiState.buddhaInsight?.let { insight ->
-                BuddhaInsightCard(
-                    insight = insight,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onOpenBuddhaChat() }
-                )
-            }
-        }
-
-        // 4. Teach Me a Word (AI Highlight)
-        item {
-            com.productivitystreak.ui.screens.dashboard.components.TeachWordWidget(
-                onClick = { onAddEntrySelected(AddEntryType.TEACH) }
-            )
-        }
-
-        // 5. Leaderboard Preview
-        item {
-            LeaderboardWidget(
-                entries = streakUiState.statsState.leaderboard,
-                onEntrySelected = { /* TODO: View profile */ },
-                onViewAll = onOpenLeaderboard
-            )
-        }
-
-        // 6. Today's Focus
+        // 2. Today's Focus (Top Priority)
         item {
             Text(
                 text = "TODAY'S FOCUS",
@@ -111,26 +84,101 @@ fun DashboardScreen(
             )
         }
 
-        if (streakUiState.todayTasks.isEmpty()) {
+        if (streakUiState.isLoading) {
+            items(3) {
+                com.productivitystreak.ui.components.GlassCard(
+                    modifier = Modifier.fillMaxWidth().height(80.dp),
+                    content = {}
+                )
+                Spacer(modifier = Modifier.height(Spacing.sm))
+            }
+        } else if (streakUiState.todayTasks.isEmpty()) {
             item {
-                DashboardEmptyState(onAddHabitClick = onAddHabitClick)
+                DashboardEmptyState(onAddHabitClick = {
+                    performHaptic()
+                    onAddHabitClick()
+                })
             }
         } else {
             items(streakUiState.todayTasks.size) { index ->
                 val task = streakUiState.todayTasks[index]
                 com.productivitystreak.ui.screens.home.ImprovedHabitRow(
                     task = task,
-                    onToggle = { onToggleTask(task.id) },
+                    onToggle = { 
+                        performHaptic(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                        onToggleTask(task.id) 
+                    },
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(Spacing.sm))
             }
         }
 
-        // 5. Quick Tasks
+        // 3. Quick Actions Grid
+        item {
+            Text(
+                text = "ACTIONS",
+                style = MaterialTheme.typography.labelMedium,
+                color = NeverZeroTheme.designColors.textSecondary,
+                modifier = Modifier.padding(top = Spacing.md)
+            )
+        }
+
         item {
             Row(
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md)
+            ) {
+                // Journal
+                Box(modifier = Modifier.weight(1f)) {
+                    com.productivitystreak.ui.screens.home.JournalPromptCard(onClick = {
+                        performHaptic(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        onOpenJournal()
+                    })
+                }
+                // Time Capsule
+                Box(modifier = Modifier.weight(1f)) {
+                    com.productivitystreak.ui.screens.home.TimeCapsuleCard(onClick = {
+                        performHaptic(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        onOpenTimeCapsule()
+                    })
+                }
+            }
+        }
+
+        // 4. Teach Me a Word (AI Highlight)
+        item {
+            com.productivitystreak.ui.screens.dashboard.components.TeachWordWidget(
+                onClick = { 
+                    performHaptic()
+                    onAddEntrySelected(AddEntryType.TEACH) 
+                }
+            )
+        }
+
+        // 5. Buddha's Wisdom
+        item {
+            streakUiState.buddhaInsight?.let { insight ->
+                BuddhaInsightCard(
+                    insight = insight,
+                    onRefresh = {
+                        performHaptic(androidx.compose.ui.hapticfeedback.HapticFeedbackType.TextHandleMove)
+                        onRefreshQuote()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { 
+                            performHaptic()
+                            onOpenBuddhaChat() 
+                        }
+                )
+            }
+        }
+
+        // 6. Quick Tasks
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(top = Spacing.md),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -140,7 +188,10 @@ fun DashboardScreen(
                     color = NeverZeroTheme.designColors.textSecondary
                 )
                 IconButton(
-                    onClick = { showAddTaskDialog = true },
+                    onClick = { 
+                        performHaptic()
+                        showAddTaskDialog = true 
+                    },
                     modifier = Modifier.size(24.dp)
                 ) {
                     Icon(
@@ -157,8 +208,14 @@ fun DashboardScreen(
                 val task = streakUiState.oneOffTasks[index]
                 OneOffTaskRow(
                     task = task,
-                    onToggle = { onToggleOneOffTask(task.id) },
-                    onDelete = { onDeleteOneOffTask(task.id) }
+                    onToggle = { 
+                        performHaptic()
+                        onToggleOneOffTask(task.id) 
+                    },
+                    onDelete = { 
+                        performHaptic()
+                        onDeleteOneOffTask(task.id) 
+                    }
                 )
                 Spacer(modifier = Modifier.height(Spacing.sm))
             }

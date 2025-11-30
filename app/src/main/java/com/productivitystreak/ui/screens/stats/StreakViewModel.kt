@@ -28,6 +28,7 @@ data class StreakUiState(
     val statsState: StatsState = StatsState(),
     val skillPathsState: SkillPathsState = SkillPathsState(),
     val isSubmitting: Boolean = false,
+    val isLoading: Boolean = true,
     val errorMessage: String? = null,
     val successMessage: String? = null,
     val buddhaInsight: String? = null
@@ -56,7 +57,7 @@ class StreakViewModel(
         fetchBuddhaInsight()
     }
 
-    private fun fetchBuddhaInsight() {
+    fun fetchBuddhaInsight() {
         viewModelScope.launch {
             // In a real app, check cache first. For now, fetch fresh to demonstrate AI.
             val insight = geminiClient.generateBuddhaInsight()
@@ -130,12 +131,13 @@ class StreakViewModel(
                             selectedStreakId = selectedId,
                             todayTasks = buildTasksForStreaks(streaks),
                             statsState = stats,
-                            skillPathsState = skillPaths
+                            skillPathsState = skillPaths,
+                            isLoading = false
                         )
                     }
                 }
             } catch (e: Exception) {
-                // Handle error
+                _uiState.update { it.copy(isLoading = false, errorMessage = "Failed to load streaks") }
             }
         }
     }

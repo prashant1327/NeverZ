@@ -21,5 +21,6 @@ data class TeachWordUiState(
     val learnerContext: String = "",
     val isGenerating: Boolean = false,
     val lesson: TeachingLesson? = null,
+    val suggestedWord: VocabularyWord? = null,
     val errorMessage: String? = null
 )

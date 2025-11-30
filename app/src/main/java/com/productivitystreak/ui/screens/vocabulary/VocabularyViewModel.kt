@@ -215,14 +215,43 @@ class VocabularyViewModel(
         _teachUiState.update { it.copy(learnerContext = value) }
     }
 
+    fun suggestNewWord() {
+        viewModelScope.launch {
+            _teachUiState.update { it.copy(isGenerating = true, errorMessage = null, suggestedWord = null) }
+            // Use "general knowledge" or random topics for variety
+            val topics = listOf("stoicism", "business strategy", "psychology", "art history", "technology", "philosophy")
+            val topic = topics.random()
+            
+            val result = runCatching { geminiClient.generateWordOfTheDay(topic) }
+            _teachUiState.update { state ->
+                result.fold(
+                    onSuccess = { word ->
+                        if (word != null) {
+                            state.copy(isGenerating = false, suggestedWord = word, errorMessage = null)
+                        } else {
+                            state.copy(isGenerating = false, errorMessage = "Could not find a word. Try again.")
+                        }
+                    },
+                    onFailure = { error ->
+                        state.copy(isGenerating = false, errorMessage = error.message ?: "Connection error.")
+                    }
+                )
+            }
+        }
+    }
+
     fun onGenerateTeachingLesson() {
-        val word = _teachUiState.value.wordInput.trim()
+        // If we have a suggested word, use that. Otherwise fallback to input (legacy support or if user wants to type)
+        val suggested = _teachUiState.value.suggestedWord
+        val word = suggested?.word ?: _teachUiState.value.wordInput.trim()
+        
         if (word.isBlank()) {
-            _teachUiState.update { it.copy(errorMessage = "Enter a word to teach.") }
+            _teachUiState.update { it.copy(errorMessage = "No word selected.") }
             return
         }
 
         val context = _teachUiState.value.learnerContext.trim().takeIf { it.isNotBlank() }
+        Log.d("VocabularyViewModel", "Generating lesson for word: $word, context: $context")
 
         viewModelScope.launch {
             _teachUiState.update { it.copy(isGenerating = true, errorMessage = null) }
@@ -230,12 +259,14 @@ class VocabularyViewModel(
             _teachUiState.update { state ->
                 result.fold(
                     onSuccess = { lesson ->
+                        Log.d("VocabularyViewModel", "Lesson generated successfully: ${lesson.word}")
                         state.copy(isGenerating = false, lesson = lesson, errorMessage = null)
                     },
                     onFailure = { error ->
+                        Log.e("VocabularyViewModel", "Error generating lesson", error)
                         state.copy(
                             isGenerating = false,
-                            errorMessage = error.message ?: "Couldn't generate a lesson."
+                            errorMessage = error.message ?: "Couldn't generate a lesson. Check connection."
                         )
                     }
                 )
@@ -245,6 +276,8 @@ class VocabularyViewModel(
 
     fun resetTeachUiState() {
         _teachUiState.value = TeachWordUiState()
+        // Auto-suggest on reset/open
+        suggestNewWord()
     }
 
     fun logLessonWord(lesson: TeachingLesson) {

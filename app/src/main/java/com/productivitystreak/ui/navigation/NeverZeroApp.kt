@@ -83,7 +83,7 @@ import com.productivitystreak.ui.theme.NeverZeroTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 
-enum class MainDestination { HOME, STATS, DISCOVER, PROFILE }
+enum class MainDestination { HOME, STATS, MENTOR, PROFILE }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -234,14 +234,14 @@ fun NeverZeroApp(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .then(
-                    // Add blur to background when Command Center is open
-                    if (isSheetVisible) Modifier.blur(10.dp) else Modifier
-                )
         ) {
-            Crossfade(
+            AnimatedContent(
                 targetState = currentDestination,
-                animationSpec = spring(stiffness = Spring.StiffnessLow),
+                transitionSpec = {
+                    (androidx.compose.animation.fadeIn(androidx.compose.animation.core.tween(300)) +
+                            androidx.compose.animation.scaleIn(initialScale = 0.95f, animationSpec = androidx.compose.animation.core.tween(300)))
+                        .togetherWith(androidx.compose.animation.fadeOut(androidx.compose.animation.core.tween(300)))
+                },
                 label = "main-nav"
             ) { destination ->
                 when (destination) {
@@ -251,7 +251,7 @@ fun NeverZeroApp(
                             streakUiState = streakState,
                             uiState = uiState,
                             onToggleTask = streakViewModel::onToggleTask,
-                            onRefreshQuote = appViewModel::refreshQuote,
+                            onRefreshQuote = streakViewModel::fetchBuddhaInsight,
                             onAddHabitClick = appViewModel::onAddButtonTapped,
                             onSelectStreak = streakViewModel::onSelectStreak,
                             onAddOneOffTask = streakViewModel::addOneOffTask,
@@ -299,35 +299,15 @@ fun NeverZeroApp(
                             onOpenLeaderboard = { showLeaderboard = true }
                         )
                     }
-                    MainDestination.DISCOVER -> {
-                        val discoverState by discoverViewModel.uiState.collectAsStateWithLifecycle()
-                        DiscoverScreen(
-                            state = discoverState,
-                            onAssetSelected = { assetId -> selectedAssetId = assetId }
+                    MainDestination.MENTOR -> {
+                        val app = appViewModel.getApplication<com.productivitystreak.NeverZeroApplication>()
+                        com.productivitystreak.ui.screens.ai.BuddhaChatScreen(
+                            onBackClick = { currentDestination = MainDestination.HOME },
+                            repository = app.buddhaRepository,
+                            hapticsEnabled = uiState.profileState.hapticsEnabled,
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
-                }
-            }
-
-            // Skill Paths Overlay
-            if (showSkillPaths) {
-                val streakState by streakViewModel.uiState.collectAsStateWithLifecycle()
-                com.productivitystreak.ui.screens.skills.SkillPathsScreen(
-                    onBack = { showSkillPaths = false },
-                    onPathSelected = { /* TODO: show skill-path detail */ },
-                    paths = streakState.skillPathsState.pathsProgress
-                )
-            }
-
-            // Buddha Chat Overlay
-            if (showBuddhaChat) {
-                val app = appViewModel.getApplication<com.productivitystreak.NeverZeroApplication>()
-                com.productivitystreak.ui.screens.ai.BuddhaChatScreen(
-                    onBackClick = { showBuddhaChat = false },
-                    repository = app.buddhaRepository,
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
 
             // Leaderboard Overlay
             if (showLeaderboard) {
@@ -550,10 +530,10 @@ private fun NeverZeroBottomBar(
                 )
 
                 NavItem(
-                    icon = Icons.Outlined.Search,
-                    label = "Discover",
-                    selected = current == MainDestination.DISCOVER,
-                    onClick = { onDestinationSelected(MainDestination.DISCOVER) }
+                    icon = Icons.Rounded.Spa,
+                    label = "Mentor",
+                    selected = current == MainDestination.MENTOR,
+                    onClick = { onDestinationSelected(MainDestination.MENTOR) }
                 )
                 NavItem(
                     icon = Icons.Outlined.Person,

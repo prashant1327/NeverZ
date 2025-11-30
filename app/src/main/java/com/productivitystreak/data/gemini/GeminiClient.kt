@@ -189,7 +189,7 @@ class GeminiClient private constructor() {
 
     suspend fun generateBuddhaInsight(context: String = "general"): String = withContext(Dispatchers.IO) {
         val generativeModel = model ?: return@withContext "The obstacle is the way."
-        val prompt = "Give me a short, profound, stoic or buddhist insight about $context. Max 20 words. No quotes."
+        val prompt = "Give me a short, profound quote, proverb, or stoic insight about $context. Max 20 words. No quotes around the text."
         try {
             val response = generativeModel.generateContent(content { text(prompt) })
             response.text?.trim() ?: "The obstacle is the way."
