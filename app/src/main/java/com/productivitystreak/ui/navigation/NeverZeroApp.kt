@@ -308,6 +308,8 @@ fun NeverZeroApp(
                             modifier = Modifier.fillMaxSize()
                         )
                     }
+                }
+            }
 
             // Leaderboard Overlay
             if (showLeaderboard) {
