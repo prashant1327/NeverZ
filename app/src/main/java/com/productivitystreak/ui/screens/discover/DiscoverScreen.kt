@@ -116,7 +116,7 @@ fun DiscoverScreen(
                         contentPadding = PaddingValues(horizontal = 16.dp)
                     ) {
                         items(state.categories, key = { it.id }) { category ->
-                            FocusAreaChip(category)
+                            FocusAreaItem(category)
                         }
                     }
                 }
@@ -407,7 +407,7 @@ private fun CommunityStoryAvatar(story: CommunityStory, isOnline: Boolean) {
 }
 
 @Composable
-private fun FocusAreaItem(item: FocusArea) {
+private fun FocusAreaItem(item: CategoryItem) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val primary = MaterialTheme.colorScheme.primary
     val accent = remember(item.accentHex) {
