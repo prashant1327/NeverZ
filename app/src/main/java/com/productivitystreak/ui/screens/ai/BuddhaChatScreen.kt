@@ -1,6 +1,7 @@
 package com.productivitystreak.ui.screens.ai
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -196,8 +197,8 @@ fun BuddhaChatScreen(
 }
 
 @Composable
-fun ChatMessageItem(message: BuddhaChatMessage) {
-    val alignment = if (message.isUser) Alignment.End else Alignment.Start
+fun ChatMessageItem(message: ChatMessage) {
+    val alignment = if (message.isUser) Alignment.CenterEnd else Alignment.CenterStart
     val backgroundColor = if (message.isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
     val textColor = if (message.isUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
     val shape = if (message.isUser) {

@@ -20,6 +20,8 @@ import com.productivitystreak.ui.state.AppUiState
 import com.productivitystreak.ui.theme.NeverZeroTheme
 import com.productivitystreak.ui.theme.Spacing
 import com.productivitystreak.ui.state.AddEntryType
+import com.productivitystreak.ui.components.EmptyState
+import com.productivitystreak.ui.state.DashboardTask
 
 @Composable
 fun DashboardScreen(
@@ -228,19 +230,35 @@ fun DashboardScreen(
 
         if (streakUiState.streaks.isEmpty()) {
             item {
-                com.productivitystreak.ui.components.EmptyStateCard(
+                com.productivitystreak.ui.components.EmptyState(
+                    icon = com.productivitystreak.ui.icons.AppIcons.AddHabit,
                     message = "No disciplines set. Begin your protocol.",
-                    buttonText = "Define Protocol",
-                    onClick = { onAddHabitClick() }
+                    action = {
+                        com.productivitystreak.ui.components.Buttons.PrimaryButton(
+                            text = "Define Protocol",
+                            onClick = { onAddHabitClick() }
+                        )
+                    }
                 )
             }
         } else {
+
             items(streakUiState.streaks.size) { index ->
                 val streak = streakUiState.streaks[index]
+                val task = DashboardTask(
+                    id = streak.id,
+                    title = streak.name,
+                    category = streak.category,
+                    streakId = streak.id,
+                    isCompleted = streak.currentCount > 0 && streak.lastUpdated >= System.currentTimeMillis() - 86400000, // Rough check, logic should be in VM
+                    accentHex = streak.color,
+                    streakCount = streak.currentCount
+                )
+                
                 com.productivitystreak.ui.screens.home.ImprovedHabitRow(
-                    streak = streak,
-                    onToggle = { onSelectStreak(streak) },
-                    onClick = { onSelectStreak(streak) }
+                    task = task,
+                    onToggle = { onSelectStreak(streak.id) },
+                    modifier = Modifier.clickable { onSelectStreak(streak.id) }
                 )
                 Spacer(modifier = Modifier.height(Spacing.sm))
             }

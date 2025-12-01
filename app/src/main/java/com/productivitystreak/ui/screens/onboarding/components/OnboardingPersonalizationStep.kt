@@ -153,9 +153,14 @@ fun OnboardingPersonalizationStep(
                 modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
             )
 
-            Text(
-                text = "Habit Name",
-                style = MaterialTheme.typography.labelLarge.copy(
+            OutlinedTextField(
+                value = habitName,
+                onValueChange = onHabitNameChange,
+                label = { Text("Protocol Name") },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
                     focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                     unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
