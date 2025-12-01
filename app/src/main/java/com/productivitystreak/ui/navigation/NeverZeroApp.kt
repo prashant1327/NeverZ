@@ -84,7 +84,7 @@ import com.productivitystreak.ui.theme.NeverZeroTheme
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.launch
 
-enum class MainDestination { HOME, STATS, MENTOR, PROFILE }
+enum class MainDestination { HOME, STATS, MENTOR, PROFILE, FOCUS, CHALLENGES }
 
 @OptIn(ExperimentalMaterial3Api::class, androidx.compose.animation.ExperimentalAnimationApi::class)
 @Composable
@@ -262,7 +262,9 @@ fun NeverZeroApp(
                             onOpenBuddhaChat = { showBuddhaChat = true },
                             onOpenJournal = { appViewModel.onAddEntrySelected(AddEntryType.JOURNAL) },
                             onOpenTimeCapsule = { appViewModel.onAddEntrySelected(AddEntryType.TIME_CAPSULE) },
-                            onOpenLeaderboard = { showLeaderboard = true }
+                            onOpenLeaderboard = { showLeaderboard = true },
+                            onOpenMonkMode = { currentDestination = MainDestination.FOCUS },
+                            onOpenChallenges = { currentDestination = MainDestination.CHALLENGES }
                         )
                     }
                     MainDestination.PROFILE -> {
@@ -309,6 +311,16 @@ fun NeverZeroApp(
                             repository = app.buddhaRepository,
                             hapticsEnabled = uiState.profileState.hapticsEnabled,
                             modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                    MainDestination.FOCUS -> {
+                        com.productivitystreak.ui.screens.focus.FocusScreen(
+                            onBackClick = { currentDestination = MainDestination.HOME }
+                        )
+                    }
+                    MainDestination.CHALLENGES -> {
+                        com.productivitystreak.ui.screens.challenges.ChallengesScreen(
+                            onBackClick = { currentDestination = MainDestination.HOME }
                         )
                     }
                 }

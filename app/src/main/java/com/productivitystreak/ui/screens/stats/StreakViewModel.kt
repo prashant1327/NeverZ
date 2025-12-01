@@ -31,7 +31,8 @@ data class StreakUiState(
     val isLoading: Boolean = true,
     val errorMessage: String? = null,
     val successMessage: String? = null,
-    val buddhaInsight: String? = null
+    val buddhaInsight: String? = null,
+    val dailyBriefing: String? = null
 )
 
 class StreakViewModel(
@@ -39,7 +40,8 @@ class StreakViewModel(
     private val preferencesManager: com.productivitystreak.data.local.PreferencesManager,
     private val moshi: com.squareup.moshi.Moshi,
     private val geminiClient: com.productivitystreak.data.gemini.GeminiClient,
-    private val socialRepository: com.productivitystreak.data.repository.SocialRepository
+    private val socialRepository: com.productivitystreak.data.repository.SocialRepository,
+    private val aiCoach: com.productivitystreak.data.ai.AICoach
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(StreakUiState())
@@ -55,6 +57,14 @@ class StreakViewModel(
         observeGlobalLeaderboard()
         observeOneOffTasks()
         fetchBuddhaInsight()
+        
+        viewModelScope.launch {
+            preferencesManager.userName.collectLatest { name ->
+                if (name.isNotEmpty()) {
+                    fetchDailyBriefing(name)
+                }
+            }
+        }
     }
 
     fun fetchBuddhaInsight() {
@@ -62,6 +72,18 @@ class StreakViewModel(
             // In a real app, check cache first. For now, fetch fresh to demonstrate AI.
             val insight = geminiClient.generateBuddhaInsight()
             _uiState.update { it.copy(buddhaInsight = insight) }
+        }
+    }
+
+    fun fetchDailyBriefing(userName: String) {
+        viewModelScope.launch {
+            val currentState = _uiState.value
+            val briefing = aiCoach.generateDailyBriefing(
+                userName = userName,
+                streaks = currentState.streaks,
+                rpgStats = currentState.statsState.rpgStats ?: com.productivitystreak.data.model.RpgStats()
+            )
+            _uiState.update { it.copy(dailyBriefing = briefing) }
         }
     }
 

@@ -1,5 +1,7 @@
 package com.productivitystreak.ui.state.profile
 
+import com.productivitystreak.data.model.RpgStats
+
 data class ProfileState(
     val email: String = "alex@neverzero.app",
     val notificationEnabled: Boolean = true,
@@ -11,7 +13,9 @@ data class ProfileState(
     val legalLinks: List<LegalItem> = listOf(
         LegalItem("Privacy Policy", "https://neverzero.app/privacy"),
         LegalItem("Terms of Service", "https://neverzero.app/terms")
-    )
+    ),
+    val timeCapsules: List<com.productivitystreak.data.model.TimeCapsule> = emptyList(),
+    val rpgStats: RpgStats = RpgStats()
 )
 
 enum class ReminderFrequency { None, Daily, Weekly }

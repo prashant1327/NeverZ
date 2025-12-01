@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.AddTask
 import androidx.compose.material.icons.outlined.MenuBook
 import androidx.compose.material.icons.outlined.QuestionAnswer
 import androidx.compose.material.icons.outlined.EditNote
+import androidx.compose.material.icons.outlined.PhonelinkOff
 import androidx.compose.material.icons.rounded.EmojiEvents
 import androidx.compose.material.icons.rounded.LocalFireDepartment
 import androidx.compose.material.icons.rounded.Bolt
@@ -28,6 +29,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
  * Centralized set of icons used across the app to keep the visual language consistent.
+ * NO EMOJIS - Professional vector graphics only.
  */
 object AppIcons {
     // Friendly heart for Health, matching our optimistic, habit-first tone
@@ -62,6 +64,12 @@ object AppIcons {
     val AddJournal: ImageVector = Icons.Outlined.EditNote // Journal entry
     val TeachWord: ImageVector = Icons.Outlined.QuestionAnswer // Teach/coach with AI
 
+    // Challenge Icons (Professional, no emojis)
+    val ChallengeBrain: ImageVector = Icons.Outlined.School // Mental challenges
+    val ChallengeSword: ImageVector = Icons.Outlined.FitnessCenter // Physical/warrior challenges
+    val ChallengePhone: ImageVector = Icons.Outlined.PhonelinkOff // Digital detox
+    val ChallengeTrophy: ImageVector = Icons.Rounded.EmojiEvents // Achievement/completion
+
     private val categoryMap: Map<String, ImageVector> = mapOf(
         "health" to Health,
         "fitness" to Fitness,
@@ -75,5 +83,5 @@ object AppIcons {
     )
 
     fun forCategory(categoryId: String): ImageVector =
-        categoryMap[categoryId.lowercase()] ?: Default
+        categoryMap[categoryId.lowercase()] ??: Default
 }

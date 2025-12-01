@@ -29,6 +29,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun MorningBriefCard(
     quote: Quote?,
+    briefing: String?,
     isQuoteLoading: Boolean,
     todayTasks: List<DashboardTask>,
     onRefreshQuote: () -> Unit,
@@ -128,25 +129,35 @@ fun MorningBriefCard(
                     }
                 }
 
-                quote?.let {
+                if (briefing != null) {
                     Text(
-                        text = "\"${it.text}\"",
+                        text = briefing,
                         style = MaterialTheme.typography.bodyMedium,
                         color = designColors.textPrimary,
-                        maxLines = 3,
+                        maxLines = 4,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Text(
-                        text = it.author,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = designColors.textSecondary
-                    )
-                } ?: run {
-                    Text(
-                        text = "Today is a clean slate. Take one decisive action.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = designColors.textPrimary
-                    )
+                } else {
+                    quote?.let {
+                        Text(
+                            text = "\"${it.text}\"",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = designColors.textPrimary,
+                            maxLines = 3,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = it.author,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = designColors.textSecondary
+                        )
+                    } ?: run {
+                        Text(
+                            text = "Today is a clean slate. Take one decisive action.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = designColors.textPrimary
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(6.dp))

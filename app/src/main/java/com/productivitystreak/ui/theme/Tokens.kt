@@ -195,25 +195,6 @@ object Container {
     val listItemMediumHeight: Dp = 72.dp
     val listItemLargeHeight: Dp = 88.dp
 }
-
-// ==================== ICON SIZE TOKENS ====================
-/**
- * Extended icon sizing for various contexts
- */
-object IconSize {
-    val extraSmall: Dp = 12.dp
-    val small: Dp = 16.dp
-    val medium: Dp = 24.dp
-    val large: Dp = 32.dp
-    val extraLarge: Dp = 48.dp
-    val huge: Dp = 64.dp
-    val massive: Dp = 96.dp
-}
-
-// ==================== SPACING INSETS ====================
-/**
- * Screen edge insets and safe areas
- */
 object Insets {
     val screenHorizontal: Dp = 16.dp
     val screenVertical: Dp = 16.dp

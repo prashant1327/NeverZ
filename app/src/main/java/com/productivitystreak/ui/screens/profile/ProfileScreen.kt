@@ -66,6 +66,11 @@ fun ProfileScreen(
             totalPoints = totalPoints
         )
 
+        // 1.5 RPG Stats
+        RpgStatsCard(
+            stats = profileState.rpgStats
+        )
+
         // 2. Time Capsules
         TimeCapsuleCard(
             capsules = timeCapsules,

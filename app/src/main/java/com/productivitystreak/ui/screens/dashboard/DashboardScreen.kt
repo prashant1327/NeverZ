@@ -40,6 +40,8 @@ fun DashboardScreen(
     onOpenTimeCapsule: () -> Unit = {},
     onOpenBuddhaChat: () -> Unit = {},
     onOpenLeaderboard: () -> Unit = {},
+    onOpenMonkMode: () -> Unit = {},
+    onOpenChallenges: () -> Unit = {},
     onAddEntrySelected: (AddEntryType) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
@@ -163,7 +165,6 @@ fun DashboardScreen(
             }
         } else {
             item {
-                // Empty state for tasks to encourage usage
                 com.productivitystreak.ui.components.GlassCard(
                     modifier = Modifier.fillMaxWidth().clickable { showAddTaskDialog = true },
                     contentPadding = PaddingValues(16.dp)
@@ -190,9 +191,47 @@ fun DashboardScreen(
             }
         }
 
-        // 4. Teach Me a Word (AI Highlight)
+        // 4. Teach Me a Word (AI Highlight) & Monk Mode
         item {
+            com.productivitystreak.ui.screens.dashboard.components.MorningBriefCard(
+                quote = streakUiState.quote,
+                briefing = streakUiState.dailyBriefing,
+                isQuoteLoading = streakUiState.isLoading,
+                todayTasks = streakUiState.todayTasks,
+                onRefreshQuote = onRefreshQuote,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        item {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md)
+            ) {
+                com.productivitystreak.ui.screens.dashboard.components.TeachWordWidget(
+                    onClick = { 
+                        performHaptic()
+                        onAddEntrySelected(AddEntryType.TEACH) 
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+                com.productivitystreak.ui.screens.dashboard.components.MonkModeWidget(
+                    onClick = {
+                        performHaptic()
+                        onOpenMonkMode()
+                    },
+                    modifier = Modifier.weight(1f)
+                )
             }
+        }
+
+        // 5. Challenges
+        item {
+            com.productivitystreak.ui.screens.dashboard.components.ChallengesWidget(
+                onClick = {
+                    performHaptic()
+                    onOpenChallenges()
+                }
+            )
         }
 
         // 6. Habits List (Renamed to Disciplines)

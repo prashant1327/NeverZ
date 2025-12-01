@@ -42,7 +42,8 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
                     preferencesManager = app.preferencesManager,
                     moshi = moshi,
                     geminiClient = app.geminiClient,
-                    socialRepository = app.socialRepository
+                    socialRepository = app.socialRepository,
+                    aiCoach = app.aiCoach
                 ) as T
             }
             modelClass.isAssignableFrom(ProfileViewModel::class.java) -> {
@@ -51,19 +52,6 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
                     preferencesManager = app.preferencesManager,
                     timeCapsuleRepository = app.timeCapsuleRepository,
                     reminderScheduler = StreakReminderScheduler(application)
-                ) as T
-            }
-            modelClass.isAssignableFrom(VocabularyViewModel::class.java) -> {
-                VocabularyViewModel(
-                    preferencesManager = app.preferencesManager,
-                    moshi = moshi,
-                    geminiClient = app.geminiClient
-                ) as T
-            }
-            modelClass.isAssignableFrom(ReadingViewModel::class.java) -> {
-                ReadingViewModel(
-                    preferencesManager = app.preferencesManager,
-                    moshi = moshi
                 ) as T
             }
             modelClass.isAssignableFrom(OnboardingViewModel::class.java) -> {

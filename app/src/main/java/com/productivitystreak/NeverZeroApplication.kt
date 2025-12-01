@@ -47,6 +47,7 @@ class NeverZeroApplication : Application() {
         )
     }
     val buddhaRepository by lazy { com.productivitystreak.data.ai.BuddhaRepository() }
+    val aiCoach by lazy { com.productivitystreak.data.ai.AICoach(geminiClient) }
 
     // Utilities
     val backupManager by lazy { BackupManager(this, database) }
