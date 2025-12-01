@@ -54,8 +54,6 @@ import com.productivitystreak.data.ai.BuddhaRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
 fun BuddhaChatScreen(
     userName: String,
     onBackClick: () -> Unit,
@@ -208,6 +206,23 @@ fun ChatMessageItem(message: BuddhaChatMessage) {
         RoundedCornerShape(20.dp, 20.dp, 20.dp, 4.dp)
     }
 
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = alignment
+    ) {
+        Row(verticalAlignment = Alignment.Bottom) {
+            if (!message.isUser) {
+                Box(
+                    modifier = Modifier
+                        .size(32.dp)
+                        .background(MaterialTheme.colorScheme.surfaceVariant, CircleShape)
+                        .border(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.3f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.SelfImprovement,
+                        contentDescription = "Buddha",
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp)
                     )
                 }

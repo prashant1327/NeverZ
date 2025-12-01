@@ -9,12 +9,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.productivitystreak.ui.icons.AppIcons
 import com.productivitystreak.ui.state.onboarding.OnboardingCategory
 
 @Composable
+fun OnboardingIdentityStep(
+    categories: List<OnboardingCategory>,
+    selected: Set<String>,
+    onToggleCategory: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Text(
+            text = "What is your mission?",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            categories.chunked(2).forEach { rowItems ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     rowItems.forEach { item ->

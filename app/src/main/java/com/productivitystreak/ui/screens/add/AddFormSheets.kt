@@ -101,6 +101,42 @@ fun AddEntryMenuSheet(
                 text = "What would you like to do?",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
+        // Actions List
+        CommandCenterItem(
+            icon = com.productivitystreak.ui.icons.AppIcons.AddHabit,
+            title = "New Protocol",
+            subtitle = "Define a new discipline",
+            color = Color(0xFF4ADE80),
+            onClick = { 
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                onEntrySelected(AddEntryType.HABIT) 
+            }
+        )
+        CommandCenterItem(
+            icon = com.productivitystreak.ui.icons.AppIcons.TeachWord,
+            title = "Teach Word",
+            subtitle = "Expand your vocabulary",
+            color = Color(0xFF22D3EE),
+            onClick = { 
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                onEntrySelected(AddEntryType.TEACH) 
+            }
+        )
+        CommandCenterItem(
+            icon = com.productivitystreak.ui.icons.AppIcons.AddJournal,
+            title = "Journal",
+            subtitle = "Reflect on your day",
+            color = Color(0xFFFB7185),
+            onClick = { 
+                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
+                onEntrySelected(AddEntryType.JOURNAL) 
+            }
+        )
+    }
+}
+
+@Composable
+private fun CommandCenterItem(
     icon: ImageVector,
     title: String,
     subtitle: String,
