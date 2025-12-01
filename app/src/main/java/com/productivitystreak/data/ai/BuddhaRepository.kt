@@ -109,7 +109,8 @@ class BuddhaRepository {
             
             return com.google.ai.client.generativeai.type.GenerateContentResponse(
                 candidates = listOf(),
-                promptFeedback = null
+                promptFeedback = null,
+                usageMetadata = null
             )
         }
     }

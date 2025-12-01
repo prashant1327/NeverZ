@@ -234,7 +234,7 @@ fun DashboardScreen(
                     icon = com.productivitystreak.ui.icons.AppIcons.AddHabit,
                     message = "No disciplines set. Begin your protocol.",
                     action = {
-                        com.productivitystreak.ui.components.Buttons.PrimaryButton(
+                        PrimaryButton(
                             text = "Define Protocol",
                             onClick = { onAddHabitClick() }
                         )
