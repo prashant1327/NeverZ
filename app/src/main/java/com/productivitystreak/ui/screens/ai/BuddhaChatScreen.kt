@@ -54,7 +54,10 @@ import com.productivitystreak.data.ai.BuddhaRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun BuddhaChatScreen(
+    userName: String,
     onBackClick: () -> Unit,
     repository: BuddhaRepository, // Pass repository to create factory
     hapticsEnabled: Boolean = true,
@@ -63,6 +66,11 @@ fun BuddhaChatScreen(
     val viewModel: BuddhaChatViewModel = viewModel(
         factory = BuddhaChatViewModelFactory(repository)
     )
+    
+    LaunchedEffect(userName) {
+        viewModel.startChat(userName)
+    }
+
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     var inputText by remember { mutableStateOf("") }
@@ -85,13 +93,13 @@ fun BuddhaChatScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Black,
-                    titleContentColor = Color.White,
-                    navigationIconContentColor = Color.White
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        containerColor = Color.Black,
+        containerColor = MaterialTheme.colorScheme.background,
         modifier = modifier
     ) { paddingValues ->
         Column(
@@ -141,12 +149,12 @@ fun BuddhaChatScreen(
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(24.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFF1A1A1A),
-                        unfocusedContainerColor = Color(0xFF1A1A1A),
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                     ),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
                     keyboardActions = KeyboardActions(
@@ -192,31 +200,14 @@ fun BuddhaChatScreen(
 @Composable
 fun ChatMessageItem(message: BuddhaChatMessage) {
     val alignment = if (message.isUser) Alignment.End else Alignment.Start
-    val backgroundColor = if (message.isUser) MaterialTheme.colorScheme.primary else Color(0xFF1A1A1A)
-    val textColor = if (message.isUser) Color.Black else Color.White
+    val backgroundColor = if (message.isUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+    val textColor = if (message.isUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
     val shape = if (message.isUser) {
         RoundedCornerShape(20.dp, 20.dp, 4.dp, 20.dp)
     } else {
         RoundedCornerShape(20.dp, 20.dp, 20.dp, 4.dp)
     }
 
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = alignment
-    ) {
-        Row(verticalAlignment = Alignment.Bottom) {
-            if (!message.isUser) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFF2A2A2A)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.SelfImprovement,
-                        contentDescription = "Buddha",
-                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp)
                     )
                 }

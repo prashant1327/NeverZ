@@ -303,6 +303,7 @@ fun NeverZeroApp(
                     MainDestination.MENTOR -> {
                         val app = appViewModel.getApplication<com.productivitystreak.NeverZeroApplication>()
                         com.productivitystreak.ui.screens.ai.BuddhaChatScreen(
+                            userName = uiState.userName,
                             onBackClick = { currentDestination = MainDestination.HOME },
                             repository = app.buddhaRepository,
                             hapticsEnabled = uiState.profileState.hapticsEnabled,

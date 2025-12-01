@@ -101,67 +101,6 @@ fun AddEntryMenuSheet(
                 text = "What would you like to do?",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        // Actions List
-        CommandCenterItem(
-            icon = com.productivitystreak.ui.icons.AppIcons.AddHabit,
-            title = "New Habit",
-            subtitle = "Build a new routine",
-            color = Color(0xFF4ADE80),
-            onClick = { 
-                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                onEntrySelected(AddEntryType.HABIT) 
-            }
-        )
-        CommandCenterItem(
-            icon = com.productivitystreak.ui.icons.AppIcons.TeachWord,
-            title = "Teach Word",
-            subtitle = "Expand your vocabulary",
-            color = Color(0xFF22D3EE),
-            onClick = { 
-                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                onEntrySelected(AddEntryType.TEACH) 
-            }
-        )
-        CommandCenterItem(
-            icon = com.productivitystreak.ui.icons.AppIcons.AddWord,
-            title = "Log Word",
-            subtitle = "Quickly add a new word",
-            color = Color(0xFFFACC15),
-            onClick = { 
-                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                onEntrySelected(AddEntryType.WORD) 
-            }
-        )
-        CommandCenterItem(
-            icon = com.productivitystreak.ui.icons.AppIcons.AddJournal,
-            title = "Journal",
-            subtitle = "Reflect on your day",
-            color = Color(0xFFFB7185),
-            onClick = { 
-                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                onEntrySelected(AddEntryType.JOURNAL) 
-            }
-        )
-        CommandCenterItem(
-            icon = com.productivitystreak.ui.icons.AppIcons.Search,
-            title = "Templates",
-            subtitle = "Browse community templates",
-            color = Color(0xFFA78BFA),
-            onClick = { 
-                haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                onEntrySelected(AddEntryType.TEMPLATE) 
-            }
-        )
-    }
-}
-
-@Composable
-private fun CommandCenterItem(
     icon: ImageVector,
     title: String,
     subtitle: String,
@@ -325,11 +264,11 @@ fun HabitFormSheet(
     var selectedIcon by remember { mutableStateOf(habitIcons.first()) }
     var frequency by remember { mutableStateOf("Daily") }
 
-    AddSheetContainer(title = "New habit", subtitle = "Craft a clear target and give it a friendly face.") {
+    AddSheetContainer(title = "New Protocol", subtitle = "Craft a clear target and give it a friendly face.") {
         com.productivitystreak.ui.components.StyledTextField(
             value = name,
             onValueChange = { name = it },
-            label = "Habit name",
+            label = "Protocol Name",
             singleLine = true,
             keyboardOptions = KeyboardOptions.Default.copy(capitalization = KeyboardCapitalization.Sentences),
             modifier = Modifier.fillMaxWidth()
@@ -377,7 +316,7 @@ fun HabitFormSheet(
         val goal = goalText.toIntOrNull()?.coerceAtLeast(1) ?: 1
         val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
         com.productivitystreak.ui.components.PrimaryButton(
-            text = if (isSubmitting) "Saving…" else "Save habit",
+            text = if (isSubmitting) "Saving…" else "Initiate Protocol",
             onClick = {
                 haptics.performHapticFeedback(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
                 onSubmit(

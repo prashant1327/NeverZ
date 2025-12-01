@@ -15,27 +15,6 @@ import com.productivitystreak.ui.icons.AppIcons
 import com.productivitystreak.ui.state.onboarding.OnboardingCategory
 
 @Composable
-fun OnboardingIdentityStep(
-    categories: List<OnboardingCategory>,
-    selected: Set<String>,
-    onToggleCategory: (String) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = "Choose a few areas you want to protect from going to zero.",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant // Gray text
-        )
-
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            categories.chunked(2).forEach { rowItems ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     rowItems.forEach { item ->

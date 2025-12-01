@@ -3,7 +3,7 @@ package com.productivitystreak.ui.screens.ai
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.google.ai.client.generativeai.Chat
+import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.type.Content
 import com.google.ai.client.generativeai.type.TextPart
 import com.productivitystreak.data.ai.BuddhaRepository
@@ -16,17 +16,17 @@ class BuddhaChatViewModel(
     private val repository: BuddhaRepository
 ) : ViewModel() {
 
-    private var chatSession: Chat? = null
+    private var chatSession: BuddhaRepository.ChatSessionWrapper? = null
     
     private val _uiState = MutableStateFlow(BuddhaChatUiState())
     val uiState: StateFlow<BuddhaChatUiState> = _uiState.asStateFlow()
 
-    init {
-        startChat()
-    }
+    // Removed init block to allow lazy start with userName
 
-    fun startChat() {
-        chatSession = repository.createChatSession()
+    fun startChat(userName: String) {
+        if (chatSession != null) return // Already started
+        
+        chatSession = repository.createChatSession(userName)
         _uiState.value = BuddhaChatUiState(
             messages = chatSession?.history?.map { content ->
                 BuddhaChatMessage(
