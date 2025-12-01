@@ -83,5 +83,5 @@ object AppIcons {
     )
 
     fun forCategory(categoryId: String): ImageVector =
-        categoryMap[categoryId.lowercase()] ??: Default
+        categoryMap[categoryId.lowercase()] ?: Default
 }
