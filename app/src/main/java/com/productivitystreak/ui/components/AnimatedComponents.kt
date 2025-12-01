@@ -109,7 +109,7 @@ fun StaggeredListItem(
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn(AnimationCurves.SpringyEnter) + slideInVertically(
-            animationSpec = AnimationCurves.SpringyEnter,
+            animationSpec = tween(300, easing = FastOutSlowInEasing),
             initialOffsetY = { it / 4 }
         ),
         modifier = modifier
@@ -249,7 +249,7 @@ fun SwipeToDismiss(
         modifier = modifier
             .graphicsLayer {
                 translationX = animatedOffsetX
-                alpha = 1f - (animatedOffsetX.absoluteValue / 1000f).coerceIn(0f, 1f)
+                alpha = 1f - (animatedOffsetX.absoluteValue() / 1000f).coerceIn(0f, 1f)
             }
     ) {
         content()

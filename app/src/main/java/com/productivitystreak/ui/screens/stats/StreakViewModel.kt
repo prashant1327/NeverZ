@@ -81,7 +81,7 @@ class StreakViewModel(
             val briefing = aiCoach.generateDailyBriefing(
                 userName = userName,
                 streaks = currentState.streaks,
-                rpgStats = currentState.statsState.rpgStats ?: com.productivitystreak.data.model.RpgStats()
+                rpgStats = com.productivitystreak.data.model.RpgStats() // TODO: Get from ProfileState
             )
             _uiState.update { it.copy(dailyBriefing = briefing) }
         }

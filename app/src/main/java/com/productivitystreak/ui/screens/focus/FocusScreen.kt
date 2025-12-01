@@ -90,17 +90,19 @@ fun FocusScreen(
                 .size(300.dp)
                 .scale(scale)
         ) {
+            val primaryColor = MaterialTheme.colorScheme.primary
+            
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawCircle(
                     brush = Brush.radialGradient(
                         colors = listOf(
-                            MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
+                            primaryColor.copy(alpha = 0.2f),
                             Color.Transparent
                         )
                     )
                 )
                 drawCircle(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = primaryColor,
                     style = Stroke(width = 4.dp.toPx())
                 )
             }

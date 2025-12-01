@@ -194,7 +194,7 @@ fun DashboardScreen(
         // 4. Teach Me a Word (AI Highlight) & Monk Mode
         item {
             com.productivitystreak.ui.screens.dashboard.components.MorningBriefCard(
-                quote = streakUiState.quote,
+                quote = null,  // Quote not in StreakUiState
                 briefing = streakUiState.dailyBriefing,
                 isQuoteLoading = streakUiState.isLoading,
                 todayTasks = streakUiState.todayTasks,
