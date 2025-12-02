@@ -82,6 +82,19 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
             modelClass.isAssignableFrom(com.productivitystreak.ui.screens.leaderboard.LeaderboardViewModel::class.java) -> {
                 com.productivitystreak.ui.screens.leaderboard.LeaderboardViewModel() as T
             }
+            modelClass.isAssignableFrom(VocabularyViewModel::class.java) -> {
+                VocabularyViewModel(
+                    preferencesManager = app.preferencesManager,
+                    moshi = moshi,
+                    geminiClient = app.geminiClient
+                ) as T
+            }
+            modelClass.isAssignableFrom(ReadingViewModel::class.java) -> {
+                ReadingViewModel(
+                    preferencesManager = app.preferencesManager,
+                    moshi = moshi
+                ) as T
+            }
             else -> throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
         }
     }
