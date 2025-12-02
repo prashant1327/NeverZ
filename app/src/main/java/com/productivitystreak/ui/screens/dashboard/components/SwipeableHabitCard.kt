@@ -205,7 +205,7 @@ fun SwipeableHabitCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = com.productivitystreak.ui.icons.AppIcons.Streak,
+                        imageVector = com.productivitystreak.ui.icons.AppIcons.FireStreak,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)

@@ -1,8 +1,8 @@
 package com.productivitystreak.ui.screens.stats.components
 
-import androidx.compose.foundation.layout.Modifier
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import com.productivitystreak.ui.state.stats.StatsState
 
 @Composable
