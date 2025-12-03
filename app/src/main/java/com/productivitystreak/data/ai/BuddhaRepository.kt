@@ -28,7 +28,7 @@ class BuddhaRepository {
             var mock = false
             try {
                 model = GenerativeModel(
-                    modelName = "gemini-1.5-flash",
+                    modelName = "gemini-2.0-flash-exp-0827",
                     apiKey = apiKey,
                     systemInstruction = content { text(BUDDHA_SYSTEM_PROMPT) },
                     generationConfig = generationConfig {
