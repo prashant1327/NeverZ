@@ -26,7 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.foundation.clickable
 
 @Composable
-@Composable
 fun ProfileHeader(
     userName: String,
     email: String,
