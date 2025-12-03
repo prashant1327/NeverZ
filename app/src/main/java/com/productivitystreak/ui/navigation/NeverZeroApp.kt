@@ -133,6 +133,7 @@ fun NeverZeroApp(
             onUserNameChange = onboardingViewModel::onUserNameChange,
             onHabitNameChange = onboardingViewModel::onHabitNameChange,
             onIconSelected = onboardingViewModel::onIconSelected,
+            onRegenerateSuggestions = onboardingViewModel::onRegenerateSuggestions,
             onCompleteOnboarding = { onboardingViewModel.onCompleteOnboarding() },
             onDismissOnboarding = { /* handled by state */ },
             onRequestNotificationPermission = appViewModel::onShowNotificationPermissionDialog,
@@ -323,6 +324,7 @@ fun NeverZeroApp(
                         onRequestNotificationPermission = appViewModel::onShowNotificationPermissionDialog,
                         onRequestExactAlarmPermission = appViewModel::onShowAlarmPermissionDialog,
                         onCreateTimeCapsule = profileViewModel::onCreateTimeCapsule,
+                        onNameChange = profileViewModel::onNameChange,
                         onSaveTimeCapsuleReflection = profileViewModel::onSaveTimeCapsuleReflection
                     )
                 }

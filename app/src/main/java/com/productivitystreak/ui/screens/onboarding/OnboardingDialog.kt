@@ -38,6 +38,7 @@ fun OnboardingFlow(
     onUserNameChange: (String) -> Unit,
     onHabitNameChange: (String) -> Unit,
     onIconSelected: (String) -> Unit,
+    onRegenerateSuggestions: () -> Unit,
     onCompleteOnboarding: () -> Unit,
     onDismissOnboarding: () -> Unit,
     onRequestNotificationPermission: () -> Unit,
@@ -106,6 +107,9 @@ fun OnboardingFlow(
                                 onIconSelected = onIconSelected,
                                 dailyReminderEnabled = onboarding.allowNotifications,
                                 onDailyReminderToggle = onToggleNotificationsAllowed,
+                                habitSuggestions = onboarding.habitSuggestions,
+                                isGeneratingSuggestions = onboarding.isGeneratingSuggestions,
+                                onRegenerateSuggestions = onRegenerateSuggestions,
                                 onComplete = {
                                     if (!showFinishRipple) {
                                         coroutineScope.launch {

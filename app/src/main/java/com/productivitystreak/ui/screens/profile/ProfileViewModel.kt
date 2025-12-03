@@ -438,6 +438,13 @@ class ProfileViewModel(
         )
     }
 
+    fun onNameChange(newName: String) {
+        viewModelScope.launch {
+            preferencesManager.setUserName(newName)
+            _uiState.update { it.copy(userName = newName) }
+        }
+    }
+
     private fun mapCategoryToAttribute(category: String): HabitAttribute {
         val normalized = category.lowercase()
         return when {

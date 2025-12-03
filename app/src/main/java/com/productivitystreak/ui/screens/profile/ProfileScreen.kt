@@ -44,7 +44,8 @@ fun ProfileScreen(
     onRequestExactAlarmPermission: () -> Unit,
     onCreateTimeCapsule: (message: String, goal: String, daysFromNow: Int) -> Unit,
     onSaveTimeCapsuleReflection: (id: String, reflection: String) -> Unit,
-    onEditProfile: () -> Unit = {}
+    onEditProfile: () -> Unit = {},
+    onNameChange: (String) -> Unit = {}
 ) {
     val scrollState = rememberScrollState()
     var showTimeCapsuleSheet by rememberSaveable { mutableStateOf(false) }
@@ -63,20 +64,22 @@ fun ProfileScreen(
         ProfileHeader(
             userName = userName,
             email = profileState.email,
-            totalPoints = totalPoints
+            totalPoints = totalPoints,
+            onNameChange = onNameChange
         )
 
-        // 1.5 RPG Stats
-        RpgStatsCard(
-            stats = profileState.rpgStats
-        )
-
-        // 2. Time Capsules
-        TimeCapsuleCard(
-            capsules = timeCapsules,
-            onWriteNew = { showTimeCapsuleSheet = true },
-            onReflect = { capsule -> reflectionCapsuleId = capsule.id }
-        )
+        // 2. Legacy Section (Stats & Time Capsules)
+        SettingsSection(title = "Legacy") {
+            RpgStatsCard(
+                stats = profileState.rpgStats
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            TimeCapsuleCard(
+                capsules = timeCapsules,
+                onWriteNew = { showTimeCapsuleSheet = true },
+                onReflect = { capsule -> reflectionCapsuleId = capsule.id }
+            )
+        }
 
         // 3. General Settings
         SettingsSection(title = "General") {

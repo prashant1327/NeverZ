@@ -82,6 +82,10 @@ class OnboardingViewModel(
         generateHabitSuggestions()
     }
 
+    fun onRegenerateSuggestions() {
+        generateHabitSuggestions()
+    }
+
     private fun generateHabitSuggestions() {
         val categories = _uiState.value.selectedCategories.joinToString(", ")
         if (categories.isBlank()) return
@@ -96,6 +100,12 @@ class OnboardingViewModel(
     fun onNextOnboardingStep() {
         _uiState.update { state ->
             val next = (state.currentStep + 1).coerceAtMost(state.totalSteps - 1)
+            
+            // Trigger generation when entering personalization step (index 4) if empty
+            if (next == 4 && state.habitSuggestions.isEmpty()) {
+                generateHabitSuggestions()
+            }
+            
             state.copy(currentStep = next)
         }
     }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -36,6 +37,9 @@ fun OnboardingPersonalizationStep(
     onIconSelected: (String) -> Unit,
     dailyReminderEnabled: Boolean,
     onDailyReminderToggle: (Boolean) -> Unit,
+    habitSuggestions: List<String> = emptyList(),
+    isGeneratingSuggestions: Boolean = false,
+    onRegenerateSuggestions: () -> Unit = {},
     onComplete: () -> Unit
 ) {
     val focusManager = LocalFocusManager.current
@@ -54,7 +58,7 @@ fun OnboardingPersonalizationStep(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(horizontal = Spacing.sm), // Reduced padding to match reference which seems to have content close to edges or card-like
+            .padding(horizontal = Spacing.sm),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(Spacing.md))
@@ -65,7 +69,7 @@ fun OnboardingPersonalizationStep(
                 .size(120.dp)
                 .clip(CircleShape)
                 .background(MaterialTheme.colorScheme.surfaceVariant)
-                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape) // Dashed border simulation
+                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
                 .clickable { /* TODO: Implement photo picker */ },
             contentAlignment = Alignment.Center
         ) {
@@ -169,6 +173,23 @@ fun OnboardingPersonalizationStep(
                     unfocusedTextColor = MaterialTheme.colorScheme.onSurface
                 ),
                 singleLine = true,
+                trailingIcon = {
+                    IconButton(onClick = onRegenerateSuggestions, enabled = !isGeneratingSuggestions) {
+                        if (isGeneratingSuggestions) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = "Generate Suggestions",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+                },
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.Sentences,
                     imeAction = ImeAction.Done
@@ -177,6 +198,36 @@ fun OnboardingPersonalizationStep(
                     onDone = { focusManager.clearFocus() }
                 )
             )
+            
+            if (habitSuggestions.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Suggestions for you:",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                
+                @OptIn(ExperimentalLayoutApi::class)
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    habitSuggestions.forEach { suggestion ->
+                        SuggestionChip(
+                            onClick = { onHabitNameChange(suggestion) },
+                            label = { Text(suggestion) },
+                            colors = SuggestionChipDefaults.suggestionChipColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                                labelColor = MaterialTheme.colorScheme.onSurface
+                            ),
+                            border = SuggestionChipDefaults.suggestionChipBorder(
+                                borderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                            )
+                        )
+                    }
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(Spacing.lg))
