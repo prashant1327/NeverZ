@@ -16,7 +16,11 @@ class BuddhaRepository {
 
     init {
         val apiKey = BuildConfig.GEMINI_API_KEY
+        android.util.Log.d("BuddhaRepository", "Initializing with API key length: ${apiKey.length}")
+        android.util.Log.d("BuddhaRepository", "API key starts with: ${apiKey.take(10)}...")
+        
         if (apiKey.isBlank()) {
+            android.util.Log.w("BuddhaRepository", "API key is blank - using mock mode")
             generativeModel = null
             isMockMode = true
         } else {
@@ -35,14 +39,18 @@ class BuddhaRepository {
                         responseMimeType = "text/plain"
                     }
                 )
+                android.util.Log.d("BuddhaRepository", "GenerativeModel created successfully")
                 mock = false
             } catch (e: Exception) {
-                android.util.Log.e("BuddhaRepository", "Failed to initialize Gemini", e)
+                android.util.Log.e("BuddhaRepository", "Failed to initialize Gemini: ${e.javaClass.simpleName}", e)
+                android.util.Log.e("BuddhaRepository", "Error message: ${e.message}")
+                android.util.Log.e("BuddhaRepository", "Cause: ${e.cause?.message}")
                 model = null
                 mock = true
             }
             generativeModel = model
             isMockMode = mock
+            android.util.Log.d("BuddhaRepository", "Initialization complete. Mock mode: $isMockMode")
         }
     }
 

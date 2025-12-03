@@ -74,6 +74,9 @@ class BuddhaChatViewModel(
                 _uiState.value = _uiState.value.copy(messages = updatedMessages, isLoading = false)
             } catch (e: Exception) {
                 android.util.Log.e("BuddhaChat", "Error generating response", e)
+                android.util.Log.e("BuddhaChat", "Error type: ${e.javaClass.simpleName}")
+                android.util.Log.e("BuddhaChat", "Error message: ${e.message}")
+                android.util.Log.e("BuddhaChat", "Cause: ${e.cause?.message}")
                 
                 val updatedMessages = _uiState.value.messages.toMutableList()
                 val index = updatedMessages.indexOfFirst { it.id == userMessage.id }
@@ -81,10 +84,19 @@ class BuddhaChatViewModel(
                     updatedMessages[index] = userMessage.copy(status = MessageStatus.ERROR)
                 }
                 
+                // Show more specific error message
+                val errorMessage = when {
+                    e.message?.contains("API key", ignoreCase = true) == true -> "Invalid API key"
+                    e.message?.contains("quota", ignoreCase = true) == true -> "API quota exceeded"
+                    e.message?.contains("network", ignoreCase = true) == true -> "Network error"
+                    e.message?.contains("timeout", ignoreCase = true) == true -> "Request timeout"
+                    else -> "Connection weak, meditating..."
+                }
+                
                 _uiState.value = _uiState.value.copy(
                     messages = updatedMessages, 
                     isLoading = false,
-                    errorEvent = "Connection weak, meditating..."
+                    errorEvent = errorMessage
                 )
             }
         }
