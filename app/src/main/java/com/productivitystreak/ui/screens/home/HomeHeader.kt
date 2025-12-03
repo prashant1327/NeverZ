@@ -73,7 +73,7 @@ fun LevelBadge(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .clip(RoundedCornerShape(50))
-            .background(NeverZeroTheme.designColors.cardBackground)
+            .background(MaterialTheme.colorScheme.surfaceVariant)
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Text(

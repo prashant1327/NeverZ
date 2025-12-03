@@ -172,7 +172,7 @@ fun BuddhaChatScreen(
                             focusedContainerColor = NeverZeroTheme.designColors.background,
                             unfocusedContainerColor = NeverZeroTheme.designColors.background,
                             focusedIndicatorColor = NeverZeroTheme.designColors.primary,
-                            unfocusedIndicatorColor = NeverZeroTheme.designColors.outline,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.outline,
                             focusedTextColor = NeverZeroTheme.designColors.textPrimary,
                             unfocusedTextColor = NeverZeroTheme.designColors.textPrimary
                         ),
@@ -210,7 +210,7 @@ fun BuddhaChatScreen(
                         modifier = Modifier
                             .size(48.dp)
                             .background(
-                                color = if (isSendEnabled) NeverZeroTheme.designColors.primary else NeverZeroTheme.designColors.surfaceVariant,
+                                color = if (isSendEnabled) NeverZeroTheme.designColors.primary else MaterialTheme.colorScheme.surfaceVariant,
                                 shape = CircleShape
                             )
                             .alpha(if (isSendEnabled) 1f else 0.5f),
@@ -284,7 +284,7 @@ fun ChatMessageItem(
                         .background(backgroundColor, shape)
                         .border(
                             width = 1.dp,
-                            color = if (message.isUser) Color.Transparent else NeverZeroTheme.designColors.outline.copy(alpha = 0.5f),
+                            color = if (message.isUser) Color.Transparent else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                             shape = shape
                         )
                         .padding(12.dp)
