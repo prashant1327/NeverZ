@@ -23,19 +23,10 @@ import java.util.concurrent.TimeUnit
  * Implements the "Digital Ascetic" persona and handles strict JSON parsing.
  */
 class GeminiRepository(
-    private val apiKey: String
+    private val apiKey: String,
+    private val service: GeminiService,
+    private val moshi: Moshi
 ) {
-    private val moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory())
-        .build()
-
-    private val service: GeminiService by lazy {
-        val retrofit = Retrofit.Builder()
-            .baseUrl("https://generativelanguage.googleapis.com/v1beta/")
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .build()
-        retrofit.create(GeminiService::class.java)
-    }
 
     /**
      * Generates a personalized daily wisdom quote using the "Digital Ascetic" persona.

@@ -2,6 +2,7 @@ package com.productivitystreak.data.repository
 
 import com.productivitystreak.data.local.dao.StreakDao
 import com.productivitystreak.data.local.entity.StreakEntity
+import com.productivitystreak.data.repository.RepositoryResult
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -44,7 +45,19 @@ class StreakRepositoryTest {
                 category = "test",
                 history = emptyList(),
                 color = "#FF0000",
-                icon = "test"
+                icon = "test",
+                frequency = com.productivitystreak.data.model.StreakFrequency.DAILY,
+                targetPerPeriod = null,
+                customDaysOfWeek = emptyList(),
+                reminderEnabled = true,
+                reminderTime = "09:00",
+                difficulty = com.productivitystreak.data.model.StreakDifficulty.BALANCED,
+                allowFreezeDays = true,
+                rescuedDates = emptyList(),
+                freezeDaysAvailable = 0,
+                freezeDaysUsed = 0,
+                lastUpdated = System.currentTimeMillis(),
+                isArchived = false
             )
         )
         whenever(streakDao.getAllStreaks()).thenReturn(flowOf(streakEntities))

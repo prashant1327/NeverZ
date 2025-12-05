@@ -20,45 +20,54 @@ import kotlinx.coroutines.launch
 class NeverZeroApplication : Application() {
     private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
-    val database by lazy { AppDatabase.getDatabase(this) }
-    val preferencesManager by lazy { PreferencesManager(this) }
-    
-    private val _isInitialized = MutableStateFlow(false)
-    val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
+    // Database
+    lateinit var database: AppDatabase
+        private set
 
     // Repositories
-    val streakRepository by lazy { StreakRepository(database.streakDao()) }
-    val vocabularyRepository by lazy { VocabularyRepository(database.vocabularyDao()) }
-    val bookRepository by lazy { BookRepository(database.bookDao(), database.readingSessionDao()) }
-    val reflectionRepository by lazy { ReflectionRepository(database.dailyReflectionDao()) }
-    val achievementRepository by lazy { AchievementRepository(database.achievementDao()) }
-    val assetRepository by lazy { AssetRepository() }
-    val timeCapsuleRepository by lazy { TimeCapsuleRepository(database.timeCapsuleDao()) }
-    val templateRepository by lazy { TemplateRepository() }
-    val socialRepository by lazy { SocialRepository() }
-    
-    // AI
-    val geminiClient by lazy { com.productivitystreak.data.gemini.GeminiClient.getInstance(this) }
-    val geminiRepository by lazy { 
-        GeminiRepository(com.productivitystreak.data.config.ApiKeyManager.getApiKey(this)) 
-    }
-    val quoteRepository by lazy { 
-        QuoteRepository(
-            personalizedEngine = PersonalizedQuoteEngine(geminiClient),
-            reflectionRepository = reflectionRepository,
-            timeCapsuleRepository = timeCapsuleRepository
-        )
-    }
-    val buddhaRepository by lazy { com.productivitystreak.data.ai.BuddhaRepository(this) }
-    val aiCoach by lazy { com.productivitystreak.data.ai.AICoach(geminiClient) }
+    lateinit var streakRepository: StreakRepository
+        private set
+    lateinit var templateRepository: TemplateRepository
+        private set
+    lateinit var geminiRepository: GeminiRepository
+        private set
+    lateinit var achievementRepository: AchievementRepository
+        private set
+    lateinit var timeCapsuleRepository: TimeCapsuleRepository
+        private set
+    lateinit var reflectionRepository: ReflectionRepository
+        private set
+    lateinit var quoteRepository: QuoteRepository
+        private set
+    lateinit var buddhaRepository: com.productivitystreak.data.ai.BuddhaRepository
+        private set
+    lateinit var socialRepository: SocialRepository
+        private set
+    lateinit var assetRepository: com.productivitystreak.data.repository.AssetRepository
+        private set
 
-    // Utilities
-    val backupManager by lazy { BackupManager(this, database) }
-    private val ghostScheduler by lazy { GhostNotificationScheduler(this) }
+    // AI & Services
+    lateinit var geminiClient: com.productivitystreak.data.gemini.GeminiClient
+        private set
+    lateinit var aiCoach: com.productivitystreak.data.ai.AICoach
+        private set
+    lateinit var personalizedQuoteEngine: PersonalizedQuoteEngine
+        private set
+    lateinit var preferencesManager: PreferencesManager
+        private set
+    lateinit var ghostScheduler: GhostNotificationScheduler
+        private set
+    lateinit var backupManager: com.productivitystreak.data.backup.BackupManager
+        private set
+
+    private val _isInitialized = MutableStateFlow(false)
+    val isInitialized: StateFlow<Boolean> = _isInitialized.asStateFlow()
 
     override fun onCreate() {
         super.onCreate()
         Thread.setDefaultUncaughtExceptionHandler(GlobalExceptionHandler(this))
+
+        initializeDependencies()
 
         // Initialize sample data if needed
         applicationScope.launch {
@@ -79,5 +88,64 @@ class NeverZeroApplication : Application() {
         } catch (e: Exception) {
             android.util.Log.e("NeverZeroApp", "Failed to schedule ghost notifications", e)
         }
+    }
+
+    private fun initializeDependencies() {
+        // 1. Core Data & Utils
+        database = AppDatabase.getDatabase(this)
+        preferencesManager = PreferencesManager(this)
+        val moshi = com.squareup.moshi.Moshi.Builder()
+            .add(com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory())
+            .build()
+
+        // 2. Network & AI
+        val logging = okhttp3.logging.HttpLoggingInterceptor().apply {
+            level = okhttp3.logging.HttpLoggingInterceptor.Level.BODY
+        }
+        val okHttpClient = okhttp3.OkHttpClient.Builder()
+            .addInterceptor(logging)
+            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .writeTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
+
+        val retrofit = retrofit2.Retrofit.Builder()
+            .baseUrl("https://generativelanguage.googleapis.com/")
+            .client(okHttpClient)
+            .addConverterFactory(retrofit2.converter.moshi.MoshiConverterFactory.create(moshi))
+            .build()
+
+        val geminiService = retrofit.create(com.productivitystreak.data.remote.GeminiService::class.java)
+        geminiClient = com.productivitystreak.data.gemini.GeminiClient.getInstance(this)
+        
+        // 3. Repositories
+        streakRepository = StreakRepository(database.streakDao())
+        templateRepository = TemplateRepository()
+        achievementRepository = AchievementRepository(database.achievementDao())
+        timeCapsuleRepository = TimeCapsuleRepository(database.timeCapsuleDao())
+        reflectionRepository = ReflectionRepository(database.dailyReflectionDao())
+        buddhaRepository = com.productivitystreak.data.ai.BuddhaRepository(this)
+        socialRepository = SocialRepository()
+        assetRepository = com.productivitystreak.data.repository.AssetRepository()
+
+        geminiRepository = GeminiRepository(
+            apiKey = com.productivitystreak.data.config.ApiKeyManager.getApiKey(this),
+            service = geminiService,
+            moshi = moshi
+        )
+
+        // 4. Complex Dependencies
+        aiCoach = com.productivitystreak.data.ai.AICoach(geminiClient)
+        personalizedQuoteEngine = PersonalizedQuoteEngine(geminiClient)
+        
+        quoteRepository = QuoteRepository(
+            personalizedEngine = personalizedQuoteEngine,
+            reflectionRepository = reflectionRepository,
+            timeCapsuleRepository = timeCapsuleRepository,
+            geminiClient = geminiClient
+        )
+
+        ghostScheduler = GhostNotificationScheduler(this)
+        backupManager = com.productivitystreak.data.backup.BackupManager(this, database)
     }
 }

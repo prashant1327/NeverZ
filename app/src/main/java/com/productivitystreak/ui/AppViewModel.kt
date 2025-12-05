@@ -17,8 +17,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalTime
-
 import com.productivitystreak.data.repository.GeminiRepository
 
 class AppViewModel(
@@ -95,7 +93,7 @@ class AppViewModel(
                             )
                         }
                     }
-                    else -> { /* Handle other cases if needed */ }
+                    else -> { }
                 }
             } catch (error: Exception) {
                 _uiState.update { state ->

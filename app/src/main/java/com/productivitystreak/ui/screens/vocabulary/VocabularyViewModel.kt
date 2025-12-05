@@ -14,7 +14,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -73,57 +75,53 @@ class VocabularyViewModel(
     // ... (rest of the methods: loadVocabularyData, onSubmitVocabularyEntry, onAddVocabularyWord, checkVocabularyAchievements, clearMessages)
     
     private fun loadVocabularyData() {
-        viewModelScope.launch {
-            try {
-                preferencesManager.vocabularyStreakDays.collect { streakDays ->
-                    _uiState.update { it.copy(currentStreakDays = streakDays) }
-                }
-            } catch (e: Exception) {
+        preferencesManager.vocabularyStreakDays
+            .onEach { streakDays ->
+                _uiState.update { it.copy(currentStreakDays = streakDays) }
+            }
+            .catch { e ->
                 Log.e("VocabularyViewModel", "Error loading vocabulary streak days", e)
             }
-        }
+            .launchIn(viewModelScope)
 
-        viewModelScope.launch {
-            try {
-                preferencesManager.vocabularyLastDate.collect { lastDate ->
-                    val today = LocalDate.now().toString()
-                    if (lastDate != today) {
-                        preferencesManager.setWordsAddedToday(0)
-                        preferencesManager.setVocabularyLastDate(today)
-                    }
+        preferencesManager.vocabularyLastDate
+            .onEach { lastDate ->
+                val today = LocalDate.now().toString()
+                if (lastDate != today) {
+                    preferencesManager.setWordsAddedToday(0)
+                    preferencesManager.setVocabularyLastDate(today)
                 }
-            } catch (e: Exception) {
+            }
+            .catch { e ->
                 Log.e("VocabularyViewModel", "Error checking vocabulary date", e)
             }
-        }
+            .launchIn(viewModelScope)
 
-        viewModelScope.launch {
-            try {
-                preferencesManager.wordsAddedToday.collect { count ->
-                    _uiState.update { it.copy(wordsAddedToday = count) }
-                }
-            } catch (e: Exception) {
+        preferencesManager.wordsAddedToday
+            .onEach { count ->
+                _uiState.update { it.copy(wordsAddedToday = count) }
+            }
+            .catch { e ->
                 Log.e("VocabularyViewModel", "Error loading words added today", e)
             }
-        }
+            .launchIn(viewModelScope)
 
-        viewModelScope.launch {
-            try {
-                preferencesManager.vocabularyWords.collect { wordsJson ->
-                    val type = Types.newParameterizedType(List::class.java, VocabularyWord::class.java)
-                    val adapter = moshi.adapter<List<VocabularyWord>>(type)
-                    val words = try {
-                        adapter.fromJson(wordsJson) ?: emptyList()
-                    } catch (e: Exception) {
-                        Log.e("VocabularyViewModel", "Error parsing vocabulary words", e)
-                        emptyList()
-                    }
-                    _uiState.update { it.copy(words = words) }
+        preferencesManager.vocabularyWords
+            .onEach { wordsJson ->
+                val type = Types.newParameterizedType(List::class.java, VocabularyWord::class.java)
+                val adapter = moshi.adapter<List<VocabularyWord>>(type)
+                val words = try {
+                    adapter.fromJson(wordsJson) ?: emptyList()
+                } catch (e: Exception) {
+                    Log.e("VocabularyViewModel", "Error parsing vocabulary words", e)
+                    emptyList()
                 }
-            } catch (e: Exception) {
+                _uiState.update { it.copy(words = words) }
+            }
+            .catch { e ->
                 Log.e("VocabularyViewModel", "Error loading vocabulary words", e)
             }
-        }
+            .launchIn(viewModelScope)
     }
 
     fun onSubmitVocabularyEntry(word: String, definition: String, example: String?) {
