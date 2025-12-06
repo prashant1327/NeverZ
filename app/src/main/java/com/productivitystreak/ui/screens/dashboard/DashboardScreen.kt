@@ -33,7 +33,6 @@ import com.productivitystreak.ui.screens.dashboard.components.AddTaskDialog
 import com.productivitystreak.ui.screens.dashboard.components.FocusModeWidget
 import com.productivitystreak.ui.screens.dashboard.components.OneOffTaskRow
 import com.productivitystreak.ui.screens.dashboard.components.RadarChartPreview
-import com.productivitystreak.ui.screens.dashboard.components.VoiceControlCard
 import com.productivitystreak.ui.screens.home.HomeHeader
 import com.productivitystreak.ui.state.AppUiState
 import com.productivitystreak.ui.state.DashboardTask
@@ -41,17 +40,6 @@ import com.productivitystreak.ui.state.AddEntryType
 import com.productivitystreak.ui.theme.NeverZeroTheme
 import com.productivitystreak.ui.theme.PlayfairFontFamily
 import com.productivitystreak.ui.theme.Spacing
-import com.productivitystreak.ui.interaction.rememberHapticManager
-import com.productivitystreak.ui.interaction.HapticFeedback
-import com.productivitystreak.ui.interaction.HapticPattern
-import com.productivitystreak.ui.interaction.taskSwipeGestures
-import com.productivitystreak.ui.interaction.quickActionGestures
-import com.productivitystreak.ui.components.VoiceButton
-import com.productivitystreak.ui.voice.rememberVoiceManager
-import com.productivitystreak.ui.voice.VoiceCommand
-import com.productivitystreak.ui.animation.rememberPhysicsState
-import com.productivitystreak.ui.animation.elasticStretchAnimation
-import com.productivitystreak.ui.animation.bounceAnimation
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -90,10 +78,8 @@ fun DashboardScreen(
 
     val haptics = LocalHapticFeedback.current
     val hapticsEnabled = uiState.profileState.hapticsEnabled
-    val hapticManager = rememberHapticManager()
-    val voiceManager = rememberVoiceManager()
 
-    fun performHaptic(type: HapticFeedbackType = com.productivitystreak.ui.theme.HapticTokens.Impact) {
+    fun performHaptic(type: HapticFeedbackType = HapticFeedbackType.LongPress) {
         if (hapticsEnabled) {
             haptics.performHapticFeedback(type)
         }
@@ -138,24 +124,9 @@ fun DashboardScreen(
                 DailyWisdomCard(
                     insight = streakUiState.buddhaInsight ?: "Meditate on your goals.",
                     onRefresh = {
-                        HapticFeedback(pattern = HapticPattern.REFRESH, manager = hapticManager)
+                        performHaptic()
                         onRefreshQuote()
                     },
-                    deepForest = deepForest,
-                    creamWhite = creamWhite
-                ).quickActionGestures(
-                    onRefresh = {
-                        HapticFeedback(pattern = HapticPattern.WISDOM_REVEAL, manager = hapticManager)
-                        onRefreshQuote()
-                    }
-                )
-            }
-
-            // 4. Voice Control (square)
-            item(key = "voice-control") {
-                VoiceControlCard(
-                    voiceManager = voiceManager,
-                    hapticManager = hapticManager,
                     deepForest = deepForest,
                     creamWhite = creamWhite
                 )
@@ -225,8 +196,7 @@ fun DashboardScreen(
                                 celebratingTaskId = task.id
                                 onToggleTask(task.id)
                             },
-                            onSelect = { onSelectStreak(streak.id) },
-                            hapticManager = hapticManager
+                            onSelect = { onSelectStreak(streak.id) }
                         )
                     }
                 }
@@ -265,12 +235,9 @@ private fun ProtocolRow(
     task: DashboardTask,
     onToggle: () -> Unit,
     onSelect: () -> Unit,
-    hapticManager: com.productivitystreak.ui.interaction.HapticManager,
     modifier: Modifier = Modifier
 ) {
     val checkScale = remember { Animatable(1f) }
-    val physicsState = rememberPhysicsState()
-    val elasticScale = elasticStretchAnimation(stretched = false)
     
     LaunchedEffect(task.isCompleted) {
         if (task.isCompleted) {
@@ -294,20 +261,7 @@ private fun ProtocolRow(
     Surface(
         modifier = modifier
             .fillMaxWidth()
-            .taskSwipeGestures(
-                onComplete = {
-                    HapticFeedback(pattern = HapticPattern.TASK_COMPLETE, manager = hapticManager)
-                    onToggle()
-                },
-                onDelete = {
-                    HapticFeedback(pattern = HapticPattern.TASK_DELETE, manager = hapticManager)
-                    // Handle delete if needed
-                },
-                onEdit = {
-                    HapticFeedback(pattern = HapticPattern.TASK_EDIT, manager = hapticManager)
-                    onSelect()
-                }
-            ),
+            .clickable { onToggle() },
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
         tonalElevation = 1.dp
@@ -332,7 +286,7 @@ private fun ProtocolRow(
                 Icon(
                     imageVector = if (task.isCompleted) Icons.Filled.CheckCircle else Icons.Outlined.Circle,
                     contentDescription = if (task.isCompleted) "Completed" else "Mark complete",
-                    tint = if (task.isCompleted) accentColor else MaterialTheme.colorScheme.outline,
+                    tint = if (task.isCompleted) Color(task.accentHex.toLong()) else MaterialTheme.colorScheme.outline,
                     modifier = Modifier.size(28.dp)
                 )
             }
@@ -366,7 +320,7 @@ private fun ProtocolRow(
             Box(
                 modifier = Modifier
                     .size(8.dp)
-                    .background(accentColor, shape = RoundedCornerShape(4.dp))
+                    .background(Color(task.accentHex.toLong()), shape = RoundedCornerShape(4.dp))
             )
         }
     }
