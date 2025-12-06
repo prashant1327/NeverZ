@@ -139,18 +139,99 @@ class GeminiClient private constructor(private val context: android.content.Cont
     }
 
     suspend fun generateHabitSuggestions(interests: String): List<String> = withContext(Dispatchers.IO) {
-        val generativeModel = model ?: return@withContext emptyList()
-        val prompt = "Suggest 5 simple, daily habits for someone interested in: $interests. Format as a simple list, one per line, no numbering or bullets."
+        val generativeModel = model ?: return@withContext getFallbackHabitSuggestions(interests)
+        
+        // Check rate limit
+        if (!rateLimiter.acquirePermit()) {
+            Log.w(TAG, "Rate limit exceeded for habit suggestions")
+            return@withContext getFallbackHabitSuggestions(interests)
+        }
+        
+        val prompt = """
+            Generate 5 specific, actionable daily habits for someone interested in: $interests
+            
+            Requirements:
+            - Each habit should take 5-30 minutes
+            - Be specific and measurable
+            - Focus on consistency over intensity
+            - Make them practical for busy professionals
+            - No generic advice like "exercise more"
+            
+            Format: One habit per line, no numbering or bullets
+            
+            Example:
+            Write 3 sentences in a journal about today's key insight
+            Read 10 pages from a book in your field
+            Practice 5 minutes of focused breathing
+        """.trimIndent()
+        
         try {
-            val response = generativeModel.generateContent(content { text(prompt) })
-            response.text?.lines()
-                ?.map { it.trim().removePrefix("- ").removePrefix("* ").trim() }
-                ?.filter { it.isNotBlank() }
+            val response = generateWithRetry(generativeModel, prompt, maxRetries = 2)
+            val habits = response?.lines()
+                ?.map { it.trim().removePrefix("- ").removePrefix("* ").removePrefix("•").trim() }
+                ?.filter { it.isNotBlank() && it.length > 10 }
                 ?.take(5)
                 ?: emptyList()
+            
+            if (habits.size >= 3) {
+                return@withContext habits
+            } else {
+                return@withContext getFallbackHabitSuggestions(interests)
+            }
         } catch (e: Exception) {
-            emptyList()
+            Log.e(TAG, "Failed to generate habit suggestions", e)
+            getFallbackHabitSuggestions(interests)
         }
+    }
+    
+    private fun getFallbackHabitSuggestions(interests: String): List<String> {
+        val categoryMap = mapOf(
+            "fitness" to listOf(
+                "Do 20 push-ups first thing in the morning",
+                "Take a 15-minute walk during lunch break",
+                "Stretch for 5 minutes before bed",
+                "Drink 8 glasses of water throughout the day",
+                "Track your meals in a simple food journal"
+            ),
+            "reading" to listOf(
+                "Read 10 pages from a book before breakfast",
+                "Summarize one article you read in 3 sentences",
+                "Spend 15 minutes reading industry news",
+                "Listen to an audiobook during your commute",
+                "Share one interesting fact you learned today"
+            ),
+            "productivity" to listOf(
+                "Plan tomorrow's top 3 priorities before bed",
+                "Time-block your calendar for deep work",
+                "Review and clear your inbox to zero",
+                "Take a 5-minute break every hour",
+                "Write down 3 wins from today"
+            ),
+            "mindfulness" to listOf(
+                "Practice 5 minutes of focused breathing",
+                "Write 3 things you're grateful for",
+                "Meditate for 10 minutes in the morning",
+                "Do a body scan before sleep",
+                "Take 3 conscious breaths before meals"
+            ),
+            "learning" to listOf(
+                "Learn one new word and use it in a sentence",
+                "Watch a 10-minute educational video",
+                "Practice a skill for 20 minutes",
+                "Teach someone something you learned",
+                "Review your notes from yesterday"
+            )
+        )
+        
+        // Find best match
+        val category = categoryMap.keys.find { interests.contains(it, ignoreCase = true) }
+        return category?.let { categoryMap[it] } ?: listOf(
+            "Spend 15 minutes on focused work related to $interests",
+            "Journal about your progress in $interests for 5 minutes",
+            "Practice a skill in $interests for 20 minutes",
+            "Read or watch content about $interests for 10 minutes",
+            "Share something you learned about $interests with someone"
+        )
     }
 
     suspend fun generateWordOfTheDay(interests: String = "general knowledge", forceRefresh: Boolean = false): com.productivitystreak.ui.state.vocabulary.VocabularyWord? = withContext(Dispatchers.IO) {
@@ -227,45 +308,138 @@ class GeminiClient private constructor(private val context: android.content.Cont
             }
         }
         
-        val generativeModel = model ?: return@withContext "The obstacle is the way."
+        val generativeModel = model ?: return@withContext getFallbackBuddhaInsight()
         
         // Check rate limit
         if (!rateLimiter.acquirePermit()) {
             Log.w(TAG, "Rate limit exceeded for Buddha insight")
-            return@withContext cache.get<String>(cacheKey) ?: "The obstacle is the way."
+            return@withContext cache.get<String>(cacheKey) ?: getFallbackBuddhaInsight()
         }
         
-        val prompt = "Give me a short, profound quote, proverb, or stoic insight about $context. Max 20 words. No quotes around the text."
+        val prompt = """
+            You are a wise Buddhist monk and stoic philosopher. 
+            Generate a profound, actionable insight about: $context
+            
+            Guidelines:
+            - Keep it under 20 words
+            - Be encouraging but not preachy
+            - Use metaphors from nature or daily life
+            - Make it practical and actionable
+            - No generic platitudes
+            - No quotation marks
+            
+            Example style: "Like water shaping stone, small daily actions carve your destiny."
+        """.trimIndent()
+        
         try {
-            val response = generativeModel.generateContent(content { text(prompt) })
-            val result = response.text?.trim() ?: "The obstacle is the way."
+            val response = generateWithRetry(generativeModel, prompt, maxRetries = 2)
+            val result = response?.trim()?.removeSurrounding("\"") ?: getFallbackBuddhaInsight()
+            
+            // Validate response quality
+            if (result.length < 10 || result.contains("error", ignoreCase = true)) {
+                return@withContext getFallbackBuddhaInsight()
+            }
             
             // Cache the result
             cache.put(cacheKey, result, com.productivitystreak.data.ai.AIResponseCache.BUDDHA_INSIGHT_TTL, java.util.concurrent.TimeUnit.MILLISECONDS)
-            Log.d(TAG, "Cached Buddha insight")
+            Log.d(TAG, "Cached Buddha insight: $result")
             
             result
         } catch (e: Exception) {
             Log.e(TAG, "Failed to generate Buddha insight", e)
-            "The obstacle is the way."
+            getFallbackBuddhaInsight()
         }
+    }
+    
+    private fun getFallbackBuddhaInsight(): String {
+        val insights = listOf(
+            "The obstacle is the way. Transform resistance into growth.",
+            "Like bamboo, bend with challenges but never break your core.",
+            "Small steps daily compound into extraordinary journeys.",
+            "Your consistency today shapes your character tomorrow.",
+            "Progress whispers while perfection shouts. Listen to whispers.",
+            "The path reveals itself to those who take the first step.",
+            "Discipline is choosing what you want most over what you want now.",
+            "Every streak begins with a single committed day.",
+            "Your future self is watching. Make them proud today.",
+            "Mastery is patience applied consistently over time."
+        )
+        return insights.random()
+    }
+    
+    private suspend fun generateWithRetry(
+        model: GenerativeModel,
+        prompt: String,
+        maxRetries: Int = 3
+    ): String? {
+        repeat(maxRetries) { attempt ->
+            try {
+                val response = model.generateContent(content { text(prompt) })
+                return response.text
+            } catch (e: Exception) {
+                Log.w(TAG, "Attempt ${attempt + 1} failed: ${e.message}")
+                if (attempt < maxRetries - 1) {
+                    kotlinx.coroutines.delay(1000L * (attempt + 1)) // Exponential backoff
+                }
+            }
+        }
+        return null
     }
 
     suspend fun generateJournalFeedback(entry: String): String = withContext(Dispatchers.IO) {
-        val generativeModel = model ?: return@withContext "Reflect on this moment. It is a stepping stone."
+        val generativeModel = model ?: return@withContext getFallbackJournalFeedback()
+        
+        // Check rate limit
+        if (!rateLimiter.acquirePermit()) {
+            Log.w(TAG, "Rate limit exceeded for journal feedback")
+            return@withContext getFallbackJournalFeedback()
+        }
+        
         val prompt = """
-            You are a wise, stoic mentor (like Marcus Aurelius or Buddha). 
-            Read this journal entry: "$entry"
-            Provide a short, 1-2 sentence personalized reflection or advice. 
-            Be encouraging but deep. No "Good job" or generic praise.
+            You are a wise, compassionate mentor combining Buddhist wisdom and Stoic philosophy.
+            
+            Journal entry: "$entry"
+            
+            Provide a personalized 1-2 sentence reflection that:
+            - Acknowledges their experience with empathy
+            - Offers a practical insight or reframe
+            - Uses metaphors from nature or daily life
+            - Encourages growth without being preachy
+            - Avoids generic praise like "Good job" or "Keep it up"
+            
+            Example style: "Your awareness of this pattern is the first crack in the wall. Now, like water finding its path, let action flow through that opening."
         """.trimIndent()
+        
         try {
-            val response = generativeModel.generateContent(content { text(prompt) })
-            response.text?.trim() ?: "Reflect on this moment. It is a stepping stone."
+            val response = generateWithRetry(generativeModel, prompt, maxRetries = 2)
+            val result = response?.trim() ?: getFallbackJournalFeedback()
+            
+            // Validate response quality
+            if (result.length < 20 || result.contains("error", ignoreCase = true)) {
+                return@withContext getFallbackJournalFeedback()
+            }
+            
+            result
         } catch (e: Exception) {
             Log.e(TAG, "Failed to generate journal feedback", e)
-            "Reflect on this moment. It is a stepping stone."
+            getFallbackJournalFeedback()
         }
+    }
+    
+    private fun getFallbackJournalFeedback(): String {
+        val feedbacks = listOf(
+            "Your reflection shows self-awareness. That clarity is the compass for your next step.",
+            "Notice how you're observing your patterns. This distance creates space for change.",
+            "The fact you're writing this means you're already in motion. Trust the process.",
+            "Your honesty here is courage in action. Small truths compound into transformation.",
+            "This moment of reflection is planting seeds. Water them with consistent action.",
+            "You're mapping your inner landscape. Each entry makes the path clearer.",
+            "The struggle you describe is the friction that shapes you. Lean into it.",
+            "Your awareness of this challenge is already shifting it. Keep observing.",
+            "This entry captures a pivot point. Your future self will thank you for noticing.",
+            "The patterns you see here are invitations to evolve. Accept them."
+        )
+        return feedbacks.random()
     }
 
     companion object {
