@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 import com.productivitystreak.data.gemini.GeminiClient
@@ -32,6 +34,9 @@ class OnboardingViewModel(
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
+    // Debounce job for saving user name
+    private var userNameSaveJob: Job? = null
 
     init {
         loadOnboardingState()
@@ -127,6 +132,13 @@ class OnboardingViewModel(
 
     fun onUserNameChange(name: String) {
         _uiState.update { it.copy(userName = name) }
+        
+        // Debounced immediate save to DataStore
+        userNameSaveJob?.cancel()
+        userNameSaveJob = viewModelScope.launch {
+            delay(300) // 300ms debounce to avoid excessive writes
+            preferencesManager.setUserName(name)
+        }
     }
 
     fun onHabitNameChange(name: String) {

@@ -17,7 +17,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import com.productivitystreak.data.repository.GeminiRepository
+import com.productivitystreak.data.gamification.GamificationEngine
+import com.productivitystreak.data.gamification.LevelUpEvent
 
 class AppViewModel(
     application: Application,
@@ -25,11 +30,15 @@ class AppViewModel(
     private val preferencesManager: PreferencesManager,
     private val streakRepository: com.productivitystreak.data.repository.StreakRepository,
     private val templateRepository: com.productivitystreak.data.repository.TemplateRepository,
-    private val geminiRepository: GeminiRepository
+    private val geminiRepository: GeminiRepository,
+    private val gamificationEngine: GamificationEngine
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
+
+    private val _levelUpEvent = MutableSharedFlow<LevelUpEvent>()
+    val levelUpEvent: SharedFlow<LevelUpEvent> = _levelUpEvent.asSharedFlow()
 
     private var quoteRefreshJob: Job? = null
 
@@ -164,6 +173,68 @@ class AppViewModel(
     fun onDismissAlarmPermissionDialog() {
         _uiState.update { state ->
             state.copy(permissionState = state.permissionState.copy(showAlarmDialog = false))
+        }
+    }
+
+    // Gamification: Claim XP
+    /**
+     * Called when user clicks 'Claim XP' for a streak.
+     * Awards XP based on streak length and may trigger level-up.
+     */
+    fun onClaimXp(streakId: String) {
+        viewModelScope.launch {
+            try {
+                val event = gamificationEngine.awardXp(streakId)
+                if (event != null) {
+                    _levelUpEvent.emit(event)
+                    _uiState.update {
+                        it.copy(
+                            uiMessage = UiMessage(
+                                text = "Level Up! You are now level ${event.newLevel}!",
+                                type = UiMessageType.SUCCESS
+                            )
+                        )
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            uiMessage = UiMessage(
+                                text = "XP claimed successfully!",
+                                type = UiMessageType.SUCCESS
+                            )
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                _uiState.update {
+                    it.copy(
+                        uiMessage = UiMessage(
+                            text = "Failed to claim XP: ${e.message}",
+                            type = UiMessageType.ERROR
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Check and apply stat decay for missed Health protocols.
+     * Call this on app startup or periodically.
+     */
+    fun checkStatDecay() {
+        viewModelScope.launch {
+            val result = gamificationEngine.checkStatDecay()
+            if (result.decayOccurred) {
+                _uiState.update {
+                    it.copy(
+                        uiMessage = UiMessage(
+                            text = "Your ${result.affectedStat?.displayName} decreased due to missed Health habits!",
+                            type = UiMessageType.WARNING
+                        )
+                    )
+                }
+            }
         }
     }
 

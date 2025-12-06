@@ -43,7 +43,11 @@ class NeverZeroApplication : Application() {
         private set
     lateinit var socialRepository: SocialRepository
         private set
+    lateinit var journalRepository: JournalRepository
+        private set
     lateinit var assetRepository: com.productivitystreak.data.repository.AssetRepository
+        private set
+    lateinit var gamificationEngine: com.productivitystreak.data.gamification.GamificationEngine
         private set
 
     // AI & Services
@@ -126,7 +130,12 @@ class NeverZeroApplication : Application() {
         reflectionRepository = ReflectionRepository(database.dailyReflectionDao())
         buddhaRepository = com.productivitystreak.data.ai.BuddhaRepository(this)
         socialRepository = SocialRepository()
+        journalRepository = JournalRepository(database.journalDao())
         assetRepository = com.productivitystreak.data.repository.AssetRepository()
+        gamificationEngine = com.productivitystreak.data.gamification.GamificationEngine(
+            userStatsDao = database.userStatsDao(),
+            streakDao = database.streakDao()
+        )
 
         geminiRepository = GeminiRepository(
             apiKey = com.productivitystreak.data.config.ApiKeyManager.getApiKey(this),

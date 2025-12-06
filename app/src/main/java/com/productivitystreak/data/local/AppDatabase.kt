@@ -21,9 +21,11 @@ import com.productivitystreak.data.local.entity.*
         // New Protocol-based entities
         ProtocolEntity::class,
         DailyLogEntity::class,
-        UserStatsEntity::class
+        UserStatsEntity::class,
+        // Journal
+        JournalEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -42,6 +44,9 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun protocolDao(): ProtocolDao
     abstract fun dailyLogDao(): DailyLogDao
     abstract fun userStatsDao(): UserStatsDao
+
+    // Journal
+    abstract fun journalDao(): JournalDao
 
     companion object {
         @Volatile

@@ -34,7 +34,8 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
                     preferencesManager = app.preferencesManager,
                     streakRepository = app.streakRepository,
                     templateRepository = app.templateRepository,
-                    geminiRepository = app.geminiRepository
+                    geminiRepository = app.geminiRepository,
+                    gamificationEngine = app.gamificationEngine
                 ) as T
             }
             modelClass.isAssignableFrom(StreakViewModel::class.java) -> {
@@ -73,6 +74,7 @@ class AppViewModelFactory(private val application: Application) : ViewModelProvi
             modelClass.isAssignableFrom(JournalViewModel::class.java) -> {
                 JournalViewModel(
                     reflectionRepository = app.reflectionRepository,
+                    journalRepository = app.journalRepository,
                     geminiClient = app.geminiClient
                 ) as T
             }

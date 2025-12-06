@@ -76,7 +76,8 @@ enum class MainDestination(val route: String) {
     MENTOR("mentor"),
     PROFILE("profile"),
     FOCUS("focus"),
-    CHALLENGES("challenges")
+    CHALLENGES("challenges"),
+    JOURNAL("journal")
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -187,6 +188,7 @@ fun NeverZeroApp(
                 val (icon, iconTint) = when (snackbarType) {
                     UiMessageType.SUCCESS -> Icons.Filled.CheckCircle to MaterialTheme.colorScheme.primary
                     UiMessageType.ERROR -> Icons.Filled.Warning to MaterialTheme.colorScheme.error
+                    UiMessageType.WARNING -> Icons.Filled.Warning to MaterialTheme.colorScheme.tertiary
                     UiMessageType.INFO -> Icons.Filled.Info to MaterialTheme.colorScheme.secondary
                 }
                 Surface(
@@ -270,7 +272,7 @@ fun NeverZeroApp(
                         onDeleteOneOffTask = streakViewModel::deleteOneOffTask,
                         onAssetSelected = { assetId -> selectedAssetId = assetId },
                         onOpenBuddhaChat = { navController.navigate(MainDestination.MENTOR.route) },
-                        onOpenJournal = { appViewModel.onAddEntrySelected(AddEntryType.JOURNAL) },
+                        onOpenJournal = { navController.navigate(MainDestination.JOURNAL.route) },
                         onOpenTimeCapsule = { appViewModel.onAddEntrySelected(AddEntryType.TIME_CAPSULE) },
                         onOpenLeaderboard = { showLeaderboard = true },
                         onOpenMonkMode = { navController.navigate(MainDestination.FOCUS.route) },
@@ -338,6 +340,24 @@ fun NeverZeroApp(
                 composable(MainDestination.CHALLENGES.route) {
                     com.productivitystreak.ui.screens.challenges.ChallengesScreen(
                         onBackClick = { navController.navigateUp() }
+                    )
+                }
+
+                composable(MainDestination.JOURNAL.route) {
+                    val journalUiState by journalViewModel.isSavingStoic.collectAsStateWithLifecycle()
+                    val saveComplete by journalViewModel.stoicSaveComplete.collectAsStateWithLifecycle()
+                    
+                    LaunchedEffect(saveComplete) {
+                        if (saveComplete) {
+                            journalViewModel.resetStoicSaveComplete()
+                            navController.navigateUp()
+                        }
+                    }
+                    
+                    com.productivitystreak.ui.screens.journal.StoicJournalScreen(
+                        onBackClick = { navController.navigateUp() },
+                        onSave = journalViewModel::onSubmitStoicJournal,
+                        isSaving = journalUiState
                     )
                 }
             }

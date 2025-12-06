@@ -1,42 +1,19 @@
 package com.productivitystreak.ui.screens.dashboard
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -48,16 +25,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.productivitystreak.ui.components.RpgHexagon
+import com.productivitystreak.ui.components.BentoGrid
+import com.productivitystreak.ui.components.CompletionCelebration
+import com.productivitystreak.ui.components.PrimaryButton
+import com.productivitystreak.ui.components.fullWidthItem
 import com.productivitystreak.ui.screens.dashboard.components.AddTaskDialog
+import com.productivitystreak.ui.screens.dashboard.components.FocusModeWidget
 import com.productivitystreak.ui.screens.dashboard.components.OneOffTaskRow
+import com.productivitystreak.ui.screens.dashboard.components.RadarChartPreview
+import com.productivitystreak.ui.screens.home.HomeHeader
 import com.productivitystreak.ui.state.AppUiState
 import com.productivitystreak.ui.state.DashboardTask
+import com.productivitystreak.ui.state.AddEntryType
 import com.productivitystreak.ui.theme.NeverZeroTheme
 import com.productivitystreak.ui.theme.PlayfairFontFamily
 import com.productivitystreak.ui.theme.Spacing
-import com.productivitystreak.ui.state.AddEntryType
-import com.productivitystreak.ui.components.PrimaryButton
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -82,6 +64,7 @@ fun DashboardScreen(
     modifier: Modifier = Modifier
 ) {
     var showAddTaskDialog by remember { mutableStateOf(false) }
+    var celebratingTaskId by remember { mutableStateOf<String?>(null) }
 
     if (showAddTaskDialog) {
         AddTaskDialog(
@@ -93,109 +76,51 @@ fun DashboardScreen(
         )
     }
 
-    val haptics = androidx.compose.ui.platform.LocalHapticFeedback.current
+    val haptics = LocalHapticFeedback.current
     val hapticsEnabled = uiState.profileState.hapticsEnabled
 
-    fun performHaptic(type: androidx.compose.ui.hapticfeedback.HapticFeedbackType = com.productivitystreak.ui.theme.HapticTokens.Impact) {
+    fun performHaptic(type: HapticFeedbackType = com.productivitystreak.ui.theme.HapticTokens.Impact) {
         if (hapticsEnabled) {
             haptics.performHapticFeedback(type)
         }
     }
 
-    val scrollState = androidx.compose.foundation.lazy.rememberLazyListState()
-
     val deepForest = Color(0xFF1A2C24)
     val creamWhite = Color(0xFFF5F5DC)
-    val activeProtocol = streakUiState.todayTasks.firstOrNull { !it.isCompleted }
 
-    val heroScale = remember { Animatable(0.95f) }
-    val heroAlpha = remember { Animatable(0f) }
-    val heroTranslation = remember { Animatable(20f) }
-    LaunchedEffect(activeProtocol?.id) {
-        heroAlpha.snapTo(0f)
-        heroScale.snapTo(0.95f)
-        heroTranslation.snapTo(20f)
-        heroAlpha.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 320, easing = FastOutSlowInEasing)
-        )
-        heroScale.animateTo(
-            targetValue = 1f,
-            animationSpec = spring(
-                dampingRatio = Spring.DampingRatioMediumBouncy,
-                stiffness = Spring.StiffnessLow
-            )
-        )
-        heroTranslation.animateTo(
-            targetValue = 0f,
-            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)
-        )
-    }
+    // Celebration overlay
+    Box(modifier = modifier.fillMaxSize()) {
+        BentoGrid(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(NeverZeroTheme.designColors.background),
+            columns = 2,
+            contentPadding = PaddingValues(horizontal = Spacing.md, vertical = Spacing.lg),
+            verticalItemSpacing = Spacing.md
+        ) {
+            // 1. Header with greeting and XP bar (full width)
+            fullWidthItem(key = "header") {
+                HomeHeader(
+                    userName = uiState.userName,
+                    quote = uiState.quote,
+                    level = streakUiState.rpgStats.level,
+                    currentXp = streakUiState.rpgStats.currentXp,
+                    xpToNextLevel = streakUiState.rpgStats.xpToNextLevel
+                )
+            }
 
-    val middleAlpha = remember { Animatable(0f) }
-    LaunchedEffect(streakUiState.buddhaInsight, streakUiState.rpgStats) {
-        middleAlpha.animateTo(1f, animationSpec = tween(durationMillis = 420, easing = FastOutSlowInEasing))
-    }
-
-    androidx.compose.foundation.lazy.LazyColumn(
-        state = scrollState,
-        modifier = modifier
-            .fillMaxSize()
-            .background(NeverZeroTheme.designColors.background)
-            .padding(horizontal = Spacing.md),
-        contentPadding = PaddingValues(vertical = Spacing.lg),
-        verticalArrangement = Arrangement.spacedBy(Spacing.lg)
-    ) {
-        // 1. Header
-        item {
-            com.productivitystreak.ui.screens.home.HomeHeader(
-                userName = uiState.userName,
-                quote = uiState.quote,
-                level = streakUiState.rpgStats.level,
-                currentXp = streakUiState.rpgStats.currentXp,
-                xpToNextLevel = streakUiState.rpgStats.xpToNextLevel
-            )
-        }
-
-        // 2. Bento Grid — Top hero card
-        item {
-            Box(
-                modifier = Modifier.graphicsLayer {
-                    scaleX = heroScale.value
-                    scaleY = heroScale.value
-                    translationY = heroTranslation.value
-                    alpha = heroAlpha.value
-                }
-            ) {
-                ActiveProtocolCard(
-                    activeTask = activeProtocol,
-                    deepForest = deepForest,
-                    creamWhite = creamWhite,
-                    onStartProtocol = activeProtocol?.let {
-                        {
-                            performHaptic(androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress)
-                            onToggleTask(it.id)
-                        }
-                    },
-                    onCreateProtocol = {
+            // 2. Focus Mode Widget (full width, large)
+            fullWidthItem(key = "focus-mode") {
+                FocusModeWidget(
+                    onClick = {
                         performHaptic()
-                        onAddHabitClick()
+                        onOpenMonkMode()
                     }
                 )
             }
-        }
 
-        // 3. Bento Grid — Middle row
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .graphicsLayer {
-                        alpha = middleAlpha.value
-                        translationY = (1f - middleAlpha.value) * 30f
-                    },
-                horizontalArrangement = Arrangement.spacedBy(Spacing.md)
-            ) {
+            // 3. Daily Wisdom Card (square)
+            item(key = "daily-wisdom") {
                 DailyWisdomCard(
                     insight = streakUiState.buddhaInsight ?: "Meditate on your goals.",
                     onRefresh = {
@@ -203,30 +128,25 @@ fun DashboardScreen(
                         onRefreshQuote()
                     },
                     deepForest = deepForest,
-                    creamWhite = creamWhite,
-                    modifier = Modifier.weight(1f)
-                )
-                RpgSummaryCard(
-                    stats = streakUiState.rpgStats,
-                    deepForest = deepForest,
-                    creamWhite = creamWhite,
-                    modifier = Modifier.weight(1f)
+                    creamWhite = creamWhite
                 )
             }
-        }
 
-        // 4. Quest Log
-        item {
-            AnimatedContent(
-                targetState = streakUiState.oneOffTasks,
-                transitionSpec = {
-                    (fadeIn(animationSpec = tween(280, easing = FastOutSlowInEasing)) + slideInVertically(animationSpec = tween(280, easing = FastOutSlowInEasing)) { it / 3 }) with
-                        (fadeOut(animationSpec = tween(220, easing = FastOutSlowInEasing)) + slideOutVertically(animationSpec = tween(220, easing = FastOutSlowInEasing)) { it / 3 })
-                },
-                label = "quest-log"
-            ) { quests ->
+            // 4. Radar Chart Preview (square)
+            item(key = "radar-chart") {
+                RadarChartPreview(
+                    stats = streakUiState.rpgStats,
+                    onClick = {
+                        performHaptic()
+                        // Could navigate to stats screen
+                    }
+                )
+            }
+
+            // 5. Quest Log Section (full width)
+            fullWidthItem(key = "quest-log") {
                 QuestLogSection(
-                    tasks = quests,
+                    tasks = streakUiState.oneOffTasks,
                     deepForest = deepForest,
                     creamWhite = creamWhite,
                     onAddQuest = {
@@ -234,7 +154,7 @@ fun DashboardScreen(
                         showAddTaskDialog = true
                     },
                     onToggle = { taskId ->
-                        performHaptic()
+                        performHaptic(HapticFeedbackType.LongPress)
                         onToggleOneOffTask(taskId)
                     },
                     onDelete = { taskId ->
@@ -243,154 +163,165 @@ fun DashboardScreen(
                     }
                 )
             }
-        }
 
-        // 5. Daily Disciplines
-        item {
-            AnimatedVisibility(
-                visible = streakUiState.streaks.isNotEmpty(),
-                enter = fadeIn(animationSpec = tween(300)) + expandVertically(),
-                exit = fadeOut(animationSpec = tween(200)) + shrinkVertically()
-            ) {
-                Text(
-                    text = "DAILY DISCIPLINES",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = NeverZeroTheme.designColors.textSecondary,
-                    modifier = Modifier.padding(top = Spacing.md, bottom = Spacing.sm)
-                )
-            }
-        }
+            // 6. Daily Disciplines Section Header (full width)
+            if (streakUiState.streaks.isNotEmpty()) {
+                fullWidthItem(key = "disciplines-header") {
+                    Text(
+                        text = "DAILY DISCIPLINES",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = NeverZeroTheme.designColors.textSecondary,
+                        letterSpacing = 1.5.sp,
+                        modifier = Modifier.padding(top = Spacing.md, bottom = Spacing.xs)
+                    )
+                }
 
-        if (streakUiState.streaks.isEmpty()) {
-            item {
-                com.productivitystreak.ui.components.EmptyState(
-                    icon = com.productivitystreak.ui.icons.AppIcons.AddHabit,
-                    message = "No disciplines set. Begin your protocol.",
-                    action = {
-                        PrimaryButton(
-                            text = "Define Protocol",
-                            onClick = { onAddHabitClick() }
+                // 7. Protocol list items (full width each)
+                streakUiState.streaks.forEachIndexed { index, streak ->
+                    fullWidthItem(key = "streak-${streak.id}") {
+                        val task = DashboardTask(
+                            id = streak.id,
+                            title = streak.name,
+                            category = streak.category,
+                            streakId = streak.id,
+                            isCompleted = streak.currentCount > 0 && streak.lastUpdated >= System.currentTimeMillis() - 86400000,
+                            accentHex = streak.color,
+                            streakCount = streak.currentCount
+                        )
+
+                        ProtocolRow(
+                            task = task,
+                            onToggle = {
+                                performHaptic(HapticFeedbackType.LongPress)
+                                celebratingTaskId = task.id
+                                onToggleTask(task.id)
+                            },
+                            onSelect = { onSelectStreak(streak.id) }
                         )
                     }
-                )
+                }
+            } else {
+                fullWidthItem(key = "empty-state") {
+                    com.productivitystreak.ui.components.EmptyState(
+                        icon = com.productivitystreak.ui.icons.AppIcons.AddHabit,
+                        message = "No disciplines set. Begin your protocol.",
+                        action = {
+                            PrimaryButton(
+                                text = "Define Protocol",
+                                onClick = { onAddHabitClick() }
+                            )
+                        }
+                    )
+                }
             }
-        } else {
+        }
 
-            items(streakUiState.streaks.size) { index ->
-                val streak = streakUiState.streaks[index]
-                val task = DashboardTask(
-                    id = streak.id,
-                    title = streak.name,
-                    category = streak.category,
-                    streakId = streak.id,
-                    isCompleted = streak.currentCount > 0 && streak.lastUpdated >= System.currentTimeMillis() - 86400000,
-                    accentHex = streak.color,
-                    streakCount = streak.currentCount
-                )
-
-                com.productivitystreak.ui.screens.home.ImprovedHabitRow(
-                    task = task,
-                    onToggle = { onSelectStreak(streak.id) },
-                    modifier = Modifier.clickable { onSelectStreak(streak.id) }
-                )
-                Spacer(modifier = Modifier.height(Spacing.sm))
-            }
+        // Celebration overlay
+        celebratingTaskId?.let { taskId ->
+            CompletionCelebration(
+                trigger = true,
+                onComplete = { celebratingTaskId = null },
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
 
+/**
+ * Protocol row with animated checkbox that triggers celebration.
+ */
 @Composable
-private fun ActiveProtocolCard(
-    activeTask: DashboardTask?,
-    deepForest: Color,
-    creamWhite: Color,
-    onStartProtocol: (() -> Unit)?,
-    onCreateProtocol: () -> Unit
+private fun ProtocolRow(
+    task: DashboardTask,
+    onToggle: () -> Unit,
+    onSelect: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    val haptic = LocalHapticFeedback.current
-    val serifHeading = MaterialTheme.typography.labelLarge.copy(
-        fontFamily = PlayfairFontFamily,
-        letterSpacing = 2.sp,
-        color = creamWhite.copy(alpha = 0.8f)
-    )
+    val checkScale = remember { Animatable(1f) }
+    
+    LaunchedEffect(task.isCompleted) {
+        if (task.isCompleted) {
+            checkScale.animateTo(
+                targetValue = 1.2f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+            checkScale.animateTo(1f)
+        }
+    }
+
+    val accentColor = try {
+        Color(android.graphics.Color.parseColor(task.accentHex))
+    } catch (e: Exception) {
+        MaterialTheme.colorScheme.primary
+    }
 
     Surface(
-        shape = RoundedCornerShape(32.dp),
-        modifier = Modifier.fillMaxWidth(),
-        color = if (activeTask != null) deepForest else creamWhite,
-        contentColor = if (activeTask != null) creamWhite else deepForest
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onSelect),
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        tonalElevation = 1.dp
     ) {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Mission Control", style = serifHeading)
+            // Animated checkbox
+            IconButton(
+                onClick = { if (!task.isCompleted) onToggle() },
+                modifier = Modifier
+                    .size(40.dp)
+                    .graphicsLayer {
+                        scaleX = checkScale.value
+                        scaleY = checkScale.value
+                    }
+            ) {
+                Icon(
+                    imageVector = if (task.isCompleted) Icons.Filled.CheckCircle else Icons.Outlined.Circle,
+                    contentDescription = if (task.isCompleted) "Completed" else "Mark complete",
+                    tint = if (task.isCompleted) accentColor else MaterialTheme.colorScheme.outline,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
 
-            if (activeTask != null) {
+            // Task info
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
                 Text(
-                    text = activeTask.title,
-                    style = MaterialTheme.typography.headlineMedium.copy(fontFamily = PlayfairFontFamily),
-                    maxLines = 2,
+                    text = task.title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = if (task.isCompleted) 
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f) 
+                    else 
+                        MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "${task.category} • Streak ${task.streakCount}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = activeTask.category.uppercase(),
-                    style = MaterialTheme.typography.labelMedium,
-                    color = creamWhite.copy(alpha = 0.7f)
-                )
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Streak ${activeTask.streakCount}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                    Box(
-                        modifier = Modifier
-                            .height(32.dp)
-                            .width(1.dp)
-                            .background(creamWhite.copy(alpha = 0.2f))
-                    )
-                    Text(
-                        text = "Honor the ritual",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = creamWhite.copy(alpha = 0.7f)
-                    )
-                }
-
-                Button(
-                    onClick = {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        onStartProtocol?.invoke()
-                    },
-                    enabled = onStartProtocol != null,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = creamWhite,
-                        contentColor = deepForest
-                    ),
-                    shape = RoundedCornerShape(24.dp)
-                ) {
-                    Text("Commence Protocol", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Bold))
-                }
-            } else {
-                Text(
-                    text = "No protocol is active. Craft one to anchor today's intent.",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = deepForest
-                )
-                Button(
-                    onClick = onCreateProtocol,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = deepForest,
-                        contentColor = creamWhite
-                    ),
-                    shape = RoundedCornerShape(24.dp)
-                ) {
-                    Text("Create Protocol", style = MaterialTheme.typography.labelLarge)
-                }
             }
+
+            // Accent indicator
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(accentColor, shape = RoundedCornerShape(4.dp))
+            )
         }
     }
 }
@@ -404,85 +335,73 @@ private fun DailyWisdomCard(
     modifier: Modifier = Modifier
 ) {
     Surface(
-        modifier = modifier.heightIn(min = 220.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .aspectRatio(1f),
         shape = RoundedCornerShape(28.dp),
-        color = creamWhite,
-        tonalElevation = 2.dp
+        color = Color.Transparent
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Daily Wisdom",
-                    style = MaterialTheme.typography.titleLarge.copy(fontFamily = PlayfairFontFamily),
-                    color = deepForest
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            creamWhite,
+                            creamWhite.copy(alpha = 0.9f),
+                            Color(0xFFF0E6D3)
+                        )
+                    ),
+                    shape = RoundedCornerShape(28.dp)
                 )
-                IconButton(onClick = onRefresh) {
-                    Icon(
-                        imageVector = Icons.Filled.Refresh,
-                        contentDescription = "Refresh wisdom",
-                        tint = deepForest
-                    )
-                }
-            }
-
-            Text(
-                text = insight,
-                style = MaterialTheme.typography.bodyLarge.copy(fontFamily = PlayfairFontFamily, fontWeight = FontWeight.Medium),
-                color = deepForest.copy(alpha = 0.85f),
-                maxLines = 4,
-                overflow = TextOverflow.Ellipsis
-            )
-
-            Text(
-                text = "Summon another verse whenever you need fresh perspective.",
-                style = MaterialTheme.typography.labelSmall,
-                color = deepForest.copy(alpha = 0.6f)
-            )
-        }
-    }
-}
-
-@Composable
-private fun RpgSummaryCard(
-    stats: com.productivitystreak.data.model.RpgStats,
-    deepForest: Color,
-    creamWhite: Color,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier.heightIn(min = 220.dp),
-        shape = RoundedCornerShape(28.dp),
-        color = deepForest,
-        contentColor = creamWhite
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(16.dp)
         ) {
-            Text(
-                text = "RPG Stats",
-                style = MaterialTheme.typography.titleLarge.copy(fontFamily = PlayfairFontFamily)
-            )
-            Text(
-                text = "Level ${stats.level} → ${stats.currentXp}/${stats.xpToNextLevel + stats.currentXp} XP",
-                style = MaterialTheme.typography.bodyMedium,
-                color = creamWhite.copy(alpha = 0.8f)
-            )
-            RpgHexagon(
-                stats = stats,
-                modifier = Modifier.fillMaxWidth().height(160.dp),
-                size = 220.dp,
-                lineColor = creamWhite.copy(alpha = 0.25f),
-                strokeColor = creamWhite,
-                fillColor = creamWhite.copy(alpha = 0.2f)
-            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Daily Wisdom",
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontFamily = PlayfairFontFamily
+                        ),
+                        color = deepForest,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    IconButton(
+                        onClick = onRefresh,
+                        modifier = Modifier.size(32.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Refresh,
+                            contentDescription = "Refresh",
+                            tint = deepForest.copy(alpha = 0.7f),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+
+                Text(
+                    text = insight,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontFamily = PlayfairFontFamily,
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = 20.sp
+                    ),
+                    color = deepForest.copy(alpha = 0.85f),
+                    maxLines = 4,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+            }
         }
     }
 }
@@ -510,11 +429,21 @@ private fun QuestLogSection(
             ) {
                 Text(
                     text = "Quest Log",
-                    style = MaterialTheme.typography.titleLarge.copy(fontFamily = PlayfairFontFamily),
-                    color = deepForest
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontFamily = PlayfairFontFamily,
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = deepForest,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 TextButton(onClick = onAddQuest) {
-                    Icon(imageVector = Icons.Filled.Add, contentDescription = null, tint = deepForest)
+                    Icon(
+                        imageVector = Icons.Filled.Add,
+                        contentDescription = null,
+                        tint = deepForest,
+                        modifier = Modifier.size(18.dp)
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text("Add", color = deepForest)
                 }
@@ -522,10 +451,12 @@ private fun QuestLogSection(
 
             if (tasks.isEmpty()) {
                 Text(
-                    text = "Log quick quests to keep momentum on days when life improvises.",
+                    text = "Log quick quests for momentum.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = deepForest.copy(alpha = 0.7f),
-                    modifier = Modifier.padding(top = Spacing.sm)
+                    modifier = Modifier.padding(top = Spacing.sm),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             } else {
                 Spacer(modifier = Modifier.height(Spacing.sm))
@@ -542,5 +473,3 @@ private fun QuestLogSection(
         }
     }
 }
-
-

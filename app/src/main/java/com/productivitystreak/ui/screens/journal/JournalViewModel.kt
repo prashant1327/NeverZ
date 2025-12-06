@@ -3,14 +3,19 @@ package com.productivitystreak.ui.screens.journal
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.productivitystreak.data.local.entity.JournalEntity
+import com.productivitystreak.data.repository.JournalRepository
 import com.productivitystreak.data.repository.ReflectionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class JournalViewModel(
     private val reflectionRepository: ReflectionRepository,
+    private val journalRepository: JournalRepository,
     private val geminiClient: com.productivitystreak.data.gemini.GeminiClient
 ) : ViewModel() {
 
@@ -107,5 +112,49 @@ class JournalViewModel(
 
     fun clearRealtimeFeedback() {
         _realtimeFeedback.value = null
+    }
+
+    // Stoic Journal Methods
+    val recentJournalEntries: StateFlow<List<JournalEntity>> = journalRepository
+        .getRecentEntries(7)
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    private val _isSavingStoic = MutableStateFlow(false)
+    val isSavingStoic: StateFlow<Boolean> = _isSavingStoic.asStateFlow()
+
+    private val _stoicSaveComplete = MutableStateFlow(false)
+    val stoicSaveComplete: StateFlow<Boolean> = _stoicSaveComplete.asStateFlow()
+
+    fun onSubmitStoicJournal(
+        whatDidWell: String,
+        whereLackedDiscipline: String,
+        whatWillDoBetter: String
+    ) {
+        if (whatDidWell.isBlank() && whereLackedDiscipline.isBlank() && whatWillDoBetter.isBlank()) {
+            _uiMessage.value = "Please fill in at least one reflection."
+            return
+        }
+
+        _isSavingStoic.value = true
+        viewModelScope.launch {
+            try {
+                journalRepository.saveEntry(
+                    whatDidWell = whatDidWell,
+                    whereLackedDiscipline = whereLackedDiscipline,
+                    whatWillDoBetter = whatWillDoBetter
+                )
+                _uiMessage.value = "Reflection saved"
+                _stoicSaveComplete.value = true
+            } catch (e: Exception) {
+                Log.e("JournalViewModel", "Error saving stoic journal", e)
+                _uiMessage.value = "Couldn't save reflection. Please retry."
+            } finally {
+                _isSavingStoic.value = false
+            }
+        }
+    }
+
+    fun resetStoicSaveComplete() {
+        _stoicSaveComplete.value = false
     }
 }

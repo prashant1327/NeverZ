@@ -49,7 +49,7 @@ data class DashboardTask(
     val streakCount: Int = 0
 )
 
-enum class UiMessageType { SUCCESS, ERROR, INFO }
+enum class UiMessageType { SUCCESS, ERROR, INFO, WARNING }
 
 data class UiMessage(
     val id: Long = System.currentTimeMillis(),

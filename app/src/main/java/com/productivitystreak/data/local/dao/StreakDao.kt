@@ -15,6 +15,9 @@ interface StreakDao {
     @Query("SELECT * FROM streaks WHERE category = :category AND isArchived = 0")
     fun getStreaksByCategory(category: String): Flow<List<StreakEntity>>
 
+    @Query("SELECT * FROM streaks WHERE category = :category AND isArchived = 0")
+    suspend fun getStreaksByCategorySync(category: String): List<StreakEntity>
+
     @Query("SELECT * FROM streaks WHERE isArchived = 0 ORDER BY currentCount DESC LIMIT :limit")
     fun getTopStreaks(limit: Int): Flow<List<StreakEntity>>
 

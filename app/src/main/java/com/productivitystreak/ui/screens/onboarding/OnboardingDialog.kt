@@ -9,6 +9,8 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -74,8 +76,27 @@ fun OnboardingFlow(
                     AnimatedContent(
                         targetState = onboarding.currentStep,
                         transitionSpec = {
-                            fadeIn(animationSpec = spring(stiffness = Spring.StiffnessLow)) togetherWith
-                                fadeOut(animationSpec = spring(stiffness = Spring.StiffnessLow))
+                            if (targetState > initialState) {
+                                // Forward: slide in from right, slide out to left (like turning a page)
+                                (slideInHorizontally(
+                                    animationSpec = tween(400, easing = FastOutSlowInEasing),
+                                    initialOffsetX = { fullWidth -> fullWidth }
+                                ) + fadeIn(animationSpec = tween(300))) togetherWith
+                                    (slideOutHorizontally(
+                                        animationSpec = tween(400, easing = FastOutSlowInEasing),
+                                        targetOffsetX = { fullWidth -> -fullWidth }
+                                    ) + fadeOut(animationSpec = tween(200)))
+                            } else {
+                                // Backward: slide in from left, slide out to right
+                                (slideInHorizontally(
+                                    animationSpec = tween(400, easing = FastOutSlowInEasing),
+                                    initialOffsetX = { fullWidth -> -fullWidth }
+                                ) + fadeIn(animationSpec = tween(300))) togetherWith
+                                    (slideOutHorizontally(
+                                        animationSpec = tween(400, easing = FastOutSlowInEasing),
+                                        targetOffsetX = { fullWidth -> fullWidth }
+                                    ) + fadeOut(animationSpec = tween(200)))
+                            }
                         },
                         label = "onboarding-steps"
                     ) { step ->
