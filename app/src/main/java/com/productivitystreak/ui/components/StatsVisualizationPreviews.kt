@@ -15,13 +15,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.productivitystreak.data.model.RpgStats
-import com.productivitystreak.ui.theme.NeverZeroTheme
+import com.productivitystreak.ui.theme.ProductivityStreakTheme
 import java.time.LocalDate
 
 @Preview(name = "Spider Chart - Low Stats", showBackground = true)
 @Composable
 private fun SpiderChartPreviewLow() {
-    NeverZeroTheme {
+    ProductivityStreakTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -59,7 +59,7 @@ private fun SpiderChartPreviewLow() {
 @Preview(name = "Spider Chart - Balanced Stats", showBackground = true)
 @Composable
 private fun SpiderChartPreviewBalanced() {
-    NeverZeroTheme {
+    ProductivityStreakTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -97,7 +97,7 @@ private fun SpiderChartPreviewBalanced() {
 @Preview(name = "Spider Chart - Max Stats", showBackground = true)
 @Composable
 private fun SpiderChartPreviewMax() {
-    NeverZeroTheme {
+    ProductivityStreakTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -135,7 +135,7 @@ private fun SpiderChartPreviewMax() {
 @Preview(name = "Spider Chart - Specialized (STR Focus)", showBackground = true)
 @Composable
 private fun SpiderChartPreviewSpecialized() {
-    NeverZeroTheme {
+    ProductivityStreakTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -173,7 +173,7 @@ private fun SpiderChartPreviewSpecialized() {
 @Preview(name = "Contribution Heatmap - Active User", showBackground = true)
 @Composable
 private fun ContributionHeatmapPreviewActive() {
-    NeverZeroTheme {
+    ProductivityStreakTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -208,7 +208,7 @@ private fun ContributionHeatmapPreviewActive() {
 @Preview(name = "Contribution Heatmap - Sporadic User", showBackground = true)
 @Composable
 private fun ContributionHeatmapPreviewSporadic() {
-    NeverZeroTheme {
+    ProductivityStreakTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -243,7 +243,7 @@ private fun ContributionHeatmapPreviewSporadic() {
 @Preview(name = "Contribution Heatmap - Perfect Streak", showBackground = true)
 @Composable
 private fun ContributionHeatmapPreviewPerfect() {
-    NeverZeroTheme {
+    ProductivityStreakTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -278,7 +278,7 @@ private fun ContributionHeatmapPreviewPerfect() {
 @Preview(name = "Contribution Heatmap - New User", showBackground = true)
 @Composable
 private fun ContributionHeatmapPreviewNew() {
-    NeverZeroTheme {
+    ProductivityStreakTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

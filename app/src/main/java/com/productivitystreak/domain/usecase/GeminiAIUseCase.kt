@@ -33,7 +33,7 @@ class GeminiAIUseCase(private val geminiClient: GeminiClient) {
 
     suspend fun generateBuddhaInsight(forceRefresh: Boolean = false): String {
         return generateWithErrorHandling {
-            geminiClient.generateBuddhaInsight(forceRefresh)
+            geminiClient.generateBuddhaInsight(context = "general", forceRefresh = forceRefresh)
         }.getOrElse { handleAIError(it) }
     }
 

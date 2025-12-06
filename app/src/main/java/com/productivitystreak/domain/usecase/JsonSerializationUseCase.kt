@@ -8,7 +8,7 @@ import com.squareup.moshi.Types
  * Shared use case for JSON serialization with Moshi.
  * Eliminates repeated adapter creation across ViewModels.
  */
-class JsonSerializationUseCase(private val moshi: Moshi) {
+class JsonSerializationUseCase(val moshi: Moshi) {
 
     inline fun <reified T> serializeList(list: List<T>): String {
         val type = Types.newParameterizedType(List::class.java, T::class.java)
